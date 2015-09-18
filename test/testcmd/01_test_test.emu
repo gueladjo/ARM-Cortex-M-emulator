@@ -1,0 +1,7 @@
+#-------
+#TEST_RETURN_CODE=FAIL           
+#TEST_COMMENT="Teste fonctionnement standard"
+#-------
+
+test 123
+

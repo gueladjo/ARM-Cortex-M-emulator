@@ -1,0 +1,7 @@
+#-------
+#TEST_RETURN_CODE=FAIL           
+#TEST_COMMENT="Teste fonctionnement standard"
+#-------
+
+test 0x01 -0xFF 0x5677 0x09
+

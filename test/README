@@ -1,0 +1,5 @@
+les fichiers de test
+
+les tests sont regroupés en repertoires correspondant à une commande. 
+
+Il doivent être passés en parametre de simpleUnitTest.sh
