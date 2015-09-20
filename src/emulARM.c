@@ -107,10 +107,19 @@ char* get_next_token(interpreteur inter) {
  *@param chaine le token à analyser
  *@return 0 si non-hexa, non null autrement
  */
-int is_hexa(char* chaine) {
+
+/* int is_hexa(char* chaine) {
     int i;
     return (chaine!=NULL && strlen(chaine)>2&& chaine[0]=='0' && chaine[1]=='x' && sscanf(chaine,"%x",&i)==1);
+} */
+
+// check LONG_MAX LONG_MIN errno
+
+int is_hexa(char* chaine) {
+    char* p;
+    return (chaine!=NULL && strlen(chaine)>3 && chaine[0]=='0' && chaine[1]=='x' && strtol(chaine, &p, 0) != 0 && *p == '\0');
 }
+
 
 /**
  * retourne le type du token (fonction très incomplete)

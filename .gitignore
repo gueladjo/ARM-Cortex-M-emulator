@@ -1,1 +1,3 @@
 emul-arm
+*.o
+*.out
