@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL           
+#TEST_COMMENT="Teste trop grand nombre de paramètres"
+#-------
+
+set mem byte 0x5000 12 -e 12
