@@ -18,6 +18,7 @@
 #include "elf/elf.h"
 #include "elf/syms.h"
 #include "elf/relocator.h"
+#include "elf/memory.h"
 
 // On fixe ici une adresse basse dans la mémoire virtuelle. Le premier segment
 // ira se loger à cette adresse.
@@ -353,6 +354,8 @@ int main (int argc, char *argv[]) {
     unsigned int next_segment_start = START_MEM; // compteur pour designer le début de la prochaine section
 
     //TODO declarer une memoire virtuelle, c'est elle qui contiendra toute les données du programme
+    memory memory;
+    word stack[16];
     stab symtab= new_stab(0); // table des symboles
     FILE * pf_elf;
 
@@ -375,8 +378,7 @@ int main (int argc, char *argv[]) {
     // et des symboles
     elf_load_symtab(pf_elf, bus_width, endianness, &symtab);
 
-		//TODO allouer la memoire virtuelle
-
+		 
 
 		nsegments=0;
     next_segment_start = START_MEM;
@@ -386,6 +388,8 @@ int main (int argc, char *argv[]) {
 
         uint32_t taille;
         byte* content = elf_extract_scn_by_name(ehdr, pf_elf, section_names[i], &taille, NULL );
+
+        memory = memory_allocation(memory, section_names[i], content, taille, next_segment_start);        
         
         if (content!=NULL){
             print_section_raw_content(section_names[i],next_segment_start,content,taille);
@@ -401,6 +405,8 @@ int main (int argc, char *argv[]) {
 		free(ehdr); 
 
     //TODO allouer la pile (et donc modifier le nb de segments)
+        
+    memory = stack_set(stack, memory);
 
     printf("\n------ Fichier ELF \"%s\" : sections lues lors du chargement ------\n", argv[1]) ;
     stab32_print( symtab );

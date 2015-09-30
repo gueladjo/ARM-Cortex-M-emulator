@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=PASS           
+#TEST_COMMENT="Teste fonctionnement standard"
+#-------
+
+load filename 0x145Df blurb

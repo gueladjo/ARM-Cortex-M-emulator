@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=PASS          
+#TEST_COMMENT="Test fonctionnement standard"
+#-------
+
+disp reg r0 r15 aspr pc
