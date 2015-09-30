@@ -74,4 +74,12 @@ byte read_memory_value(size_t addr, memory mem);
  */
 int write_memory_value(size_t addr, byte value, memory mem);
 
+/**
+ * Frees the memory. Returns 0 in case of success,
+ * 1 if nothing has been freed
+ * @mem the memory
+ * @return an int to check errors
+ */
+int memory_free(memory mem);
+
 #endif

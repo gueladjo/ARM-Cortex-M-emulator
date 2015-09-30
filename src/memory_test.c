@@ -25,5 +25,8 @@ int main()
     e = write_memory_value(i, 1, mem);
   }
   printf("Displaying and changing OK\n");
+  printf("Freeing memory...\n");
+  memory_free(mem);
+  printf("Memory freed !\n");
   return 0;
 }
