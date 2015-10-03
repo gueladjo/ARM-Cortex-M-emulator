@@ -152,7 +152,7 @@ extern "C" {
 
 
 
-/*static char *ARM32_REL[] = {
+static char *ARM32_REL[] = {
     "R_ARM_NONE","R_ARM_PC24","R_ARM_ABS32","R_ARM_REL32",
     "R_ARM_LDR_PC_G0","R_ARM_ABS16","R_ARM_ABS12","R_ARM_THM_ABS5",
     "R_ARM_ABS8","R_ARM_SBREL32","R_ARM_THM_CALL","R_ARM_THM_PC8",
@@ -189,7 +189,7 @@ extern "C" {
     "R_ARM_PRIVATE_9","R_ARM_PRIVATE_10","R_ARM_PRIVATE_11","R_ARM_PRIVATE_12",
     "R_ARM_PRIVATE_13","R_ARM_PRIVATE_14","R_ARM_PRIVATE_15","R_ARM_ME_TOO",
     "R_ARM_THM_TLS_DESCSEQ16","R_ARM_THM_TLS_DESCSEQ32"
-};*/
+};
 
 #ifdef __cplusplus
 }

@@ -4,14 +4,13 @@
  * @brief Memory + registers management functions - header
  */
 
-#ifndef _MEMORY
-#define _MEMORY
+#ifndef _MEMORY123
+#define _MEMORY123
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
-#include <string.h>
 
 typedef uint8_t byte;
 typedef uint32_t word;
@@ -52,7 +51,7 @@ memory stack_set (word* reg, memory mem);
  * @return the memory structure
  */
 
-memory memory_allocation(memory mem, char* section_name, byte* segdata, size_t size, size_t adress);
+memory memory_allocation(memory mem, char* section_name, size_t size, size_t adress);
 
 /**
  * Returns value stored at the address addr

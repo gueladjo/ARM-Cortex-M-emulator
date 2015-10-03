@@ -18,7 +18,7 @@ int main()
   mem = stack_set(reg, mem);
   printf("SP = %"PRIu32"\n", reg[13]);
   printf("Setting up memory...\n");
-  mem = memory_allocation(mem, 0x12fc, 0x3500, 0xfc2, 0xff);
+  mem = memory_allocation(mem);
   printf("Displaying memory...\n");
   for (i=0;i<=0xfffff000;i++) {
     x = read_memory_value(i, mem);

@@ -53,6 +53,7 @@ typedef struct {
 
 
 /**
+
  * allocation et init interpreteur
  * @return un pointeur vers une structure allouée dynamiquement
  */
