@@ -52,7 +52,7 @@ memory stack_set (word* reg, memory mem);
  * @return the memory structure
  */
 
-memory memory_allocation(memory mem, char* section_name, size_t size, size_t adress);
+memory memory_allocation(memory mem, char* section_name, byte* segdata, size_t size, size_t adress);
 
 /**
  * Returns value stored at the address addr

@@ -1,6 +1,6 @@
 #-------
-#TEST_RETURN_CODE=PASS           
-#TEST_COMMENT="Teste fonctionnement standard"
+#TEST_RETURN_CODE=PASS          
+#TEST_COMMENT="Test fonctionnement standard"
 #-------
 
-load filename 0x1f4d24
+disp mem map

@@ -1,4 +1,6 @@
 #include "interpreter.h"
+#include "parsing.h"
+#include "functions.h"
 
 /**
  * allocation et init interpreteur
@@ -29,7 +31,7 @@ void del_inter(interpreteur inter) {
 * @return CMD_UNKOWN_RETURN_VALUE si la commande n'est pas reconnue. (-2)
 * @return tout autre nombre (eg tout nombre positif) si erreur d'execution de la commande
 */
-int execute_cmd(interpreteur inter) {
+int execute_cmd(interpreteur inter, memory memory) {
     DEBUG_MSG("input '%s'", inter->input);
     char cmdStr[MAX_STR];
     memset( cmdStr, '\0', MAX_STR );
@@ -48,9 +50,25 @@ int execute_cmd(interpreteur inter) {
     if(strcmp(token, "exit") == 0) {
         return exitcmd(inter);
     }
-    else if(strcmp(token, "test") == 0) {
-        return testcmd(inter);
+
+    if(strcmp(token, "load") == 0) {
+        return loadcmd(inter, memory);
     }
+    else if(strcmp(token, "debug") == 0) {
+        return debugcmd(inter); 
+    } 
+    else if(strcmp(token, "disp") == 0) {
+        return dispcmd(inter, memory); 
+    } 
+    else if(strcmp(token, "assert") == 0) {
+        return assertcmd(inter, memory); 
+    }
+    else if(strcmp(token, "set") == 0) {
+        return setcmd(inter, memory); 
+    } 
+    else if(strcmp(token, "resume") == 0) {
+        return resumecmd(inter); 
+    } 
 
     WARNING_MSG("Unknown Command : '%s'\n", cmdStr);
     return CMD_UNKOWN_RETURN_VALUE;
@@ -109,3 +127,18 @@ int  acquire_line(FILE *fp, interpreteur inter) {
     DEBUG_MSG("Ligne acquise '%s'\n", inter->input); /* macro DEBUG_MSG : uniquement si compil en mode DEBUG_MSG */
     return 0;
 }
+
+void usage_ERROR_MSG( char *command ) {
+    fprintf( stderr, "Usage: %s [file.emul]\n   If no file is given, executes in Shell mode.", command );
+}
+
+/**
+ * commande exit qui ne necessite pas d'analyse syntaxique
+ * @param inter l'interpreteur qui demande l'analyse
+ * @return 0 en case de succes, un nombre positif sinon
+ */
+int exitcmd(interpreteur inter) {
+    INFO_MSG("Bye bye !");
+    return CMD_EXIT_RETURN_VALUE;
+}
+

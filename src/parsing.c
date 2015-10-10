@@ -1,5 +1,6 @@
-#include "parsing.h"
 #include "interpreter.h"
+#include "parsing.h"
+
 
 /**
  * return le prochain token de la chaine actuellement
@@ -46,6 +47,7 @@ char* get_next_token(interpreteur inter) {
 
 int is_hexa(char* chaine) {
     char* p;
+    if (strcmp(chaine, "0x0") == 0) return 1;
     return (chaine!=NULL && strlen(chaine)>3 && chaine[0]=='0' && chaine[1]=='x' && strtol(chaine, &p, 0) != 0 && *p == '\0');
 }
 
@@ -59,10 +61,19 @@ int is_hexa(char* chaine) {
 int get_type(char* chaine) {
     if (is_hexa(chaine))
         return HEXA;
-    return UNKNOWN;
+    if (strcmp(chaine, "0") == 0)
+	return INT; 
+    char* end;
+    int i = strtol(chaine, &end, 0);
+    if (i == 0 || *end != '\0')
+        return UNKNOWN; 
+    return INT;
 }
 
-/**
+/**ster(char* reg) {
+    return (strcmp(reg, "r0") && strcmp(reg, "r1") && strcmp(reg, "r2") && strcmp(reg, "r3") && strcmp(reg, "r4") && strcmp(reg, "r5") && strcmp(reg, "r6") && strcmp(reg, "r7") && strcmp(reg, "r8") &&  strcmp(reg, "r9") && strcmp(reg, "r10") && strcmp(reg, "r11") && strcmp(reg, "r12") && strcmp(reg, "sp") && strcmp(reg, "lr") && strcmp(reg, "pc") && strcmp(reg, "aspr") && strcmp(reg, "all"));
+}
+
  * @param in Input line (possibly very badly written).
  * @param out Line in a suitable form for further analysis.
  * @return nothing
@@ -103,4 +114,31 @@ void string_standardise( char* in, char* out ) {
     }
 }
 
+int is_adress(char* adr)
+{
+    int hexValue;
+    if (is_hexa(adr)) {
+	sscanf(adr, "%x", &hexValue);
+    }
+    else
+        return 0;
+    if(hexValue <= 0) {
+       WARNING_MSG("invalid call. The adress should be positive.\n");
+       return 0;
+    }
+    return 1;
+}
+
+int reg_index(char* reg)
+{
+    if (strcmp(reg, "sp") == 0) return 13;
+    if (strcmp(reg, "lr") == 0) return 14;
+    if (strcmp(reg, "pc") == 0) return 15;
+    if (strcmp(reg, "aspr") == 0) return 12;
+    return atoi(reg + 1);
+}
+
+int is_register(char* reg) {
+    return (strcmp(reg, "r0") || strcmp(reg, "r1") || strcmp(reg, "r2") || strcmp(reg, "r3") || strcmp(reg, "r4") || strcmp(reg, "r5") || strcmp(reg, "r6") || strcmp(reg, "r7") || strcmp(reg, "r8") ||  strcmp(reg, "r9") || strcmp(reg, "r10") || strcmp(reg, "r11") || strcmp(reg, "r12") || strcmp(reg, "r13") || strcmp(reg, "r14") || strcmp(reg, "r15") || strcmp(reg, "sp") || strcmp(reg, "lr") || strcmp(reg, "pc") || strcmp(reg, "aspr"));
+}
 
