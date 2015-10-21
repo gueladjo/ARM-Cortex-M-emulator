@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL          
+#TEST_COMMENT="Test adresse non hexa"
+#-------
+
+assert word bloub 0xffe12

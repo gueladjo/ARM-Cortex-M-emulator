@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=PASS          
+#TEST_COMMENT="Test fonctionnement standard"
+#-------
+
+assert word 0x5000 0xffeca12

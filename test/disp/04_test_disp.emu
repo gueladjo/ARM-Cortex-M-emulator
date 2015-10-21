@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIl          
+#TEST_COMMENT="Test non hexa dans plage"
+#-------
+
+disp mem 2056:regdf

@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL          
+#TEST_COMMENT="Test valeur mémoire trop grande"
+#-------
+
+load filename 0xffffffffff

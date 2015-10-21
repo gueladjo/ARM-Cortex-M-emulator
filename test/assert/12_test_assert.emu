@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL          
+#TEST_COMMENT="Test trop de parametres"
+#-------
+
+assert reg r12 0x12 blop
