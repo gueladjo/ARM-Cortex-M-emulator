@@ -24,7 +24,6 @@ int loadcmd(interpreteur inter, memory mem) {
   }
   else if(token!=NULL && is_hexa(token)) {
     sscanf(token, "%zx", &addr);
-    addr = 0x1000-addr%0x1000 + addr;
     no_args = 2;
   }
   load(no_args, elf_file, addr, mem);
@@ -162,6 +161,7 @@ int dispcmd(interpreteur inter, memory mem)
     int i = 0;
     while (token != NULL && is_register(token)) {
       if (i == 4) printf("\n");
+      int ind = reg_index(token);
       printf("%s: %x\t", token, mem->reg[reg_index(token)]);
       i++; 
       char* token = get_next_token(inter);

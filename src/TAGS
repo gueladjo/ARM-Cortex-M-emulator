@@ -26,10 +26,10 @@ int main 12,151
 functions.c,128
 int loadcmd(6,87
 int debugcmd(34,753
-int resumecmd(61,1390
-int dispcmd(87,2023
-int setcmd(193,5338
-int assertcmd(248,6672
+int resumecmd(61,1350
+int dispcmd(87,1936
+int setcmd(186,4754
+int assertcmd(241,6040
 
 interpreter.c,159
 interpreteur init_inter(9,178
@@ -41,13 +41,13 @@ int exitcmd(140,4463
 
 memory.c,231
 memory stack_set(9,126
-memory memory_allocation(20,429
-byte read_memory_value(61,1584
-int write_memory_value(90,2718
-int memory_free(124,3920
-void print_section_raw_content(155,4465
-int load 173,5070
-int read_word(240,7407
+memory memory_allocation(19,389
+byte read_memory_value(55,1427
+int write_memory_value(84,2566
+int memory_free(118,3773
+void print_section_raw_content(149,4424
+int load 167,5029
+int read_word(236,7425
 
 parsing.c,179
 char* get_next_token(13,335
@@ -380,7 +380,7 @@ notify.h,961
 parsing.h,22
 #define _PARSING2,17
 
-relocator.h,4616
+relocator.h,4573
 #define _RELOCATOR_H_11,212
 #define  R_ARM_NONE 17,275
 #define  R_ARM_PC24 18,302
@@ -513,7 +513,6 @@ relocator.h,4616
 #define  R_ARM_ME_TOO 145,5229
 #define  R_ARM_THM_TLS_DESCSEQ16 146,5269
 #define  R_ARM_THM_TLS_DESCSEQ32 147,5309
-static char *ARM32_REL[ARM32_REL155,5356
 
 syms.h,547
 #define _SYMS_H_12,185
