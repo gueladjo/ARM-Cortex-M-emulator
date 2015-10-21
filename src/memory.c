@@ -24,32 +24,28 @@ memory memory_allocation(memory mem, char* section_name, byte* segdata, size_t s
     mem->rodata->raddr = calloc(size, sizeof(byte));
     mem->rodata->vaddr = adress;
     mem->rodata->size = size;
-    mem->rodata->raddr = segdata;
-//memcpy(mem->rodata->raddr, segdata, size);
+    memcpy(mem->rodata->raddr, segdata, size);
     return mem;
   }
   if (!strcmp(section_name, ".text")) {
     mem->txt->raddr = calloc(size, sizeof(byte));
     mem->txt->vaddr = adress; 
     mem->txt->size = size;
-    mem->txt->raddr = segdata;
-//memcpy(mem->txt->raddr, segdata, size);
+    memcpy(mem->txt->raddr, segdata, size);
     return mem;
   }
   if (!strcmp(section_name,".data")) {
     mem->data->raddr = calloc(size, sizeof(byte));
     mem->data->vaddr = adress;
     mem->data->size = size;
-    mem->data->raddr = segdata;
-//memcpy(mem->data->raddr, segdata, size);
+    memcpy(mem->data->raddr, segdata, size);
     return mem;
   }
   if (!strcmp(section_name, ".bss")) {
     mem->bss->raddr = calloc(size, sizeof(byte));
     mem->bss->vaddr = adress;
     mem->bss->size = size;
-    mem->bss->raddr = segdata;
-//memcpy(mem->bss->raddr, segdata, size);
+    memcpy(mem->bss->raddr, segdata, size);
     return mem;
   }
   return mem;
@@ -187,6 +183,8 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
   }
   
   if (no_args == 2) { //Si qu'un seul argument, début de memoire par défaut
+    start_mem += 0xfff;
+    start_mem -= start_mem%0x1000;
     next_segment_start = start_mem;
   }
   
@@ -211,11 +209,11 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
     byte* content = elf_extract_scn_by_name(ehdr, pf_elf, section_names[i], &taille, NULL );
     if (content!=NULL){
       print_section_raw_content(section_names[i],next_segment_start,content,taille);
-      next_segment_start+= ((taille+0x1000)>>12 )<<12; // on arrondit au 1k suppérieur
       nsegments++;
       //Copie le contenu dans la mémoire
       
-      memory_allocation(memory, section_names[i], content, taille, next_segment_start); 
+      memory_allocation(memory, section_names[i], content, taille, next_segment_start);
+      next_segment_start += ((taille+0x1000)>>12 )<<12; // on arrondit au 1k suppérieur
       free(content);
     }
     else{
