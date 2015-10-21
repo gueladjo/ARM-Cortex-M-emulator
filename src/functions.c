@@ -206,22 +206,45 @@ int setcmd(interpreteur inter, memory mem)
       WARNING_MSG("not enough arguments given to command %s\n", "setcmd");
       return 1;
     }
-      if (!strcmp(token, "byte")) {
-	token = get_next_token(inter);
-	if(!is_adress(token)) {
-	  WARNING_MSG("third argument is not an adress range %s\n", "setcmd");
-	  return 1;
-	}
-	size_t adress = strtol(token, NULL, 16);
-	token = get_next_token(inter);
-	if(!is_hexa(token)) {
-	  WARNING_MSG("fourth argument is not an hex %s\n", "setcmd");
-	  return 1;
-	}
-	byte value = strtol(token, NULL, 16);
-	return write_memory_value(adress, value, mem);
+    if (!strcmp(token, "byte")) {
+      token = get_next_token(inter);
+      if(!is_adress(token)) {
+	WARNING_MSG("third argument is not an adress range %s\n", "setcmd");
+	return 1;
       }
-
+      size_t adress = strtol(token, NULL, 16);
+      token = get_next_token(inter);
+      if(!is_hexa(token)) {
+	WARNING_MSG("fourth argument is not an hex %s\n", "setcmd");
+	return 1;
+      }
+      byte value = strtol(token, NULL, 16);
+      if(write_memory_value(adress, value, mem)) {
+	WARNING_MSG("address is not valid %s\n", "setcmd");
+	return 1;
+      }
+      return 0;
+    }
+    
+    if (!strcmp(token, "word")) {
+      token = get_next_token(inter);
+      if(!is_adress(token)) {
+	WARNING_MSG("third argument is not an adress range %s\n", "setcmd");
+	return 1;
+      }
+      size_t adress = strtol(token, NULL, 16);
+      token = get_next_token(inter);
+      if(!is_hexa(token)) {
+	WARNING_MSG("fourth argument is not an hex %s\n", "setcmd");
+	return 1;
+      }
+      word value = strtol(token, NULL, 16);
+      byte byte1 = (byte)(word bitand 0xff000000 >> 24);
+      byte byte2 = (byte)(word bitand 0x00ff0000 >> 16);
+      byte byte3 = (byte)(word bitand 0x0000ff00 >> 8);
+      byte byte4 = (byte)(word bitand 0x000000ff);
+      
+    }
   }
 
   if (strcmp(token, "reg") == 0) {
