@@ -159,18 +159,20 @@ int dispcmd(interpreteur inter, memory mem)
     }
 
     int i = 0;
-    while (token != NULL && is_register(token)) {
+    while ((token != NULL) && !is_register(token)) {
       if (i == 4) printf("\n");
       int ind = reg_index(token);
       printf("%s: %x\t", token, mem->reg[reg_index(token)]);
       i++; 
-      char* token = get_next_token(inter);
+      token = get_next_token(inter);
     }
-	
-    if (token == NULL) return 0;
-	        
+    
+    if (token == NULL) {
+      printf("\n");
+      return 0;
+    } 
     else {
-      WARNING_MSG("argument not a valid register%s\n", "dispcmd");
+      WARNING_MSG("argument not a valid register %s\n", "dispcmd");
       return 1;
     }
   }
