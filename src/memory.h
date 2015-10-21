@@ -46,7 +46,7 @@ struct memory
   segment* data;
   segment* txt;
   segment* rodata;
-  word reg[16];
+  word reg[17];
 };
 
 

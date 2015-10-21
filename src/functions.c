@@ -145,8 +145,6 @@ int dispcmd(interpreteur inter, memory mem)
       printf("\n");
       if((token = get_next_token(inter) == NULL)) return 0;
     }
-
-
 	
     WARNING_MSG("first argument not a valid memory range or command%s\n", "dispcmd");
     return 1;
@@ -159,9 +157,16 @@ int dispcmd(interpreteur inter, memory mem)
     }
 
     int i = 0;
+    if (!strcmp(token, "all")) {
+      for (i=0; i<=15; i++) {
+	if (i%4 == 0) printf("\n");
+	printf("r%i: %x\t", i, mem->reg[i]);
+      }
+      printf("aspr: %x\t\n", mem->reg[reg_index("aspr")]);
+      return 0;
+    }
     while ((token != NULL) && !is_register(token)) {
-      if (i == 4) printf("\n");
-      int ind = reg_index(token);
+      if (i%4 == 0) printf("\n");
       printf("%s: %x\t", token, mem->reg[reg_index(token)]);
       i++; 
       token = get_next_token(inter);
@@ -201,7 +206,22 @@ int setcmd(interpreteur inter, memory mem)
       WARNING_MSG("not enough arguments given to command %s\n", "setcmd");
       return 1;
     }
-    //finish this
+      if (!strcmp(token, "byte")) {
+	token = get_next_token(inter);
+	if(!is_adress(token)) {
+	  WARNING_MSG("third argument is not an adress range %s\n", "setcmd");
+	  return 1;
+	}
+	size_t adress = strtol(token, NULL, 16);
+	token = get_next_token(inter);
+	if(!is_hexa(token)) {
+	  WARNING_MSG("fourth argument is not an hex %s\n", "setcmd");
+	  return 1;
+	}
+	byte value = strtol(token, NULL, 16);
+	return write_memory_value(adress, value, mem);
+      }
+
   }
 
   if (strcmp(token, "reg") == 0) {

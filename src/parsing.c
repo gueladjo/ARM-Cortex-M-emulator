@@ -48,7 +48,7 @@ char* get_next_token(interpreteur inter) {
 int is_hexa(char* chaine) {
     char* p;
     if (strcmp(chaine, "0x0") == 0) return 1;
-    return (chaine!=NULL && strlen(chaine)>3 && chaine[0]=='0' && chaine[1]=='x' && strtol(chaine, &p, 0) != 0 && *p == '\0');
+    return (chaine!=NULL && strlen(chaine)>=3 && chaine[0]=='0' && chaine[1]=='x' && strtol(chaine, &p, 0) != 0 && *p == '\0');
 }
 
 
@@ -134,8 +134,8 @@ int reg_index(char* reg)
     if (strcmp(reg, "sp") == 0) return 13;
     if (strcmp(reg, "lr") == 0) return 14;
     if (strcmp(reg, "pc") == 0) return 15;
-    if (strcmp(reg, "aspr") == 0) return 12;
-    return atoi(reg + 1);
+    if (strcmp(reg, "aspr") == 0) return 16;
+    return atoi(reg);
 }
 
 int is_register(char* reg) {
