@@ -322,12 +322,25 @@ int assertcmd(interpreteur inter, memory mem)
       WARNING_MSG("not enough arguments given to command %s\n", "assertcmd");
       return 1;
     }
-    if (is_register(token)) {
-      char*  token1 = get_next_token(inter);
-      if (get_type(token1) == INT || get_type(token1) == HEXA) {
-	if (atoi(token1) == mem->reg[reg_index(token)])
+    if (!is_register(token)) {
+      char* token1;
+      if((token1 = get_next_token(inter)) == NULL) {
+	WARNING_MSG("not enough arguments given to command %s\n", "setcmd");
+	return 1;
+      }
+      if (get_type(token1) == INT) {
+	if (atoi(token1) == mem->reg[reg_index(token)]) {
+	  printf("Ok\n");
 	  return 0;
+	}
 	return 1; 
+      }
+      else if (is_hexa(token1)) {
+	if (strtol(token1, NULL, 16) == mem->reg[reg_index(token)]) {
+	  printf("Ok\n");
+	  return 0;
+	}
+	return 1;
       }
       else {
 	WARNING_MSG("second argument is not an integer %s\n", "assertcmd");
@@ -338,8 +351,6 @@ int assertcmd(interpreteur inter, memory mem)
       WARNING_MSG("first argument not a valid register%s\n", "assertcmd");
       return 1;
     }
-        
-
   }
 
   if (strcmp(token, "word") == 0) {
@@ -348,16 +359,31 @@ int assertcmd(interpreteur inter, memory mem)
       return 1;
     }
     if (is_adress(token)) {
-      char * token1 = get_next_token(inter);
-      if (get_type(token1) == INT || get_type(token1) == HEXA) {
-	if (read_word(atoi(token), mem) == atoi(token1))
-	  return 0; 
-	return 1;
+      char* token1;
+      if ((token1 = get_next_token(inter)) == NULL) {
+      WARNING_MSG("not enough arguments given to command %s\n", "assertcmd");
+      return 1;
       }
+      word value;
+      if (get_type(token1) == INT) 
+	value = atoi(token1);
+      else if (is_hexa(token1))
+	value = strtol(token1, NULL, 16);
       else{
 	WARNING_MSG("second argument is not an integer %s\n", "assertcmd");
 	return 1;
-      } 
+      }
+      byte bValue[4];
+      bValue[0] = (byte)((value & 0xff000000) >> 24);
+      bValue[1] = (byte)((value & 0x00ff0000) >> 16);
+      bValue[2] = (byte)((value & 0x0000ff00) >> 8);
+      bValue[3] = (byte)((value & 0x000000ff));
+      size_t addr = strtol(token, NULL, 16);
+      if (bValue[0] == read_memory_value(addr, mem) && bValue[1] == read_memory_value(addr+1, mem) && bValue[2] == read_memory_value(addr+2, mem) && bValue[3] == read_memory_value(addr+3, mem)) {
+	printf("Ok\n");
+	return 0;
+      }
+      return 1;
     }
     else {
       WARNING_MSG("first argument not a valid adress %s\n","assertcmd");
@@ -371,9 +397,23 @@ int assertcmd(interpreteur inter, memory mem)
       return 1;
     }
     if (is_adress(token)) {
-      char * token1 = get_next_token(inter);
-      if (get_type(token1) == INT || get_type(token1) == HEXA) {
-	if (read_memory_value(atoi(token), mem) == atoi(token1)) return 0; 
+      char * token1;
+      if ((token1 = get_next_token(inter)) == NULL) {
+	WARNING_MSG("not enough arguments given to command %s\n", "assertcmd");
+	return 1;
+      }
+      if (get_type(token1) == INT) {
+	if (read_memory_value(strtol(token, NULL, 16), mem) == atoi(token1)) {
+	  printf("Ok\n");
+	  return 0;
+	}
+	return 1;
+      }
+      else if (is_hexa(token1)) {
+	if (strtol(token1, NULL, 16) == read_memory_value(strtol(token, NULL, 16), mem)) {
+	  printf("Ok\n");
+	  return 0;
+	}
 	return 1;
       }
       else{
