@@ -225,6 +225,7 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
   stack_set(memory);
   printf("\n------ Fichier ELF \"%s\" : sections lues lors du chargement ------\n", elf_file) ;
   stab32_print( symtab );
+  memory->endianness = endianness;
   // on fait le ménage avant de partir
   del_stab( symtab );
   del_scntab( section_table );

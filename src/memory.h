@@ -47,6 +47,7 @@ struct memory
   segment* txt;
   segment* rodata;
   word reg[17];
+  unsigned int endianness;
 };
 
 
