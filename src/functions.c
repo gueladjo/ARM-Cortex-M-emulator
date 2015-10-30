@@ -450,3 +450,75 @@ int assertcmd(interpreteur inter, memory mem)
 
   return 1;
 }
+
+int disasmcmd(interpreteur inter, memory mem) {
+  DEBUG_MSG("Chaine : %s", inter->input);
+  char* token = NULL;
+
+  if ((token = get_next_token(inter)) == NULL) {
+    WARNING_MSG("no argument given to command %s\n", "disasmcmd");
+    return 1;
+  }
+  size_t startaddr;
+  if (get_type(token) == HEXA)
+    startaddr = strtol(token, NULL, 16);
+  else {
+    WARNING_MSG("second argument is not an hexa %s\n", "disasmcmd");
+    return 1;
+  }
+  if (startaddr < mem->txt->vaddr || startaddr >= mem->txt->vaddr+mem->txt->size) {
+    WARNING_MSG("starting address out of .txt range %s\n", "disasmcmd");
+    return 1;
+  }
+  
+  if ((token = get_next_token(inter)) == NULL) {
+    WARNING_MSG("not enough arguments given to command %s\n", "disasmcmd");
+    return 1;
+  }
+  
+  if (!strcmp(token, ":")) {
+    if ((token = get_next_token(inter)) == NULL) {
+      WARNING_MSG("not enough arguments given to command %s\n", "disasmcmd");
+      return 1;
+    }
+    size_t endaddr;
+    if (get_type(token) == HEXA)
+      endaddr = strtol(token, NULL, 16);
+    else {
+      WARNING_MSG("last argument is not an hexa %s\n", "disasmcmd");
+      return 1;
+    }
+    if (endaddr >= mem->txt->vaddr + mem->txt->size) //If address range overflows .txt size
+      endaddr = mem->txt->vaddr + mem->txt->size - 1;
+    //disasm(startaddr, endaddr); CHECK THIS
+    return 0;
+  }
+
+  if (!strcmp(token, "+")) {
+    if ((token = get_next_token(inter)) == NULL) {
+      WARNING_MSG("not enough arguments given to command %s\n", "disasmcmd");
+      return 1;
+    }
+    size_t offset;
+    if (get_type(token) == HEXA)
+      offset = strtol(token, NULL, 16);
+    else if (get_type(token) == INT)
+      offset = atoi(token);
+    else {
+      WARNING_MSG("last argument is not an integer %s\n", "disasmcmd");
+      return 1;
+    }
+    size_t endaddr;
+    if (startaddr + offset >= mem->txt->vaddr + mem->txt->size) //If address range overflows .txt size
+      endaddr = mem->txt->vaddr + mem->txt->size - 1;
+    else
+      endaddr = startaddr+offset;
+    //disasm(startaddr, endaddr); CHECK THIS
+    return 0;
+  }
+  
+  else {
+    WARNING_MSG("wrong separator %s\n", "disasmcmd");
+    return 1;
+  }
+}
