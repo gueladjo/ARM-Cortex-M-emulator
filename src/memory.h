@@ -27,8 +27,6 @@
 #define BSS_SECTION_STR ".bss"
 
 
-typedef uint8_t byte;
-typedef uint32_t word;
 typedef struct segment segment;
 typedef struct memory* memory;
 
@@ -91,7 +89,7 @@ memory stack_set (memory mem);
  * @bss_size size of segment bss
  * @return nothing
  */
-memory memory_allocation(memory mem, char* section_name, byte* segdata, size_t size, size_t adress);
+void memory_allocation(memory mem, char* section_name, byte* segdata, size_t size, size_t adress);
 
 /**
  * Returns value stored at the address addr

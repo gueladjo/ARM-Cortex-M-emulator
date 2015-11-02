@@ -16,7 +16,7 @@ memory stack_set(memory mem)
 }
 
 
-memory memory_allocation(memory mem, char* section_name, byte* segdata, size_t size, size_t adress)
+void memory_allocation(memory mem, char* section_name, byte* segdata, size_t size, size_t adress)
 {
   if (size == 0) return mem;
   if (!strcmp(section_name,".rodata")) {

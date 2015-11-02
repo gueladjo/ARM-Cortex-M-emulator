@@ -1,79 +1,4 @@
 
-bits.c,74
-unsigned int get_host_endianness(20,361
-byte * __flip_endianness(36,943
-
-elf.c,735
-byte * __Elf_Rel_flip_endianness(31,707
-static byte * __Elf_Sym_flip_endianness(62,1503
-static byte * __Elf_Shdr_flip_endianness(96,2461
-static byte * __Elf_Ehdr_flip_endianness(139,3855
-byte * __elf_get_ehdr(189,5454
-byte *elf_extract_section_names(elf_extract_section_names240,6912
-byte *elf_extract_scn_by_name(elf_extract_scn_by_name378,10696
-byte *elf_extract_string_table(elf_extract_string_table494,14345
-void  print_string_table(503,14644
-byte *elf_extract_section_header_table(elf_extract_section_header_table522,15095
-byte *elf_extract_symbol_table(elf_extract_symbol_table584,16690
-int assert_elf_file(614,17430
-int elf_get_arch_info(645,18374
-int elf_load_scntab(726,20337
-int elf_load_symtab(782,22130
-
-emul_main.c,17
-int main 12,151
-
-functions.c,128
-int loadcmd(6,87
-int debugcmd(34,753
-int resumecmd(61,1350
-int dispcmd(87,1936
-int setcmd(186,4754
-int assertcmd(241,6040
-
-interpreter.c,159
-interpreteur init_inter(9,178
-void del_inter(20,473
-int execute_cmd(34,1079
-int  acquire_line(85,2562
-void usage_ERROR_MSG(131,4138
-int exitcmd(140,4463
-
-memory.c,231
-memory stack_set(9,126
-memory memory_allocation(19,389
-byte read_memory_value(55,1427
-int write_memory_value(84,2566
-int memory_free(118,3773
-void print_section_raw_content(149,4424
-int load 167,5029
-int read_word(236,7425
-
-parsing.c,179
-char* get_next_token(13,335
-int is_hexa(48,1185
-int get_type(61,1561
-void string_standardise(86,2708
-int is_adress(117,3487
-int reg_index(132,3754
-int is_register(141,3984
-
-section.c,81
-scntab new_scntab(21,419
-void   del_scntab(39,807
-void   print_scntab(60,1210
-
-syms.c,234
-sym  new_sym32(33,907
-sym  new_sym64(56,1646
-void sym32_print(73,2025
-void sym64_print(110,2729
-stab new_stab(150,3546
-int get_sym_by_name(170,4033
-void stab32_print(188,4391
-void stab64_print(209,4787
-void del_stab(230,5188
-
 bits.h,153
 #define _BITS_H_12,183
 #define FLIP_ENDIANNESS(24,362
@@ -316,7 +241,7 @@ enum {HEXA, INT, UNKNOWN}UNKNOWN25,535
     char first_token;44,1110
 } *interpreteur;interpreteur45,1132
 
-memory.h,606
+memory.h,580
 #define _MEMORY7,135
 #define NB_SECTIONS 21,384
 #define DEFAULT_START 23,434
@@ -324,21 +249,20 @@ memory.h,606
 #define RODATA_SECTION_STR 25,555
 #define DATA_SECTION_STR 26,593
 #define BSS_SECTION_STR 27,627
-typedef uint8_t byte;30,663
-typedef uint32_t word;31,686
-typedef struct segment segment;32,710
-typedef struct memory* memory;33,743
-struct segment35,777
-  byte* raddr;37,796
-  size_t size;38,849
-  size_t vaddr;39,880
-struct memory42,943
-  segment* stack;44,961
-  segment* bss;45,980
-  segment* data;46,997
-  segment* txt;47,1015
-  segment* rodata;48,1032
-  word reg[reg49,1052
+typedef struct segment segment;30,663
+typedef struct memory* memory;31,696
+struct segment33,730
+  byte* raddr;35,749
+  size_t size;36,802
+  size_t vaddr;37,833
+struct memory40,896
+  segment* stack;42,914
+  segment* bss;43,933
+  segment* data;44,950
+  segment* txt;45,968
+  segment* rodata;46,985
+  word reg[reg47,1005
+  unsigned int endianness;48,1022
 
 notify.h,961
 #define _NOTIFY_H_11,195
@@ -533,3 +457,79 @@ sym_type;24,340
     uint       size;36,524
     sym       *sym;sym37,545
 } stab;38,565
+
+bits.c,74
+unsigned int get_host_endianness(20,361
+byte * __flip_endianness(36,943
+
+elf.c,735
+byte * __Elf_Rel_flip_endianness(31,707
+static byte * __Elf_Sym_flip_endianness(62,1503
+static byte * __Elf_Shdr_flip_endianness(96,2461
+static byte * __Elf_Ehdr_flip_endianness(139,3855
+byte * __elf_get_ehdr(189,5454
+byte *elf_extract_section_names(elf_extract_section_names240,6912
+byte *elf_extract_scn_by_name(elf_extract_scn_by_name378,10696
+byte *elf_extract_string_table(elf_extract_string_table494,14345
+void  print_string_table(503,14644
+byte *elf_extract_section_header_table(elf_extract_section_header_table522,15095
+byte *elf_extract_symbol_table(elf_extract_symbol_table584,16690
+int assert_elf_file(614,17430
+int elf_get_arch_info(645,18374
+int elf_load_scntab(726,20337
+int elf_load_symtab(782,22130
+
+emul_main.c,17
+int main 12,151
+
+functions.c,153
+int loadcmd(6,87
+int debugcmd(33,715
+int resumecmd(60,1312
+int dispcmd(86,1898
+int setcmd(193,4961
+int assertcmd(321,8441
+int disasmcmd(454,12231
+
+interpreter.c,159
+interpreteur init_inter(9,178
+void del_inter(20,463
+int execute_cmd(34,1071
+int  acquire_line(87,2534
+void usage_ERROR_MSG(133,3968
+int exitcmd(142,4291
+
+memory.c,231
+memory stack_set(9,126
+memory memory_allocation(19,389
+byte read_memory_value(55,1427
+int write_memory_value(84,2566
+int memory_free(118,3773
+void print_section_raw_content(149,4424
+int load 167,5029
+int read_word(237,7460
+
+parsing.c,179
+char* get_next_token(13,335
+int is_hexa(48,1185
+int get_type(61,1562
+void string_standardise(86,2709
+int is_adress(117,3488
+int reg_index(132,3755
+int is_register(141,3981
+
+section.c,81
+scntab new_scntab(21,419
+void   del_scntab(39,807
+void   print_scntab(60,1210
+
+syms.c,234
+sym  new_sym32(33,907
+sym  new_sym64(56,1646
+void sym32_print(73,2025
+void sym64_print(110,2729
+stab new_stab(150,3546
+int get_sym_by_name(170,4033
+void stab32_print(188,4391
+void stab64_print(209,4787
+void del_stab(230,5188

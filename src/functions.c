@@ -131,10 +131,10 @@ int dispcmd(interpreteur inter, memory mem)
 	  int j = 0;
 	  byte value;
 	  value = read_memory_value(adress1, mem);
-	  printf("%zx\t%x  ", adress1, value);
+	  printf("%zx\t%02x  ", adress1, value);
 	  for(j = 1; adress1 + j <= adress2; j++) {
 	    value = read_memory_value(adress1 + j, mem);
-	    printf("%x  ", value);
+	    printf("%02x  ", value);
 	  }
 	}
 	else {
@@ -160,14 +160,14 @@ int dispcmd(interpreteur inter, memory mem)
     if (!strcmp(token, "all")) {
       for (i=0; i<=15; i++) {
 	if (i%4 == 0) printf("\n");
-	printf("r%i: %x\t", i, mem->reg[i]);
+	printf("r%i: %02x\t", i, mem->reg[i]);
       }
-      printf("aspr: %x\t\n", mem->reg[reg_index("aspr")]);
+      printf("aspr: %02x\t\n", mem->reg[reg_index("aspr")]);
       return 0;
     }
     while ((token != NULL) && !is_register(token)) {
       if (i%4 == 0) printf("\n");
-      printf("%s: %x\t", token, mem->reg[reg_index(token)]);
+      printf("%s: %02x\t", token, mem->reg[reg_index(token)]);
       i++; 
       token = get_next_token(inter);
     }
