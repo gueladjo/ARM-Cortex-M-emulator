@@ -2,6 +2,7 @@
 #include "memory.h"
 #include <string.h>
 #include "parsing.h"
+#include "disassembly.h"
 
 int loadcmd(interpreteur inter, memory mem) {
   int no_args;
@@ -490,6 +491,8 @@ int disasmcmd(interpreteur inter, memory mem) {
     }
     if (endaddr >= mem->txt->vaddr + mem->txt->size) //If address range overflows .txt size
       endaddr = mem->txt->vaddr + mem->txt->size - 1;
+    dico dico[53];
+    extract_dico("dico.csv", dico);
     //disasm(startaddr, endaddr); CHECK THIS
     return 0;
   }
