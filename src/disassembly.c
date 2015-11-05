@@ -7,8 +7,29 @@ int is_16bits(byte* header)
   int sig2 = 0xF8000000;
   int sig3 = 0xE8000000;
 
-  if (*header & mask == sig1 || *header & mask == sig2 || *header & mask == sig3) return 0;
+  if ((*header & mask) == sig1 ||(*header & mask) == sig2 || (*header & mask) == sig3) return 0;
   return 1;  
+}
+
+int it_condition(unsigned int firstcond, char* condition)
+{
+  if (firstcond == 0) strcpy(condition, "EQ");
+  if (firstcond == 1) strcpy(condition, "NE");
+  if (firstcond == 2) strcpy(condition, "HS");
+  if (firstcond == 3) strcpy(condition, "LO");
+  if (firstcond == 4) strcpy(condition, "MI");
+  if (firstcond == 5) strcpy(condition, "PL");
+  if (firstcond == 6) strcpy(condition, "VS");
+  if (firstcond == 7) strcpy(condition, "VC");
+  if (firstcond == 8) strcpy(condition, "HI");
+  if (firstcond == 9) strcpy(condition, "LS");
+  if (firstcond == 10) strcpy(condition, "GE");
+  if (firstcond == 11) strcpy(condition, "LT");
+  if (firstcond == 12) strcpy(condition, "GT");
+  if (firstcond == 13) strcpy(condition, "LE");
+  if (firstcond == 14) strcpy(condition, "AL");
+
+  return 0;
 }
 
 int create_mask(unsigned int a, unsigned int b)
@@ -23,7 +44,9 @@ int create_mask(unsigned int a, unsigned int b)
 int search_instruction(int binary, dico* dictionary, dico* instruction, int is_short)
 {
   int i =0, dico_size = 53;
-  if (is_short) int16_t short_binary = binary;
+  if (is_short) {
+    int16_t short_binary = binary;
+  }
 
   for (i = 0; i < dico_size; i++) {
     if (binary & dico[i].mask == dico[i].signature) {
@@ -68,7 +91,13 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
           else if ((maskit & (1 << 3)) == 1) j = 1;
 
 	  if (j >= i) {
-	     	    
+            if (((maskit & (1 << (5 - i))) == (firstcond & 1)) || j == i)
+	      it_condition(firstcond, condition);
+	    else {
+	      if (firstcond == 14) it_condition(firstcond, condition);
+	      else if (firstcond % 2 == 0) it_condition(firstcond + 1, condition);
+	      else if (firstcond % 2 == 1) it_condition(firstcond - 1, condition);
+	    }            	       
 	  }	        
         }
       }
@@ -106,6 +135,8 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
   }
 
   else if (instruction.it == 0) {
+    char condition[3];
+    condition[0] = '\0';
     while((iterator = header - 2) != mem->txt->raddr && i!=4) {
       int is_short = is_16bits(iterator);
       if (is_short) {
@@ -121,12 +152,30 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
       if (search_instruction(bin, dictionary, temp, is_16bits(iterator))) {
         i++;
         if (temp.sig == 0xBF00) {
-	        
+	  int firstcond = (0x0010 & bin) >> 4;
+	  int maskit = bin & 0x000F;
+	  int j = 0;
+          if (maskit & 1 == 1) j = 4;	        
+          else if ((maskit & (1 << 1)) == 1) j = 3;      
+          else if ((maskit & (1 << 2)) == 1) j = 2;
+          else if ((maskit & (1 << 3)) == 1) j = 1;
+
+	  if (j >= i) {
+            if (((maskit & (1 << (5 - i))) == (firstcond & 1)) || j == i)
+	      it_condition(firstcond, condition);
+	    else {
+	      if (firstcond == 14) it_condition(firstcond, condition);
+	      else if (firstcond % 2 == 0) it_condition(firstcond + 1, condition);
+	      else if (firstcond % 2 == 1) it_condition(firstcond - 1, condition);
+            }
+          }
         }
       }
     }
-    
-    printf("%sS ", instruction.mnemo);
+
+    if (condition[0] == '\0') printf("%sS ", instruction.mnemo);
+    else printf("%s%s", instruction.mnemo, condition);
+
     char* regs = instruction.registers_index;
     if (*regs != 'N') {
       char* token = strtok(regs, ":");
@@ -194,7 +243,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
   return 0; 
 }
 
-int read_instruction(byte* header, dico* dicoi, memory mem)
+int read_instruction(byte* header, dico* dico, memory mem)
 {
   int is_short = is_16bits(header);
   if (is_short) {
@@ -268,7 +317,7 @@ void extract_dico(char* dico_file, dico* dico) {
     strcpy(dico[i].immediate_index, token);
     fscanf(pf_dico, "%s", token);
   }
-  return;
+  
 }
 
 
