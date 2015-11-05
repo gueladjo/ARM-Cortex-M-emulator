@@ -35,6 +35,7 @@ assert word <registre> <valeur>
 assert byte <registre> <valeur>
 debug
 resume
+disasm <plage>
 
 
 Instructions de désinstallation

@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL
+#TEST_COMMENT="Test non hexa en premier param"
+#-------
+
+disasm 3000:0x300f

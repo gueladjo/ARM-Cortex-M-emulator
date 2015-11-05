@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL
+#TEST_COMMENT="Test non int en deuxieme param"
+#-------
+
+disasm 0x3000:lol

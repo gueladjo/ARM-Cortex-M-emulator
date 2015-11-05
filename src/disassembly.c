@@ -28,7 +28,7 @@ int search_instruction(int binary, dico* dictionary, dico* instruction, int is_s
   }
   for (i = 0; i < dico_size; i++) {
     if ((binary & dictionary[i].mask) == dictionary[i].sig) {
-      instruction = &dictionary[i];
+      *instruction = dictionary[i];
       return 0; 
     }
   }
@@ -36,14 +36,14 @@ int search_instruction(int binary, dico* dictionary, dico* instruction, int is_s
   return 1;
 }
 
-int print_instruction(int binary, dico instruction, byte* header, dico* dictionary, memory mem)
+int print_instruction(int binary, dico* instruction, byte* header, dico* dictionary, memory mem)
 {
-  printf("%x       ", binary);
   byte* iterator;
   int i = 0; 
   dico* temp;
   temp = malloc(sizeof(*temp));
-  if (instruction.it == 1) {
+  printf("%x       ", binary);
+  if (instruction->it == 1) {
     char condition[3];
     condition[0] = '\0';
     while((iterator = header - 2) != mem->txt->raddr && i!=4) {
@@ -75,8 +75,8 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
       }
     }
     
-    printf("%s%s ", instruction.mnemo, condition);
-    char* regs = instruction.registers_index;
+    printf("%s%s ", instruction->mnemo, condition);
+    char* regs = instruction->registers_index;
     if (*regs != 'N') {
       char* token = strtok(regs, ":");
       unsigned int start, end, reg;
@@ -90,7 +90,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
       } while ((token != NULL));
     }
   
-    char* imms = instruction.immediate_index;
+    char* imms = instruction->immediate_index;
     if (*imms != 'N') {
       printf(", ");
       char* token = strtok(imms, ":");
@@ -106,7 +106,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
     }
   }
 
-  else if (instruction.it == 0) {
+  else if (instruction->it == 0) {
     while((iterator = header - 2) != mem->txt->raddr && i!=4) {
       int is_short = is_16bits(iterator);
       int32_t bin;
@@ -126,8 +126,8 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
       }
     }
     
-    printf("%sS ", instruction.mnemo);
-    char* regs = instruction.registers_index;
+    printf("%sS ", instruction->mnemo);
+    char* regs = instruction->registers_index;
     if (*regs != 'N') {
       char* token = strtok(regs, ":");
       unsigned int start, end, reg;
@@ -141,7 +141,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
       } while ((token != NULL));
     }
   
-    char* imms = instruction.immediate_index;
+    char* imms = instruction->immediate_index;
     if (*imms != 'N') {
       printf(", ");
       char* token = strtok(imms, ":");
@@ -159,8 +159,8 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
   }
 
   else {
-    printf("%sS ", instruction.mnemo);
-    char* regs = instruction.registers_index;
+    printf("%sS ", instruction->mnemo);
+    char* regs = instruction->registers_index;
     if (*regs != 'N') {
       char* token = strtok(regs, ":");
       unsigned int start, end, reg;
@@ -174,7 +174,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
       } while ((token != NULL));
     }
   
-    char* imms = instruction.immediate_index;
+    char* imms = instruction->immediate_index;
     if (*imms != 'N') {
       printf(", ");
       char* token = strtok(imms, ":");
@@ -200,8 +200,8 @@ int read_instruction(byte* header, dico* dictionary, memory mem)
   if (is_short) {
     int16_t binary;
     memcpy(&binary, header, sizeof(binary));
-    dico instruction;
-    search_instruction(binary, dictionary, &instruction, is_short);
+    dico *instruction;
+    search_instruction(binary, dictionary, instruction, is_short);
     print_instruction(binary, instruction, header, dictionary, mem);
   
     return 0; 
@@ -210,8 +210,9 @@ int read_instruction(byte* header, dico* dictionary, memory mem)
   else {
     int32_t binary;
     memcpy(&binary, header, sizeof(binary));
-    dico instruction;
-    search_instruction(binary, dictionary, &instruction, is_short);
+    dico *instruction;
+    instruction = malloc(sizeof(*instruction));
+    search_instruction(binary, dictionary, instruction, is_short);
     print_instruction(binary, instruction, header, dictionary, mem);
   
     return 0; 
@@ -225,8 +226,8 @@ int disasm(size_t startadress, size_t endadress, dico* dico, memory mem)
   byte* header = mem->txt->raddr + startadress - mem->txt->vaddr;
   
   int i = 0;
-  while(i != nb_bytes) {
-    printf("%d :: ", startadress + i);
+  while(i <= nb_bytes) {
+    printf("%lu :: ", startadress + i);
     if (is_16bits(header)) {
       read_instruction(header, dico, mem);
       i = i + 2;
