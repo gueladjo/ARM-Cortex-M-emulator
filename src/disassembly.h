@@ -7,6 +7,7 @@
 #ifndef _DISASSEMBLY
 #define _DISASSEMBLY
 
+#include "memory.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -20,12 +21,19 @@ struct dico
 char id_debug[16];
 char mnemo[16];
 int size; //Size of instruction in bits (16 or 32)
-size_t sig;
-size_t mask;
+unsigned int sig;
+unsigned int mask;
 int nb_op; //Number of operands
-char registers_index[16]; //Index of registers
-char immediate_index[16]; //Index of immediate
+char registers_index[20];
+char immediate_index[20];
+int it;
 };
 
+int is_16bits(byte* header);
+int create_mask(unsigned int a, unsigned int b);
+int search_instruction(int binary, dico* dictionary, dico* instruction, int is_short);
+int print_instruction(int binary, dico instruction, byte* header, dico* dictionary, memory mem);
+int read_instruction(byte* header);
 void extract_dico(char* dico_file, dico* dico);
+
 #endif
