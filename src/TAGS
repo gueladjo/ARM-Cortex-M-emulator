@@ -1,0 +1,535 @@
+
+bits.h,153
+#define _BITS_H_12,183
+#define FLIP_ENDIANNESS(24,362
+#define CLR_BIT(27,437
+#define SET_BIT(28,484
+#define GET_BIT(29,524
+#define GET_BITS(31,575
+
+elf.h,6627
+#define _ELF_H_12,189
+typedef uint32_t Elf32_Addr;26,361
+typedef uint16_t Elf32_Half;27,390
+typedef uint32_t Elf32_Off;28,419
+typedef int32_t  Elf32_Sword;29,447
+typedef uint32_t Elf32_Word;30,477
+typedef uint64_t Elf64_Addr;32,507
+typedef uint64_t Elf64_Off;33,536
+typedef uint16_t Elf64_Half;34,564
+typedef uint32_t Elf64_Word;35,593
+typedef int32_t  Elf64_SWord;36,622
+typedef uint64_t Elf64_Xword;37,652
+typedef int64_t  Elf64_Sxword;38,682
+#define EI_NIDENT 40,714
+    unsigned char e_ident[e_ident44,758
+    Elf32_Half    e_type;45,796
+    Elf32_Half    e_machine;46,822
+    Elf32_Word    e_version;47,851
+    Elf32_Addr    e_entry;48,880
+    Elf32_Off     e_phoff;49,907
+    Elf32_Off     e_shoff;50,934
+    Elf32_Word    e_flags;51,961
+    Elf32_Half    e_ehsize;52,988
+    Elf32_Half    e_phentsize;53,1016
+    Elf32_Half    e_phnum;54,1047
+    Elf32_Half    e_shentsize;55,1074
+    Elf32_Half    e_shnum;56,1105
+    Elf32_Half    e_shstrndx;57,1132
+} Elf32_Ehdr;59,1163
+    unsigned char e_ident[e_ident64,1197
+    Elf64_Half    e_type;65,1235
+    Elf64_Half    e_machine;66,1261
+    Elf64_Word    e_version;67,1290
+    Elf64_Addr    e_entry;68,1319
+    Elf64_Off     e_phoff;69,1346
+    Elf64_Off     e_shoff;70,1373
+    Elf64_Word    e_flags;71,1400
+    Elf64_Half    e_ehsize;72,1427
+    Elf64_Half    e_phentsize;73,1455
+    Elf64_Half    e_phnum;74,1486
+    Elf64_Half    e_shentsize;75,1513
+    Elf64_Half    e_shnum;76,1544
+    Elf64_Half    e_shstrndx;77,1571
+} Elf64_Ehdr;79,1602
+#define ET_NONE 81,1617
+#define ET_REL 82,1638
+#define ET_EXEC 83,1659
+#define ET_DYN 84,1680
+#define ET_CORE 85,1701
+#define ET_LOPROC 86,1722
+#define ET_HIPROC 87,1748
+#define EM_NONE 89,1775
+#define EM_M32 90,1802
+#define EM_SPARC 91,1823
+#define EM_386 92,1844
+#define EM_68K 93,1865
+#define EM_88K 94,1886
+#define EM_860 95,1907
+#define EM_MIPS 96,1928
+#define EM_ARM 97,1949
+#define EV_NONE 99,1972
+#define EV_CURRENT 100,1993
+#define EI_MAG0 102,2015
+#define EI_MAG1 103,2036
+#define EI_MAG2 104,2057
+#define EI_MAG3 105,2078
+#define EI_CLASS 106,2099
+#define EI_DATA 107,2120
+#define EI_VERSION 108,2141
+#define EI_PAD 109,2162
+#define EI_NIDENT 110,2183
+#define ELF_MAG0 112,2206
+#define ELF_MAG1 113,2230
+#define ELF_MAG2 114,2253
+#define ELF_MAG3 115,2276
+#define ELFCLASSNONE 117,2300
+#define ELFCLASS32 118,2323
+#define ELFCLASS64 119,2346
+#define ELFDATANONE 121,2370
+#define ELFDATA2LSB 122,2393
+#define ELFDATA2MSB 123,2416
+#define SHN_UNDEF 125,2440
+#define SHN_LORESERVE 126,2464
+#define SHN_LOPROC 127,2493
+#define SHN_HIPROC 128,2522
+#define SHN_ABS 129,2551
+#define SHN_COMMON 130,2580
+#define SHN_HIRESERVE 131,2609
+    Elf32_Word   sh_name;135,2657
+    Elf32_Word   sh_type;136,2683
+    Elf32_Word   sh_flags;137,2709
+    Elf32_Addr   sh_addr;138,2736
+    Elf32_Off    sh_offset;139,2762
+    Elf32_Word   sh_size;140,2790
+    Elf32_Word   sh_link;141,2816
+    Elf32_Word   sh_info;142,2842
+    Elf32_Word   sh_addralign;143,2868
+    Elf32_Word   sh_entsize;144,2899
+} Elf32_Shdr;146,2929
+    Elf64_Word   sh_name;151,2963
+    Elf64_Word   sh_type;152,2989
+    Elf64_Xword  sh_flags;153,3015
+    Elf64_Addr   sh_addr;154,3042
+    Elf64_Off    sh_offset;155,3068
+    Elf64_Xword  sh_size;156,3096
+    Elf64_Word   sh_link;157,3122
+    Elf64_Word   sh_info;158,3148
+    Elf64_Xword  sh_addralign;159,3174
+    Elf64_Xword  sh_entsize;160,3205
+} Elf64_Shdr;162,3235
+#define SHT_NULL 164,3250
+#define SHT_PROGBITS 165,3275
+#define SHT_SYMTAB 166,3300
+#define SHT_STRTAB 167,3325
+#define SHT_RELA 168,3350
+#define SHT_HASH 169,3375
+#define SHT_DYNAMIC 170,3400
+#define SHT_NOTE 171,3425
+#define SHT_NOBITS 172,3450
+#define SHT_REL 173,3475
+#define SHT_SHLIB 174,3500
+#define SHT_DYNSYM 175,3526
+#define SHT_LOPROC 176,3552
+#define SHT_HIPROC 177,3586
+#define SHT_LOUSER 178,3620
+#define SHT_HIUSER 179,3654
+#define SHF_WRITE 181,3689
+#define SHF_ALLOC 182,3716
+#define SHF_EXECINSTR 183,3743
+#define SHF_MASKPROC 184,3770
+#define STN_UNDEF 186,3805
+    Elf32_Word      st_name;190,3849
+    Elf32_Addr      st_value;191,3878
+    Elf32_Word      st_size;192,3908
+    unsigned char   st_info;193,3937
+    unsigned char   st_other;194,3966
+    Elf32_Half      st_shndx;195,3996
+} Elf32_Sym;197,4027
+    Elf64_Word     st_name;202,4060
+    unsigned char  st_info;203,4088
+    unsigned char  st_other;204,4116
+    Elf64_Half     st_shndx;205,4145
+    Elf64_Addr     st_value;206,4174
+    Elf64_Xword    st_size;207,4203
+} Elf64_Sym;209,4232
+#define ELF32_ST_BIND(211,4246
+#define ELF32_ST_TYPE(212,4283
+#define ELF32_ST_INFO(213,4321
+#define STB_LOCAL 215,4371
+#define STB_GLOBAL 216,4397
+#define STB_WEAK 217,4423
+#define STB_LOPROC 218,4449
+#define STB_HIPROC 219,4476
+#define STT_NOTYPE 221,4504
+#define STT_OBJECT 222,4530
+#define STT_FUNC 223,4556
+#define STT_SECTION 224,4582
+#define STT_FILE 225,4608
+#define STT_LOPROC 226,4634
+#define STT_HIPROC 227,4661
+    Elf32_Addr   r_offset;231,4707
+    Elf32_Word   r_info;232,4734
+} Elf32_Rel;234,4760
+    Elf32_Addr   r_offset;238,4792
+    Elf32_Word   r_info;239,4819
+    Elf32_Sword  r_addend;240,4844
+} Elf32_Rela;242,4872
+    Elf64_Addr  r_offset;246,4905
+    Elf64_Xword r_info;247,4931
+} Elf64_Rel;249,4956
+    Elf64_Addr    r_offset;253,4988
+    Elf64_Xword   r_info;254,5016
+    Elf64_Sxword  r_addend;255,5042
+} Elf64_Rela;257,5071
+#define ELF32_R_SYM(260,5087
+#define ELF32_R_TYPE(261,5124
+#define ELF32_R_INFO(262,5173
+#define ELF64_R_SYM(264,5232
+#define ELF64_R_TYPE(265,5270
+#define ELF64_R_INFO(266,5316
+    Elf32_Word      p_type;270,5393
+    Elf32_Off       p_offset;271,5421
+    Elf32_Addr      p_vaddr;272,5451
+    Elf32_Addr      p_paddr;273,5480
+    Elf32_Word      p_filesz;274,5509
+    Elf32_Word      p_memsz;275,5539
+    Elf32_Word      p_flags;276,5568
+    Elf32_Word      p_align;277,5597
+} Elf32_Phdr;279,5627
+    Elf64_Word     p_type;283,5660
+    Elf64_Word     p_flags;284,5687
+    Elf64_Off      p_offset;285,5715
+    Elf64_Addr     p_vaddr;286,5744
+    Elf64_Addr     p_paddr;287,5772
+    Elf64_Xword    p_filesz;288,5800
+    Elf64_Xword    p_memsz;289,5829
+    Elf64_Xword    p_align;290,5857
+} Elf64_Phdr;292,5886
+#define PT_NULL 294,5901
+#define PT_LOAD 295,5924
+#define PT_DYNAMIC 296,5947
+#define PT_INTERP 297,5970
+#define PT_NOTE 298,5993
+#define PT_SHLIB 299,6016
+#define PT_PHDR 300,6039
+#define PT_LOPROC 301,6062
+#define PT_HIPROC 302,6094
+#define ENDIANNESS_FROM_EHDR(307,6130
+#define WIDTH_FROM_EHDR(308,6197
+
+functions.h,24
+#define _FUNCTIONS2,19
+
+interpreter.h,648
+#define _INTERPRETER2,21
+#define PROMPT_STRING 18,320
+#define MAX_STR 21,401
+typedef enum {INTERACTIF,INTERACTIF23,476
+typedef enum {INTERACTIF, SCRIPT,23,476
+typedef enum {INTERACTIF, SCRIPT, DEBUG_MODE}DEBUG_MODE23,476
+typedef enum {INTERACTIF, SCRIPT, DEBUG_MODE} inter_mode;23,476
+enum {HEXA,HEXA25,535
+enum {HEXA, INT,25,535
+enum {HEXA, INT, UNKNOWN}UNKNOWN25,535
+#define CMD_OK_RETURN_VALUE 32,830
+#define CMD_EXIT_RETURN_VALUE 33,860
+#define CMD_UNKOWN_RETURN_VALUE 34,893
+    inter_mode mode;41,1048
+    char input[input42,1069
+    char* from;43,1094
+    char first_token;44,1110
+} *interpreteur;interpreteur45,1132
+
+memory.h,580
+#define _MEMORY7,135
+#define NB_SECTIONS 21,384
+#define DEFAULT_START 23,434
+#define TEXT_SECTION_STR 24,502
+#define RODATA_SECTION_STR 25,555
+#define DATA_SECTION_STR 26,593
+#define BSS_SECTION_STR 27,627
+typedef struct segment segment;30,663
+typedef struct memory* memory;31,696
+struct segment33,730
+  byte* raddr;35,749
+  size_t size;36,802
+  size_t vaddr;37,833
+struct memory40,896
+  segment* stack;42,914
+  segment* bss;43,933
+  segment* data;44,950
+  segment* txt;45,968
+  segment* rodata;46,985
+  word reg[reg47,1005
+  unsigned int endianness;48,1022
+
+notify.h,961
+#define _NOTIFY_H_11,195
+#define FOR_ERRORS 21,296
+#define FOR_WARNINGS 22,325
+#define FOR_INFOS 23,354
+#define STYLE_OFF 25,384
+#define STYLE_BOLD 26,413
+#define STYLE_USCORE 27,442
+#define STYLE_BLINK 28,471
+#define STYLE_REVERSE 29,500
+#define STYLE_CONCEALED 30,529
+#define COLOR_BLACK 32,559
+#define COLOR_RED 33,588
+#define COLOR_GREEN 34,617
+#define COLOR_YELLOW 35,646
+#define COLOR_BLUE 36,675
+#define COLOR_MAGENTA 37,704
+#define COLOR_CYAN 38,733
+#define COLOR_WHITE 39,762
+#define STYLE_ERROR 41,792
+#define STYLE_WARNING 42,830
+#define STYLE_INFO 43,867
+#define COLOR_ERROR 45,905
+#define COLOR_WARNING 46,941
+#define COLOR_INFO 47,980
+#define STYLE(49,1019
+#define COLOR(53,1155
+#define ON(57,1293
+#define RESET_COLORS(58,1319
+#define SET_COLORS(60,1397
+#define ERROR_MSG(64,1520
+#define WARNING_MSG(75,1930
+#define INFO_MSG(86,2324
+#define INFO_MSG(96,2704
+#define DEBUG_MSG(100,2747
+#define DEBUG_MSG(110,3128
+
+parsing.h,22
+#define _PARSING2,17
+
+relocator.h,4573
+#define _RELOCATOR_H_11,212
+#define  R_ARM_NONE 17,275
+#define  R_ARM_PC24 18,302
+#define  R_ARM_ABS32 19,329
+#define  R_ARM_REL32 20,358
+#define  R_ARM_LDR_PC_G0 21,387
+#define  R_ARM_ABS16 22,427
+#define  R_ARM_ABS12 23,456
+#define  R_ARM_THM_ABS5 24,485
+#define  R_ARM_ABS8 25,525
+#define  R_ARM_SBREL32 26,552
+#define  R_ARM_THM_CALL 27,592
+#define  R_ARM_THM_PC8 28,632
+#define  R_ARM_BREL_ADJ 29,672
+#define  R_ARM_TLS_DESC 30,712
+#define  R_ARM_THM_SWI8 31,752
+#define  R_ARM_XPC25 32,792
+#define  R_ARM_THM_XPC22 33,821
+#define  R_ARM_TLS_DTPMOD32 34,861
+#define  R_ARM_TLS_DTPOFF32 35,901
+#define  R_ARM_TLS_TPOFF32 36,941
+#define  R_ARM_COPY 37,981
+#define  R_ARM_GLOB_DAT 38,1008
+#define  R_ARM_JUMP_SLOT 39,1048
+#define  R_ARM_RELATIVE 40,1088
+#define  R_ARM_GOTOFF32 41,1128
+#define  R_ARM_BASE_PREL 42,1168
+#define  R_ARM_GOT_BREL 43,1208
+#define  R_ARM_PLT32 44,1248
+#define  R_ARM_CALL 45,1277
+#define  R_ARM_JUMP24 46,1304
+#define  R_ARM_THM_JUMP24 47,1333
+#define  R_ARM_BASE_ABS 48,1373
+#define  R_ARM_ALU_PCREL_7_0 49,1413
+#define  R_ARM_ALU_PCREL_15_8 50,1453
+#define  R_ARM_ALU_PCREL_23_15 51,1493
+#define  R_ARM_LDR_SBREL_11_0_NC 52,1533
+#define  R_ARM_ALU_SBREL_19_12_NC 53,1573
+#define  R_ARM_ALU_SBREL_27_20_CK 54,1613
+#define  R_ARM_TARGET1 55,1653
+#define  R_ARM_SBREL31 56,1693
+#define  R_ARM_V4BX 57,1733
+#define  R_ARM_TARGET2 58,1760
+#define  R_ARM_PREL31 59,1800
+#define  R_ARM_MOVW_ABS_NC 60,1829
+#define  R_ARM_MOVT_ABS 61,1869
+#define  R_ARM_MOVW_PREL_NC 62,1909
+#define  R_ARM_MOVT_PREL 63,1949
+#define  R_ARM_THM_MOVW_ABS_NC 64,1989
+#define  R_ARM_THM_MOVT_ABS 65,2029
+#define  R_ARM_THM_MOVW_PREL_NC 66,2069
+#define  R_ARM_THM_MOVT_PREL 67,2109
+#define  R_ARM_THM_JUMP19 68,2149
+#define  R_ARM_THM_JUMP6 69,2189
+#define  R_ARM_THM_ALU_PREL_11_0 70,2229
+#define  R_ARM_THM_PC12 71,2269
+#define  R_ARM_ABS32_NOI 72,2309
+#define  R_ARM_REL32_NOI 73,2349
+#define  R_ARM_ALU_PC_G0_NC 74,2389
+#define  R_ARM_ALU_PC_G0 75,2429
+#define  R_ARM_ALU_PC_G1_NC 76,2469
+#define  R_ARM_ALU_PC_G1 77,2509
+#define  R_ARM_ALU_PC_G2 78,2549
+#define  R_ARM_LDR_PC_G1 79,2589
+#define  R_ARM_LDR_PC_G2 80,2629
+#define  R_ARM_LDRS_PC_G0 81,2669
+#define  R_ARM_LDRS_PC_G1 82,2709
+#define  R_ARM_LDRS_PC_G2 83,2749
+#define  R_ARM_LDC_PC_G0 84,2789
+#define  R_ARM_LDC_PC_G1 85,2829
+#define  R_ARM_LDC_PC_G2 86,2869
+#define  R_ARM_ALU_SB_G0_NC 87,2909
+#define  R_ARM_ALU_SB_G0 88,2949
+#define  R_ARM_ALU_SB_G1_NC 89,2989
+#define  R_ARM_ALU_SB_G1 90,3029
+#define  R_ARM_ALU_SB_G2 91,3069
+#define  R_ARM_LDR_SB_G0 92,3109
+#define  R_ARM_LDR_SB_G1 93,3149
+#define  R_ARM_LDR_SB_G2 94,3189
+#define  R_ARM_LDRS_SB_G0 95,3229
+#define  R_ARM_LDRS_SB_G1 96,3269
+#define  R_ARM_LDRS_SB_G2 97,3309
+#define  R_ARM_LDC_SB_G0 98,3349
+#define  R_ARM_LDC_SB_G1 99,3389
+#define  R_ARM_LDC_SB_G2 100,3429
+#define  R_ARM_MOVW_BREL_NC 101,3469
+#define  R_ARM_MOVT_BREL 102,3509
+#define  R_ARM_MOVW_BREL 103,3549
+#define  R_ARM_THM_MOVW_BREL_NC 104,3589
+#define  R_ARM_THM_MOVT_BREL 105,3629
+#define  R_ARM_THM_MOVW_BREL 106,3669
+#define  R_ARM_TLS_GOTDESC 107,3709
+#define  R_ARM_TLS_CALL 108,3749
+#define  R_ARM_TLS_DESCSEQ 109,3789
+#define  R_ARM_THM_TLS_CALL 110,3829
+#define  R_ARM_PLT32_ABS 111,3869
+#define  R_ARM_GOT_ABS 112,3909
+#define  R_ARM_GOT_PREL 113,3949
+#define  R_ARM_GOT_BREL12 114,3989
+#define  R_ARM_GOTOFF12 115,4029
+#define  R_ARM_GOTRELAX 116,4069
+#define  R_ARM_GNU_VTENTRY 117,4109
+#define  R_ARM_GNU_VTINHERIT 118,4149
+#define  R_ARM_THM_JUMP11 119,4189
+#define  R_ARM_THM_JUMP8 120,4229
+#define  R_ARM_TLS_GD32 121,4269
+#define  R_ARM_TLS_LDM32 122,4309
+#define  R_ARM_TLS_LDO32 123,4349
+#define  R_ARM_TLS_IE32 124,4389
+#define  R_ARM_TLS_LE32 125,4429
+#define  R_ARM_TLS_LDO12 126,4469
+#define  R_ARM_TLS_LE12 127,4509
+#define  R_ARM_TLS_IE12GP 128,4549
+#define  R_ARM_PRIVATE_0 129,4589
+#define  R_ARM_PRIVATE_1 130,4629
+#define  R_ARM_PRIVATE_2 131,4669
+#define  R_ARM_PRIVATE_3 132,4709
+#define  R_ARM_PRIVATE_4 133,4749
+#define  R_ARM_PRIVATE_5 134,4789
+#define  R_ARM_PRIVATE_6 135,4829
+#define  R_ARM_PRIVATE_7 136,4869
+#define  R_ARM_PRIVATE_8 137,4909
+#define  R_ARM_PRIVATE_9 138,4949
+#define  R_ARM_PRIVATE_10 139,4989
+#define  R_ARM_PRIVATE_11 140,5029
+#define  R_ARM_PRIVATE_12 141,5069
+#define  R_ARM_PRIVATE_13 142,5109
+#define  R_ARM_PRIVATE_14 143,5149
+#define  R_ARM_PRIVATE_15 144,5189
+#define  R_ARM_ME_TOO 145,5229
+#define  R_ARM_THM_TLS_DESCSEQ16 146,5269
+#define  R_ARM_THM_TLS_DESCSEQ32 147,5309
+
+syms.h,547
+#define _SYMS_H_12,185
+    notype,22,286
+    notype, object,22,286
+    notype, object, function,22,286
+    notype, object, function, section,22,286
+    notype, object, function, section, file,22,286
+    notype, object, function, section, file, linked22,286
+sym_type;24,340
+    char      *name;name27,368
+    vaddr      addr;28,389
+    uint       size;29,410
+    sym_type   type;30,431
+    uint     scnidx;31,452
+    uint     scnidx_link;32,473
+} sym;33,499
+    uint       size;36,524
+    sym       *sym;sym37,545
+} stab;38,565
+
+bits.c,74
+unsigned int get_host_endianness(20,361
+byte * __flip_endianness(36,943
+
+elf.c,735
+byte * __Elf_Rel_flip_endianness(31,707
+static byte * __Elf_Sym_flip_endianness(62,1503
+static byte * __Elf_Shdr_flip_endianness(96,2461
+static byte * __Elf_Ehdr_flip_endianness(139,3855
+byte * __elf_get_ehdr(189,5454
+byte *elf_extract_section_names(elf_extract_section_names240,6912
+byte *elf_extract_scn_by_name(elf_extract_scn_by_name378,10696
+byte *elf_extract_string_table(elf_extract_string_table494,14345
+void  print_string_table(503,14644
+byte *elf_extract_section_header_table(elf_extract_section_header_table522,15095
+byte *elf_extract_symbol_table(elf_extract_symbol_table584,16690
+int assert_elf_file(614,17430
+int elf_get_arch_info(645,18374
+int elf_load_scntab(726,20337
+int elf_load_symtab(782,22130
+
+emul_main.c,17
+int main 12,151
+
+functions.c,153
+int loadcmd(6,87
+int debugcmd(33,715
+int resumecmd(60,1312
+int dispcmd(86,1898
+int setcmd(193,4961
+int assertcmd(321,8441
+int disasmcmd(454,12231
+
+interpreter.c,159
+interpreteur init_inter(9,178
+void del_inter(20,463
+int execute_cmd(34,1071
+int  acquire_line(87,2534
+void usage_ERROR_MSG(133,3968
+int exitcmd(142,4291
+
+memory.c,231
+memory stack_set(9,126
+memory memory_allocation(19,389
+byte read_memory_value(55,1427
+int write_memory_value(84,2566
+int memory_free(118,3773
+void print_section_raw_content(149,4424
+int load 167,5029
+int read_word(237,7460
+
+parsing.c,179
+char* get_next_token(13,335
+int is_hexa(48,1185
+int get_type(61,1562
+void string_standardise(86,2709
+int is_adress(117,3488
+int reg_index(132,3755
+int is_register(141,3981
+
+section.c,81
+scntab new_scntab(21,419
+void   del_scntab(39,807
+void   print_scntab(60,1210
+
+syms.c,234
+sym  new_sym32(33,907
+sym  new_sym64(56,1646
+void sym32_print(73,2025
+void sym64_print(110,2729
+stab new_stab(150,3546
+int get_sym_by_name(170,4033
+void stab32_print(188,4391
+void stab64_print(209,4787
+void del_stab(230,5188
