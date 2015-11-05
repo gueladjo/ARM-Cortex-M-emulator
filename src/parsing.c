@@ -13,7 +13,7 @@
 char* get_next_token(interpreteur inter) {
 
     char       *token = NULL;
-    char       *delim = " \t\n";
+    char       *delim = " \t\n:";
 
     if ( inter->first_token == 0 ) {
         token = strtok_r( inter->input, delim, &(inter->from) );

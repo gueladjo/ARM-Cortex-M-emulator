@@ -94,10 +94,91 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
   }
 
   else if (instruction.it == 0) {
+    while((iterator = header - 2) != mem->txt->raddr && i!=4) {
+      int is_short = is_16bits(iterator);
+      if (is_short) {
+        int16_t bin;
+        memcpy(&bin, header, sizeof(bin));
+      }
+
+      else {
+        int32_t bin;
+        memcpy(&bin, header, sizeof(bin));
+      }
+
+      if (search_instruction(bin, dictionary, temp, is_16bits(iterator))) {
+        i++;
+        if (temp.sig == 0xBF00) {
+	        
+        }
+      }
+    }
+    
+    printf("%sS ", instruction.mnemo);
+    char* regs = instruction.registers_index;
+    if (*regs != 'N') {
+      char* token = strtok(regs, ":");
+      unsigned int start, end, reg;
+      do {
+        sscanf(token, "%u-%u", &start, &end);
+        unsigned int rmask = create_mask(start, end);
+        reg = rmask & binary;
+	reg = reg >> start;
+        printf("r%u", reg);
+	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
+      } while ((token != NULL);
+    }
+  
+    char* imms = instruction.immediate_index;
+    if (*imms != 'N') {
+      printf(", ");
+      char* token = strtok(imms, ":");
+      unsigned int start, end, imm;
+      do {
+        sscanf(token, "%u-%u", &start, &end);
+        unsigned int imask = create_mask(start, end);
+        imm = imask & binary;
+	imm = imm >> start;
+        printf("#%u", imm);
+	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
+      } while ((token != NULL);
+    }
+ 
   }
 
   else {
+    printf("%sS ", instruction.mnemo);
+    char* regs = instruction.registers_index;
+    if (*regs != 'N') {
+      char* token = strtok(regs, ":");
+      unsigned int start, end, reg;
+      do {
+        sscanf(token, "%u-%u", &start, &end);
+        unsigned int rmask = create_mask(start, end);
+        reg = rmask & binary;
+	reg = reg >> start;
+        printf("r%u", reg);
+	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
+      } while ((token != NULL);
+    }
+  
+    char* imms = instruction.immediate_index;
+    if (*imms != 'N') {
+      printf(", ");
+      char* token = strtok(imms, ":");
+      unsigned int start, end, imm;
+      do {
+        sscanf(token, "%u-%u", &start, &end);
+        unsigned int imask = create_mask(start, end);
+        imm = imask & binary;
+	imm = imm >> start;
+        printf("#%u", imm);
+	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
+      } while ((token != NULL);
+    }
+ 
   }
+
   return 0; 
 }
 
