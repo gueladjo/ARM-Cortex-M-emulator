@@ -1,3 +1,4 @@
 emul-arm
 *.o
 *.out
+*.swp
