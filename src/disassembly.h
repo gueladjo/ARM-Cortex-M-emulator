@@ -34,7 +34,8 @@ int it_condition(unsigned int firstcond, char* condition);
 int create_mask(unsigned int a, unsigned int b);
 int search_instruction(int binary, dico* dictionary, dico* instruction, int is_short);
 int print_instruction(int binary, dico instruction, byte* header, dico* dictionary, memory mem);
-int read_instruction(byte* header);
+int read_instruction(byte* header, dico* dico, memory mem);
 void extract_dico(char* dico_file, dico* dico);
+int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem);
 
 #endif

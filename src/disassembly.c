@@ -7,7 +7,7 @@ int is_16bits(byte* header)
   int sig2 = 0xF8000000;
   int sig3 = 0xE8000000;
 
-  if (*header & mask == sig1 || *header & mask == sig2 || *header & mask == sig3) return 1;
+  if ((*header & mask) == sig1 || (*header & mask) == sig2 || (*header & mask) == sig3) return 1;
   return 0;  
 }
 
@@ -23,11 +23,12 @@ int create_mask(unsigned int a, unsigned int b)
 int search_instruction(int binary, dico* dictionary, dico* instruction, int is_short)
 {
   int i =0, dico_size = 53;
-  if (is_short) int16_t short_binary = binary;
-
+  if (is_short) {
+    int16_t short_binary = binary;
+  }
   for (i = 0; i < dico_size; i++) {
-    if (binary & dico[i].mask == dico[i].signature) {
-      instruction = &dico[i];
+    if ((binary & dictionary[i].mask) == dictionary[i].sig) {
+      instruction = &dictionary[i];
       return 0; 
     }
   }
@@ -40,29 +41,29 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
   printf("%x       ", binary);
   byte* iterator;
   int i = 0; 
-  dico temp;
+  dico* temp;
+  temp = malloc(sizeof(*temp));
   if (instruction.it == 1) {
     char condition[3];
     condition[0] = '\0';
     while((iterator = header - 2) != mem->txt->raddr && i!=4) {
       int is_short = is_16bits(iterator);
+      int32_t bin;
       if (is_short) {
-        int16_t bin;
-        memcpy(&bin, header, sizeof(bin));
+        memcpy(&bin, header, 2);
       }
-
+      
       else {
-        int32_t bin;
-        memcpy(&bin, header, sizeof(bin));
+        memcpy(&bin, header, 4);
       }
 
       if (search_instruction(bin, dictionary, temp, is_16bits(iterator))) {
         i++;
-        if (temp.sig == 0xBF00) {
+        if (temp->sig == 0xBF00) {
 	  int firstcond = (0x0010 & bin) >> 4;
 	  int maskit = bin & 0x000F;
 	  int j = 0;
-          if (maskit & 1 == 1) j = 4;	        
+          if ((maskit & 1) == 1) j = 4;	        
           else if ((maskit & (1 << 1)) == 1) j = 3;      
           else if ((maskit & (1 << 2)) == 1) j = 2;
           else if ((maskit & (1 << 3)) == 1) j = 1;
@@ -86,7 +87,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
 	reg = reg >> start;
         printf("r%u", reg);
 	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL);
+      } while ((token != NULL));
     }
   
     char* imms = instruction.immediate_index;
@@ -101,26 +102,25 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
 	imm = imm >> start;
         printf("#%u", imm);
 	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL);
+      } while ((token != NULL));
     }
   }
 
   else if (instruction.it == 0) {
     while((iterator = header - 2) != mem->txt->raddr && i!=4) {
       int is_short = is_16bits(iterator);
+      int32_t bin;
       if (is_short) {
-        int16_t bin;
-        memcpy(&bin, header, sizeof(bin));
+        memcpy(&bin, header, 2);
       }
 
       else {
-        int32_t bin;
-        memcpy(&bin, header, sizeof(bin));
+        memcpy(&bin, header, 4);
       }
 
       if (search_instruction(bin, dictionary, temp, is_16bits(iterator))) {
         i++;
-        if (temp.sig == 0xBF00) {
+        if (temp->sig == 0xBF00) {
 	        
         }
       }
@@ -138,7 +138,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
 	reg = reg >> start;
         printf("r%u", reg);
 	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL);
+      } while ((token != NULL));
     }
   
     char* imms = instruction.immediate_index;
@@ -153,7 +153,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
 	imm = imm >> start;
         printf("#%u", imm);
 	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL);
+      } while ((token != NULL));
     }
  
   }
@@ -171,7 +171,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
 	reg = reg >> start;
         printf("r%u", reg);
 	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL);
+      } while ((token != NULL));
     }
   
     char* imms = instruction.immediate_index;
@@ -186,7 +186,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
 	imm = imm >> start;
         printf("#%u", imm);
 	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL);
+      } while ((token != NULL));
     }
  
   }
@@ -194,15 +194,15 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
   return 0; 
 }
 
-int read_instruction(byte* header)
+int read_instruction(byte* header, dico* dictionary, memory mem)
 {
   int is_short = is_16bits(header);
   if (is_short) {
     int16_t binary;
     memcpy(&binary, header, sizeof(binary));
     dico instruction;
-    search_instruction(binary, dico, &instruction, is_short);
-    print_instruction(binary, instruction, header, dico);
+    search_instruction(binary, dictionary, &instruction, is_short);
+    print_instruction(binary, instruction, header, dictionary, mem);
   
     return 0; 
   }
@@ -211,11 +211,34 @@ int read_instruction(byte* header)
     int32_t binary;
     memcpy(&binary, header, sizeof(binary));
     dico instruction;
-    search_instruction(binary, dico, &instruction, is_short);
-    print_instruction(binary, instruction, header, dico);
+    search_instruction(binary, dictionary, &instruction, is_short);
+    print_instruction(binary, instruction, header, dictionary, mem);
   
     return 0; 
   }
+}
+
+
+int disasm(size_t startadress, size_t endadress, dico* dico, memory mem)
+{
+  size_t nb_bytes = endadress - startadress;
+  byte* header = mem->txt->raddr + startadress - mem->txt->vaddr;
+  
+  int i = 0;
+  while(i != nb_bytes) {
+    printf("%d :: ", startadress + i);
+    if (is_16bits(header)) {
+      read_instruction(header, dico, mem);
+      i = i + 2;
+      header = header + 2;
+    }
+    else {
+      read_instruction(header, dico, mem);
+      i = i + 4;
+      header = header + 4;     
+    }
+  }
+  return 0;
 }
 
 void extract_dico(char* dico_file, dico* dico) {

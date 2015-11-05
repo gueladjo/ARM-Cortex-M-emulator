@@ -1,3 +1,5 @@
 emul-arm
 *.o
 *.out
+TAGS
+*.ods
