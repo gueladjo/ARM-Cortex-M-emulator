@@ -277,8 +277,6 @@ int assertcmd(interpreteur inter, memory mem)
 	    WARNING_MSG("first argument not a valid register%s\n", "assertcmd");
 	    return 1;
 	}
-        
-
     }
 
     if (strcmp(token, "word") == 0) {
@@ -332,4 +330,37 @@ int assertcmd(interpreteur inter, memory mem)
     }
 
    return 1;
+}
+
+int disasmcmd(interpreteur inter, memory mem)
+{
+    DEBUG_MSG("Chaine : %s", inter->input);
+    
+    char* token = NULL;
+
+    if ((token = get_next_token(inter)) == NULL) {
+    WARNING_MSG("no argument given to command %s\n", "disasmcmd");
+    return 1;
+    }
+
+    char* token1; 
+    if (is_adress(token)) {
+	if ((token1 = get_next_token(inter)  == NULL) {
+	    WARNING_MSG("second argument is not an adress range %s\n", "disasmcmd");
+	    return 1;
+	} 
+	if (is_adress(token1)) {
+	    size_t adress1 = atoi(tok_mem1);
+	    size_t adress2 = atoi(tok_mem2);
+	}
+	else {
+	    WARNING_MSG("second argument is not an adress range %s\n","disasmcmd");
+	    return 1;
+	}
+    }
+    printf("\n");
+    if((token = get_next_token(inter) == NULL)) return 0;
+
+    WARNING_MSG("too many arguments%s\n", "disasmcmd");
+    return 1;
 }

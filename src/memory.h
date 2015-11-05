@@ -27,8 +27,8 @@
 #define BSS_SECTION_STR ".bss"
 
 
-typedef uint8_t byte;
-typedef uint32_t word;
+//typedef uint8_t byte;
+//typedef uint32_t word;
 typedef struct segment segment;
 typedef struct memory* memory;
 
@@ -48,8 +48,6 @@ struct memory
   segment* rodata;
   word reg[16];
 };
-
-
 
 /**
  * Fonction qui affiche les segments d'un octet sur la sortie standard
