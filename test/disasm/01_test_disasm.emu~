@@ -1,6 +1,0 @@
-#-------
-#TEST_RETURN_CODE=PASS          
-#TEST_COMMENT="Test fonctionnement standard"
-#-------
-
-assert reg r18 0x123
