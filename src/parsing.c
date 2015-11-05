@@ -13,7 +13,7 @@
 char* get_next_token(interpreteur inter) {
 
     char       *token = NULL;
-    char       *delim = " \t\n:";
+    char       *delim = " \t\n";
 
     if ( inter->first_token == 0 ) {
         token = strtok_r( inter->input, delim, &(inter->from) );
@@ -48,7 +48,7 @@ char* get_next_token(interpreteur inter) {
 int is_hexa(char* chaine) {
     char* p;
     if (strcmp(chaine, "0x0") == 0) return 1;
-    return (chaine!=NULL && strlen(chaine)>3 && chaine[0]=='0' && chaine[1]=='x' && strtol(chaine, &p, 0) != 0 && *p == '\0');
+    return (chaine!=NULL && strlen(chaine)>=3 && chaine[0]=='0' && chaine[1]=='x' && strtol(chaine, &p, 0) != 0 && *p == '\0');
 }
 
 
@@ -134,11 +134,10 @@ int reg_index(char* reg)
     if (strcmp(reg, "sp") == 0) return 13;
     if (strcmp(reg, "lr") == 0) return 14;
     if (strcmp(reg, "pc") == 0) return 15;
-    if (strcmp(reg, "aspr") == 0) return 12;
-    return atoi(reg + 1);
+    if (strcmp(reg, "aspr") == 0) return 16;
+    return atoi(reg);
 }
 
 int is_register(char* reg) {
-    return (strcmp(reg, "r0") || strcmp(reg, "r1") || strcmp(reg, "r2") || strcmp(reg, "r3") || strcmp(reg, "r4") || strcmp(reg, "r5") || strcmp(reg, "r6") || strcmp(reg, "r7") || strcmp(reg, "r8") ||  strcmp(reg, "r9") || strcmp(reg, "r10") || strcmp(reg, "r11") || strcmp(reg, "r12") || strcmp(reg, "r13") || strcmp(reg, "r14") || strcmp(reg, "r15") || strcmp(reg, "sp") || strcmp(reg, "lr") || strcmp(reg, "pc") || strcmp(reg, "aspr"));
+    return (strcmp(reg, "r0") && strcmp(reg, "r1") && strcmp(reg, "r2") && strcmp(reg, "r3") && strcmp(reg, "r4") && strcmp(reg, "r5") && strcmp(reg, "r6") && strcmp(reg, "r7") && strcmp(reg, "r8") &&  strcmp(reg, "r9") && strcmp(reg, "r10") && strcmp(reg, "r11") && strcmp(reg, "r12") && strcmp(reg, "r13") && strcmp(reg, "r14") && strcmp(reg, "r15") && strcmp(reg, "sp") && strcmp(reg, "lr") && strcmp(reg, "pc") && strcmp(reg, "aspr"));
 }
-

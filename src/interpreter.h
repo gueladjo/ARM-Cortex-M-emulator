@@ -12,7 +12,7 @@
 /* macros de DEBUG_MSG fournies , etc */
 #include "common/notify.h"
 
-#include "memory.h"
+#include"memory.h"
 
 /* prompt du mode shell interactif */
 #define PROMPT_STRING "ARMShell : > "

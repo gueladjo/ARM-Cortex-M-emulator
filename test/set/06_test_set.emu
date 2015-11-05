@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL           
+#TEST_COMMENT="Teste nom de registre invalide"
+#-------
+
+set reg 14 125

@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL          
+#TEST_COMMENT="Test négatif dans plage"
+#-------
+
+disp mem -0xff24:0xff452

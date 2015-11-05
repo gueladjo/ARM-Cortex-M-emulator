@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL          
+#TEST_COMMENT="Test valeur trop grande pour registre"
+#-------
+
+assert reg r6 0xffffffffffffff

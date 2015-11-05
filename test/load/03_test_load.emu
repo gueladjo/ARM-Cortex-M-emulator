@@ -1,6 +1,6 @@
 #-------
-#TEST_RETURN_CODE=PASS          
-#TEST_COMMENT="Test fonctionnement standard"
+#TEST_RETURN_CODE=FAIL           
+#TEST_COMMENT="Test hexa négatif"
 #-------
 
-disp reg all
+load filename -0x1fD2e

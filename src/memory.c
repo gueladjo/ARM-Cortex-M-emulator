@@ -8,7 +8,6 @@
 
 memory stack_set(memory mem)
 {
-  mem->stack = malloc(sizeof(segment));
   mem->stack->vaddr = 0xff7ff000;
   mem->stack->size = 0x00800000; //Stack size
   mem->stack->raddr = calloc(mem->stack->size, sizeof(byte));
@@ -17,41 +16,36 @@ memory stack_set(memory mem)
 }
 
 
-memory memory_allocation(memory mem, char* section_name, byte* segdata, size_t size, size_t adress)
+void memory_allocation(memory mem, char* section_name, byte* segdata, size_t size, size_t adress)
 {
   if (size == 0) return mem;
-
-  if (strcmp(section_name,".rodata")) {
+  if (!strcmp(section_name,".rodata")) {
     WARNING_MSG("RODATA\n");
     mem->rodata->raddr = calloc(size, sizeof(byte));
     mem->rodata->vaddr = adress;
     mem->rodata->size = size;
-    mem->rodata->raddr = segdata;
-//memcpy(mem->rodata->raddr, segdata, size);
+    memcpy(mem->rodata->raddr, segdata, size);
     return mem;
   }
-  if (strcmp(section_name, ".text")) {
+  if (!strcmp(section_name, ".text")) {
     mem->txt->raddr = calloc(size, sizeof(byte));
     mem->txt->vaddr = adress; 
     mem->txt->size = size;
-    mem->txt->raddr = segdata;
-//memcpy(mem->txt->raddr, segdata, size);
+    memcpy(mem->txt->raddr, segdata, size);
     return mem;
   }
-  if (strcmp(section_name,".data")) {
+  if (!strcmp(section_name,".data")) {
     mem->data->raddr = calloc(size, sizeof(byte));
     mem->data->vaddr = adress;
     mem->data->size = size;
-    mem->data->raddr = segdata;
-//memcpy(mem->data->raddr, segdata, size);
+    memcpy(mem->data->raddr, segdata, size);
     return mem;
   }
-  if (strcmp(section_name, ".bss")) {
+  if (!strcmp(section_name, ".bss")) {
     mem->bss->raddr = calloc(size, sizeof(byte));
     mem->bss->vaddr = adress;
     mem->bss->size = size;
-    mem->bss->raddr = segdata;
-//memcpy(mem->bss->raddr, segdata, size);
+    memcpy(mem->bss->raddr, segdata, size);
     return mem;
   }
   return mem;
@@ -63,23 +57,23 @@ byte read_memory_value(size_t addr, memory mem)
   //For each segment, checks if the address is there, and returns the value stored in the cell
   byte value = NULL; 
   size_t offset;
-  if (mem->rodata!=NULL && addr > mem->rodata->vaddr && addr < mem->rodata->vaddr + mem->rodata->size) {
+  if (mem->rodata!=NULL && addr >= mem->rodata->vaddr && addr < mem->rodata->vaddr + mem->rodata->size) {
     offset = addr - mem->rodata->vaddr;
     value = *(mem->rodata->raddr + offset);
   }
-  else if (mem->txt!=NULL && addr > mem->txt->vaddr && addr < mem->txt->vaddr + mem->txt->size) {
+  else if (mem->txt!=NULL && addr >= mem->txt->vaddr && addr < mem->txt->vaddr + mem->txt->size) {
     offset = addr - mem->txt->vaddr;
     value = *(mem->txt->raddr + offset);
   }
-  else if (mem->data!=NULL && addr > mem->data->vaddr && addr < mem->data->vaddr + mem->data->size) {
+  else if (mem->data!=NULL && addr >= mem->data->vaddr && addr < mem->data->vaddr + mem->data->size) {
     offset = addr - mem->data->vaddr;
     value = *(mem->data->raddr + offset);
  }
-  else if (mem->bss!=NULL && addr > mem->bss->vaddr && addr < mem->bss->vaddr + mem->bss->size) {
+  else if (mem->bss!=NULL && addr >= mem->bss->vaddr && addr < mem->bss->vaddr + mem->bss->size) {
     offset = addr - mem->bss->vaddr;
     value = *(mem->bss->raddr + offset);
   }
-  else if (mem->stack!=NULL && addr > mem->stack->vaddr && addr < mem->stack->vaddr + mem->stack->size) {
+  else if (mem->stack!=NULL && addr >= mem->stack->vaddr && addr < mem->stack->vaddr + mem->stack->size) {
     offset = addr - mem->stack->vaddr;
     value = *(mem->stack->raddr + offset);
   }
@@ -92,27 +86,27 @@ int write_memory_value(size_t addr, byte value, memory mem)
   //For each segment, checks if the address is there, and changes the value stored in the cell
   int e = 1; //Error value
   size_t offset;
-  if (mem->rodata!=NULL && addr > mem->rodata->vaddr && addr < mem->rodata->vaddr + mem->rodata->size) {
+  if (mem->rodata!=NULL && addr >= mem->rodata->vaddr && addr < mem->rodata->vaddr + mem->rodata->size) {
     offset = addr - mem->rodata->vaddr;
     *(mem->rodata->raddr + offset) = value;
     e = 0;
   }
-  else if (mem->txt!=NULL && addr > mem->txt->vaddr && addr < mem->txt->vaddr + mem->txt->size) {
+  else if (mem->txt!=NULL && addr >= mem->txt->vaddr && addr < mem->txt->vaddr + mem->txt->size) {
     offset = addr - mem->txt->vaddr;
     *(mem->txt->raddr + offset) = value;
     e = 0;
   }
-  else if (mem->data!=NULL && addr > mem->data->vaddr && addr < mem->data->vaddr + mem->data->size) {
+  else if (mem->data!=NULL && addr >= mem->data->vaddr && addr < mem->data->vaddr + mem->data->size) {
     offset = addr - mem->data->vaddr;
     *(mem->data->raddr + offset) = value;
     e = 0;
  }
-  else if (mem->bss!=NULL && addr > mem->bss->vaddr && addr < mem->bss->vaddr + mem->bss->size) {
+  else if (mem->bss!=NULL && addr >= mem->bss->vaddr && addr < mem->bss->vaddr + mem->bss->size) {
     offset = addr - mem->bss->vaddr;
     *(mem->bss->raddr + offset) = value;
     e = 0;
   }
-  else if (mem->stack!=NULL && addr > mem->stack->vaddr && addr < mem->stack->vaddr + mem->stack->size) {
+  else if (mem->stack!=NULL && addr >= mem->stack->vaddr && addr < mem->stack->vaddr + mem->stack->size) {
     offset = addr - mem->stack->vaddr;
     *(mem->stack->raddr + offset) = value;
     e = 0;
@@ -124,27 +118,27 @@ int write_memory_value(size_t addr, byte value, memory mem)
 int memory_free(memory mem)
 {
   int e = 1; //Error value
-  if (mem->rodata->size != 0) {
+  if (mem->rodata != NULL && mem->rodata->size != 0) {
     free(mem->rodata->raddr);
     free(mem->rodata);
     e = 0;
   }
-  if (mem->txt->size != 0) {
+  if (mem->txt != NULL && mem->txt->size != 0) {
     free(mem->txt->raddr);
     free(mem->txt);
     e = 0;
   }
-  if (mem->data->size != 0) {
+  if (mem->data != NULL && mem->data->size != 0) {
     free(mem->data->raddr);
     free(mem->data);
     e = 0;
   }
-  if (mem->bss->size != 0) {
+  if (mem->bss != NULL && mem->bss->size != 0) {
     free(mem->bss->raddr);
     free(mem->bss);
     e = 0;
   }
-  if (mem->stack->size != 0) {
+  if (mem->stack != NULL && mem->stack->size != 0) {
     free(mem->stack->raddr);
     free(mem->stack);
     e = 0;
@@ -189,6 +183,8 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
   }
   
   if (no_args == 2) { //Si qu'un seul argument, début de memoire par défaut
+    start_mem += 0xfff;
+    start_mem -= start_mem%0x1000;
     next_segment_start = start_mem;
   }
   
@@ -213,11 +209,11 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
     byte* content = elf_extract_scn_by_name(ehdr, pf_elf, section_names[i], &taille, NULL );
     if (content!=NULL){
       print_section_raw_content(section_names[i],next_segment_start,content,taille);
-      next_segment_start+= ((taille+0x1000)>>12 )<<12; // on arrondit au 1k suppérieur
       nsegments++;
       //Copie le contenu dans la mémoire
       
-      memory_allocation(memory, section_names[i], content, taille, next_segment_start); 
+      memory_allocation(memory, section_names[i], content, taille, next_segment_start);
+      next_segment_start += ((taille+0x1000)>>12 )<<12; // on arrondit au 1k suppérieur
       free(content);
     }
     else{
@@ -229,6 +225,7 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
   stack_set(memory);
   printf("\n------ Fichier ELF \"%s\" : sections lues lors du chargement ------\n", elf_file) ;
   stab32_print( symtab );
+  memory->endianness = endianness;
   // on fait le ménage avant de partir
   del_stab( symtab );
   del_scntab( section_table );
@@ -241,5 +238,3 @@ int read_word(size_t adress, memory mem)
 {
   return 0;
 }
-
-

@@ -1,6 +1,6 @@
 #-------
 #TEST_RETURN_CODE=FAIL          
-#TEST_COMMENT="Test registe inexistant"
+#TEST_COMMENT="Test pas de parametre"
 #-------
 
-disp reg r18
+load

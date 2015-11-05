@@ -42,6 +42,8 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
   int i = 0; 
   dico temp;
   if (instruction.it == 1) {
+    char condition[3];
+    condition[0] = '\0';
     while((iterator = header - 2) != mem->txt->raddr && i!=4) {
       int is_short = is_16bits(iterator);
       if (is_short) {
@@ -57,12 +59,22 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
       if (search_instruction(bin, dictionary, temp, is_16bits(iterator))) {
         i++;
         if (temp.sig == 0xBF00) {
-	        
+	  int firstcond = (0x0010 & bin) >> 4;
+	  int maskit = bin & 0x000F;
+	  int j = 0;
+          if (maskit & 1 == 1) j = 4;	        
+          else if ((maskit & (1 << 1)) == 1) j = 3;      
+          else if ((maskit & (1 << 2)) == 1) j = 2;
+          else if ((maskit & (1 << 3)) == 1) j = 1;
+
+	  if (j >= i) {
+	     	    
+	  }	        
         }
       }
     }
     
-    printf("%s ", instruction.mnemo);
+    printf("%s%s ", instruction.mnemo, condition);
     char* regs = instruction.registers_index;
     if (*regs != 'N') {
       char* token = strtok(regs, ":");
@@ -204,4 +216,35 @@ int read_instruction(byte* header)
   
     return 0; 
   }
+}
+
+void extract_dico(char* dico_file, dico* dico) {
+  int i;
+  FILE* pf_dico;
+  char token[16];
+  if ((pf_dico = fopen(dico_file, "r")) == NULL)
+    ERROR_MSG("Cannot open file %s", dico_file);
+  for (i=0;i<9;i++) {
+    fscanf(pf_dico, "%s", token);
+  }
+  for (i=0;i<=52;i++) {
+    fscanf(pf_dico, "%s", token);
+    strcpy(dico[i].id_debug, token);
+    fscanf(pf_dico, "%s", token);
+    strcpy(dico[i].mnemo, token);
+    fscanf(pf_dico, "%s", token);
+    dico[i].size = atoi(token);
+    fscanf(pf_dico, "%s", token);
+    dico[i].sig = strtol(token, NULL, 16);
+    fscanf(pf_dico, "%s", token);
+    dico[i].mask = strtol(token, NULL, 16);
+    fscanf(pf_dico, "%s", token);
+    dico[i].nb_op = atoi(token);
+    fscanf(pf_dico, "%s", token);
+    strcpy(dico[i].registers_index, token);
+    fscanf(pf_dico, "%s", token);
+    strcpy(dico[i].immediate_index, token);
+    fscanf(pf_dico, "%s", token);
+  }
+  return;
 }

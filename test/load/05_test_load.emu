@@ -1,6 +1,6 @@
 #-------
-#TEST_RETURN_CODE=FAIL          
-#TEST_COMMENT="Test commandes inconnues"
+#TEST_RETURN_CODE=FAIL           
+#TEST_COMMENT="Test non hexa"
 #-------
 
-disp bourou sauce
+load filename 1223

@@ -1,6 +1,6 @@
 #-------
 #TEST_RETURN_CODE=FAIL          
-#TEST_COMMENT="Test format plage inccorect"
+#TEST_COMMENT="Test valeur mémoire trop grande"
 #-------
 
-disp mem 0x12547
+load filename 0xffffffffff

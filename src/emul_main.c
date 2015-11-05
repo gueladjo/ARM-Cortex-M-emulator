@@ -21,7 +21,7 @@ int main ( int argc, char *argv[] ) {
     memory->txt = malloc(sizeof(segment));
     memory->data = malloc(sizeof(segment));
     memory->bss = malloc(sizeof(segment));
-    
+    memory->stack = malloc(sizeof(segment));
 
 
     FILE *fp = NULL; /* le flux dans lequel les commande seront lues : stdin (mode shell) ou un fichier */

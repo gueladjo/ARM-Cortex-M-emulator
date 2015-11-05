@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL          
+#TEST_COMMENT="Test adresse trop grande
+#-------
+
+assert word 0xffffffffffffffffffff 0xffe12

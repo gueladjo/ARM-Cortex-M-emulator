@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL
+#TEST_COMMENT="Test valeur non hexa"
+#-------
+
+assert reg r6 bloup

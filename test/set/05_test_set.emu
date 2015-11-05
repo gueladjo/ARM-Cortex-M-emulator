@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL           
+#TEST_COMMENT="Teste valeur trop grande pour taille mémoire"
+#-------
+
+set mem byte 0x5000 152000
