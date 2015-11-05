@@ -493,7 +493,7 @@ int disasmcmd(interpreteur inter, memory mem) {
       endaddr = mem->txt->vaddr + mem->txt->size - 1;
     dico dico[53];
     extract_dico("dico.csv", dico);
-    //disasm(startaddr, endaddr); CHECK THIS
+    disasm(startaddr, endaddr, dico, mem); 
     return 0;
   }
 
@@ -516,7 +516,9 @@ int disasmcmd(interpreteur inter, memory mem) {
       endaddr = mem->txt->vaddr + mem->txt->size - 1;
     else
       endaddr = startaddr+offset;
-    //disasm(startaddr, endaddr); CHECK THIS
+    dico dico[53];
+    extract_dico("dico.csv", dico);
+    disasm(startaddr, endaddr, dico, mem);
     return 0;
   }
   

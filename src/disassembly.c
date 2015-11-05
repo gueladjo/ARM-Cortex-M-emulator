@@ -7,8 +7,8 @@ int is_16bits(byte* header)
   int sig2 = 0xF8000000;
   int sig3 = 0xE8000000;
 
-  if (*header & mask == sig1 || *header & mask == sig2 || *header & mask == sig3) return 1;
-  return 0;  
+  if (*header & mask == sig1 || *header & mask == sig2 || *header & mask == sig3) return 0;
+  return 1;  
 }
 
 int create_mask(unsigned int a, unsigned int b)
@@ -194,7 +194,7 @@ int print_instruction(int binary, dico instruction, byte* header, dico* dictiona
   return 0; 
 }
 
-int read_instruction(byte* header)
+int read_instruction(byte* header, dico* dicoi, memory mem)
 {
   int is_short = is_16bits(header);
   if (is_short) {
@@ -216,6 +216,28 @@ int read_instruction(byte* header)
   
     return 0; 
   }
+}
+
+int disasm(size_t startadress, size_t endadress, dico* dico, memory mem)
+{
+  size_t nb_bytes = endadress - startadress;
+  byte* header = mem->txt->raddr + startadress - mem->txt->vaddr;
+  
+  int i = 0;
+  while(i != nb_bytes) {
+    print("%d :: ", startadress + i);
+    if (is_16bits(header)) {
+      read_instruction(header, dico, mem);
+      i = i + 2;
+      header = header + 2;
+    }
+    else {
+      read_instruction(header, dico, mem);
+      i = i + 4;
+      header = header + 4;     
+    }
+  }
+  return 0;
 }
 
 void extract_dico(char* dico_file, dico* dico) {
@@ -248,3 +270,5 @@ void extract_dico(char* dico_file, dico* dico) {
   }
   return;
 }
+
+
