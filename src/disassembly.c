@@ -322,3 +322,32 @@ void extract_dico(char* dico_file, dico* dico) {
   }
   return;
 }
+
+word ThumbExpandImm(unsigned int i, unsigned int imm3, unsigned int imm8) {
+  word imm12, imm32;
+  imm12 = (i << 11) + (imm3 << 8) + imm8;
+  if (!(imm12 & 0xC00)) {
+    switch(imm12 & 0x300) {
+    case 0:
+      imm32 = imm12;
+      break;
+    case 0x100:
+      imm32 = (imm8 << 16) + imm8;
+      break;
+    case 0x200:
+      imm32 = (imm8 << 24) + (imm8 << 8);
+      break;
+    case 0x300:
+      imm32 = (imm8 << 24) + (imm8 << 16) + (imm8 << 8) + imm8;
+      break;
+    }
+  }
+  else {
+    word temp;
+    word offset;
+    temp = ((imm8 & 0x7F) + 0x80) << 24; //1bcdefgh (see pg A5-116)
+    offset = (i << 4) + (imm3 << 1) + ((imm8 & 0x80) >> 7) - 8; //offset to apply, see i:imm3:a
+    imm32 = temp >> offset;
+  }
+  return imm32;
+}
