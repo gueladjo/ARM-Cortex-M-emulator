@@ -122,5 +122,5 @@ int write_memory_value(size_t addr, byte value, memory mem);
  * @return an int to check errors
  */
 int memory_free(memory mem);
-int read_word(size_t adress, memory mem);
+
 #endif

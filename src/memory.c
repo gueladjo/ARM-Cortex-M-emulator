@@ -18,37 +18,37 @@ memory stack_set(memory mem)
 
 void memory_allocation(memory mem, char* section_name, byte* segdata, size_t size, size_t adress)
 {
-  if (size == 0) return mem;
+  if (size == 0) return;
   if (!strcmp(section_name,".rodata")) {
     WARNING_MSG("RODATA\n");
     mem->rodata->raddr = calloc(size, sizeof(byte));
     mem->rodata->vaddr = adress;
     mem->rodata->size = size;
     memcpy(mem->rodata->raddr, segdata, size);
-    return mem;
+    return;
   }
   if (!strcmp(section_name, ".text")) {
     mem->txt->raddr = calloc(size, sizeof(byte));
     mem->txt->vaddr = adress; 
     mem->txt->size = size;
     memcpy(mem->txt->raddr, segdata, size);
-    return mem;
+    return;
   }
   if (!strcmp(section_name,".data")) {
     mem->data->raddr = calloc(size, sizeof(byte));
     mem->data->vaddr = adress;
     mem->data->size = size;
     memcpy(mem->data->raddr, segdata, size);
-    return mem;
+    return;
   }
   if (!strcmp(section_name, ".bss")) {
     mem->bss->raddr = calloc(size, sizeof(byte));
     mem->bss->vaddr = adress;
     mem->bss->size = size;
     memcpy(mem->bss->raddr, segdata, size);
-    return mem;
+    return;
   }
-  return mem;
+  return;
 }
 
 
@@ -231,10 +231,5 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
   del_scntab( section_table );
   fclose(pf_elf);
   puts("");
-  return 0;
-} 
-
-int read_word(size_t adress, memory mem)
-{
   return 0;
 }
