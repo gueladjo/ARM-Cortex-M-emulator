@@ -298,7 +298,7 @@ void extract_dico(char* dico_file, dico* dico) {
   char token[16];
   if ((pf_dico = fopen(dico_file, "r")) == NULL)
     ERROR_MSG("Cannot open file %s", dico_file);
-  for (i=0;i<9;i++) {
+  for (i=0;i<11;i++) {
     fscanf(pf_dico, "%s", token);
   }
   for (i=0;i<=52;i++) {
@@ -319,6 +319,11 @@ void extract_dico(char* dico_file, dico* dico) {
     fscanf(pf_dico, "%s", token);
     strcpy(dico[i].immediate_index, token);
     fscanf(pf_dico, "%s", token);
+    dico[i].it = atoi(token);
+    fscanf(pf_dico, "%s", token);
+    dico[i].treatImm = atoi(token);
+    fscanf(pf_dico, "%s", token);
+    dico[i].treatReg = atoi(token);
   }
   return;
 }
@@ -350,4 +355,48 @@ word ThumbExpandImm(unsigned int i, unsigned int imm3, unsigned int imm8) {
     imm32 = temp >> offset;
   }
   return imm32;
+}
+
+char* DecodeImmShift(unsigned int imm3, unsigned int imm2, unsigned int type) {
+  char ret[16];
+  char temp[16];
+  unsigned int imm5;
+  imm5 = (imm3 << 2) + imm2;
+  switch(type) {
+  case 0:
+    strcpy(ret, "LSL");
+    sprintf(temp, "%u", imm5);
+    strcat(ret, " #");
+    strcat(ret, temp);
+    break;
+  case 1:
+    strcpy(ret, "LSR");
+    if (!imm5)
+      imm5 = 32;
+    sprintf(temp, "%u", imm5);
+    strcat(ret, " #");
+    strcat(ret, temp);
+    break;
+  case 2:
+    strcpy(ret, "ASR");
+    if (!imm5)
+      imm5 + 32;
+    sprintf(temp, "%u", imm5);
+    strcat(ret, " #");
+    strcat(ret, temp);
+    break;
+  case 3:
+    if (!imm5)
+      strcpy(ret, "RRX");
+    else {
+      strcpy(ret, "ROR");
+      sprintf(temp, "%u", imm5);
+      strcat(ret, " #");
+      strcat(ret, temp);
+    }
+    break;
+  default:
+    ERROR_MSG("Wrong shift type %s", "disasmcmd");
+  }
+  return ret;
 }

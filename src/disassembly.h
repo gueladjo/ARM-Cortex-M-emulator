@@ -18,15 +18,17 @@ typedef struct dico dico;
 
 struct dico
 {
-char id_debug[16];
-char mnemo[16];
-int size; //Size of instruction in bits (16 or 32)
-unsigned int sig;
-unsigned int mask;
-int nb_op; //Number of operands
-char registers_index[20];
-char immediate_index[20];
-int it;
+  char id_debug[16];
+  char mnemo[16];
+  int size; //Size of instruction in bits (16 or 32)
+  unsigned int sig;
+  unsigned int mask;
+  int nb_op; //Number of operands
+  char registers_index[20];
+  char immediate_index[20];
+  int it;
+  int treatImm;
+  int treatReg;
 };
 
 int is_16bits(byte* header);
@@ -39,5 +41,6 @@ void extract_dico(char* dico_file, dico* dico);
 int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem);
 int it_condition(unsigned int firstcond, char* condition);
 word ThumbExpandImm(unsigned int i, unsigned int imm3, unsigned int imm8);
+char* DecodeImmShift(unsigned int imm3, unsigned int imm2, unsigned int type);
 
 #endif

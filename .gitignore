@@ -3,3 +3,4 @@ emul-arm
 *.out
 TAGS
 *.ods
+.~lock.dico.ods#
