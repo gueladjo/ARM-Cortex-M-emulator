@@ -32,15 +32,15 @@ struct dico
 };
 
 int is_16bits(byte* header);
-int it_condition(unsigned int firstcond, char* condition);
-int create_mask(unsigned int a, unsigned int b);
-int search_instruction(int binary, dico* dictionary, dico* instruction, int is_short);
-int print_instruction(int binary, dico *instruction, byte* header, dico* dictionary, memory mem);
-int read_instruction(byte* header, dico* dico, memory mem);
+int it_condition(unsigned int it_state, char* condition);
+int it_XYZ(unsigned int it_state, char* XYZ);
+int search_instruction(word binary, dico* dictionary, dico* instruction, int is_short);
+int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* it_state, int print);
+word create_mask(unsigned int a, unsigned int b);
 void extract_dico(char* dico_file, dico* dico);
 int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem);
 int it_condition(unsigned int firstcond, char* condition);
 word ThumbExpandImm(unsigned int i, unsigned int imm3, unsigned int imm8);
-char* DecodeImmShift(unsigned int imm3, unsigned int imm2, unsigned int type);
+char* DecodeImmShift(unsigned int imm3, unsigned int imm2, unsigned int type, char* ret);
 
 #endif

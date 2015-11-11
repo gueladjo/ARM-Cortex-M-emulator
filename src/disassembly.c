@@ -10,42 +10,54 @@ int is_16bits(byte* header)
   return 1;  
 }
 
-int it_condition(unsigned int firstcond, char* condition)
-{
-  if (firstcond == 0) strcpy(condition, "EQ");
-  if (firstcond == 1) strcpy(condition, "NE");
-  if (firstcond == 2) strcpy(condition, "HS");
-  if (firstcond == 3) strcpy(condition, "LO");
-  if (firstcond == 4) strcpy(condition, "MI");
-  if (firstcond == 5) strcpy(condition, "PL");
-  if (firstcond == 6) strcpy(condition, "VS");
-  if (firstcond == 7) strcpy(condition, "VC");
-  if (firstcond == 8) strcpy(condition, "HI");
-  if (firstcond == 9) strcpy(condition, "LS");
-  if (firstcond == 10) strcpy(condition, "GE");
-  if (firstcond == 11) strcpy(condition, "LT");
-  if (firstcond == 12) strcpy(condition, "GT");
-  if (firstcond == 13) strcpy(condition, "LE");
-  if (firstcond == 14) strcpy(condition, "AL");
+int it_condition(unsigned int it_state, char* condition) {
+  int cond;
+  cond = it_state >> 4;
+  if (cond == 0) strcpy(condition, "EQ");
+  if (cond == 1) strcpy(condition, "NE");
+  if (cond == 2) strcpy(condition, "HS");
+  if (cond == 3) strcpy(condition, "LO");
+  if (cond == 4) strcpy(condition, "MI");
+  if (cond == 5) strcpy(condition, "PL");
+  if (cond == 6) strcpy(condition, "VS");
+  if (cond == 7) strcpy(condition, "VC");
+  if (cond == 8) strcpy(condition, "HI");
+  if (cond == 9) strcpy(condition, "LS");
+  if (cond == 10) strcpy(condition, "GE");
+  if (cond == 11) strcpy(condition, "LT");
+  if (cond == 12) strcpy(condition, "GT");
+  if (cond == 13) strcpy(condition, "LE");
+  if (cond == 14) strcpy(condition, "AL");
 
   return 0;
 }
 
-int create_mask(unsigned int a, unsigned int b)
-{
-  unsigned r = 0;
-  for (unsigned i = a; i <= b; i++)
-    r = r | 1 << i;
+int it_XYZ(unsigned int it_state, char* XYZ) {
+  unsigned int mask = it_state & 0xF;
+  unsigned int firstcond = (it_state & 0x10) >> 4;
+  
+  if (mask == 8) strcpy(XYZ, "");
+  if (mask == (4 + (firstcond << 3))) strcpy(XYZ, "T");
+  if (mask == (4 + (~firstcond << 3))) strcpy(XYZ, "E");
+  if (mask == (2 + (firstcond << 3) + (firstcond << 2))) strcpy(XYZ, "TT");
+  if (mask == (2 + (~firstcond << 3) + (firstcond << 2))) strcpy(XYZ, "ET");
+  if (mask == (2 + (firstcond << 3) + (~firstcond << 2))) strcpy(XYZ, "TE");
+  if (mask == (2 + (~firstcond << 3) + (~firstcond << 2))) strcpy(XYZ, "EE");
+  if (mask == (1 + (firstcond << 3) + (firstcond << 2) + (firstcond << 1))) strcpy(XYZ, "TTT");
+  if (mask == (1 + (~firstcond << 3) + (firstcond << 2) + (firstcond << 1))) strcpy(XYZ, "ETT");
+  if (mask == (1 + (firstcond << 3) + (~firstcond << 2) + (firstcond << 1))) strcpy(XYZ, "TET");
+  if (mask == (1 + (~firstcond << 3) + (~firstcond << 2) + (firstcond << 1))) strcpy(XYZ, "EET");
+  if (mask == (1 + (firstcond << 3) + (firstcond << 2) + (~firstcond << 1))) strcpy(XYZ, "TTE");
+  if (mask == (1 + (~firstcond << 3) + (firstcond << 2) + (~firstcond << 1))) strcpy(XYZ, "ETE");
+  if (mask == (1 + (firstcond << 3) + (~firstcond << 2) + (~firstcond << 1))) strcpy(XYZ, "TEE");
+  if (mask == (1 + (~firstcond << 3) + (~firstcond << 2) + (~firstcond << 1))) strcpy(XYZ, "EEE");
 
-  return r;
+  return 0;
 }
 
-int search_instruction(int binary, dico* dictionary, dico* instruction, int is_short)
+int search_instruction(word binary, dico* dictionary, dico* instruction, int is_short)
 {
   int i =0, dico_size = 53;
-  if (is_short) {
-    int16_t short_binary = binary;
-  }
   for (i = 0; i < dico_size; i++) {
     if ((binary & dictionary[i].mask) == dictionary[i].sig) {
       *instruction = dictionary[i];
@@ -56,246 +68,138 @@ int search_instruction(int binary, dico* dictionary, dico* instruction, int is_s
   return 1;
 }
 
-int print_instruction(int binary, dico* instruction, byte* header, dico* dictionary, memory mem)
-{ 
-  byte* iterator;
-  int i = 0; 
-  dico* temp;
-  temp = malloc(sizeof(*temp));
-  printf("%x       ", binary);
-  if (instruction->it == 1) {
-    char condition[3];
-    condition[0] = '\0';
-    while((iterator = header - 2) != mem->txt->raddr && i!=4) {
-      int is_short = is_16bits(iterator);
-      int32_t bin;
-      if (is_short) {
-        memcpy(&bin, header, 2);
-      }
+int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* it_state, int print) {
+  if (instruction->it == 3) { //If IT instruction
+    word mask;
+    int temp;
+    unsigned int start, end;
+    sscanf(instruction->immediate_index, "%u-%u", &end, &start);
+    mask = create_mask(start, end);
+    *it_state = binary & mask;
+    temp = *it_state;
+    *in_it = 5; //N+1 instructions under IT
+    while ((temp & 1) != 1) {
+      *(in_it)--;
+      temp = temp >> 1;
+    }
+    if(print) {
+      char XYZ[4];
+      char condition[3];
+      it_XYZ(*it_state, XYZ);
+      it_condition(*it_state, condition);
+      printf("IT%s %s\n", XYZ, condition);
+    }
+    return 0;
+  }
+  
+  if (print) { //If we display instruction
+    if (*it_state <= 0) { //If not in IT block
       
-      else {
-        memcpy(&bin, header, 4);
-      }
-
-      if (search_instruction(bin, dictionary, temp, is_16bits(iterator))) {
-        i++;
-        if (temp->sig == 0xBF00) {
-	  int firstcond = (0x0010 & bin) >> 4;
-	  int maskit = bin & 0x000F;
-	  int j = 0;
-          if ((maskit & 1) == 1) j = 4;	        
-          else if ((maskit & (1 << 1)) == 1) j = 3;      
-          else if ((maskit & (1 << 2)) == 1) j = 2;
-          else if ((maskit & (1 << 3)) == 1) j = 1;
-
-	  if (j >= i) {	    
-            if (((maskit & (1 << (5 - i))) == (firstcond & 1)) || j == i)
-	      it_condition(firstcond, condition);
-	    else {
-	      if (firstcond == 14) it_condition(firstcond, condition);
-	      else if (firstcond % 2 == 0) it_condition(firstcond + 1, condition);
-	      else if (firstcond % 2 == 1) it_condition(firstcond - 1, condition);
-	    }	        
+      if (instruction->it == 0 || instruction->it == 1) {
+	char* token;
+	unsigned int start, end, var;
+	word mask;
+	printf("%s ", instruction->mnemo);
+	
+	if (instruction->registers_index != 'N') {
+	  switch (instruction->treatReg) { //Treatment on reg
+	    
+	  case 0:
+	    token = strtok(instruction->registers_index, ":");
+	    do {
+	      sscanf(token, "%u-%u", &end, &start);
+	      mask = create_mask(start, end);
+	      var = (mask & binary) >> start;
+	      printf("r%u", var);
+	      if ((token = strtok(NULL, ":")) != NULL) printf(", ");
+	    } while (token != NULL);
+	    break;
+	  case 1:
+	    token = strtok(instruction->registers_index, ":");
+	    sscanf(token, "%u-%u", &end, &start);
+	    mask = create_mask(start, end);
+	    var = (mask & binary) >> start;
+	    var =+ (binary & 0x80) >> 4;
+	    printf("r%u, ", var);
+	    token = strtok(NULL, ":");
+	    sscanf(token, "%u-%u", &end, &start);
+	    mask = create_mask(start, end);
+	    var = (mask & binary) >> start;
+	    printf("r%u", var);
 	  }
+	}
+
+	if (instruction->immediate_index != 'N') {
+	  printf("imm ");
 	}
       }
     }
-    printf("%s%s ", instruction->mnemo, condition);
-    char* regs = instruction->registers_index;
-    if (*regs != 'N') {
-      char* token = strtok(regs, ":");
-      unsigned int start, end, reg;
-      do {
-        sscanf(token, "%u-%u", &start, &end);
-        unsigned int rmask = create_mask(start, end);
-        reg = rmask & binary;
-	reg = reg >> start;
-        printf("r%u", reg);
-	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL));
-    }
-  
-    char* imms = instruction->immediate_index;
-    if (*imms != 'N') {
-      printf(", ");
-      char* token = strtok(imms, ":");
-      unsigned int start, end, imm;
-      do {
-        sscanf(token, "%u-%u", &start, &end);
-        unsigned int imask = create_mask(start, end);
-        imm = imask & binary;
-	imm = imm >> start;
-        printf("#%u", imm);
-	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL));
-    }
   }
-
-  else if (instruction->it == 0) {
-    char condition[3];
-    condition[0] = '\0';
-    while((iterator = header - 2) != mem->txt->raddr && i!=4) {
-      int is_short = is_16bits(iterator);
-      int32_t bin;
-      if (is_short) {
-        memcpy(&bin, header, 2);
-      }
-
-      else {
-        memcpy(&bin, header, 4);
-      }
-
-      if (search_instruction(bin, dictionary, temp, is_16bits(iterator))) {
-        i++;
-        if (temp->sig == 0xBF00) {
-	  int firstcond = (0x0010 & bin) >> 4;
-	  int maskit = bin & 0x000F;
-	  int j = 0;
-          if ((maskit & 1) == 1) j = 4;	        
-          else if ((maskit & (1 << 1)) == 1) j = 3;      
-          else if ((maskit & (1 << 2)) == 1) j = 2;
-          else if ((maskit & (1 << 3)) == 1) j = 1;
-	  
-	  if (j >= i) {
-            if (((maskit & (1 << (5 - i))) == (firstcond & 1)) || j == i)
-	      it_condition(firstcond, condition);
-	    else {
-	      if (firstcond == 14) it_condition(firstcond, condition);
-	      else if (firstcond % 2 == 0) it_condition(firstcond + 1, condition);
-	      else if (firstcond % 2 == 1) it_condition(firstcond - 1, condition);
-            }
-          }     
-        }
-      }
-    }
-    
-    
-    if (condition[0] == '\0') printf("%sS ", instruction->mnemo);
-    else printf("%s%s", instruction->mnemo, condition);
-    char* regs = instruction->registers_index;
-    if (*regs != 'N') {
-      char* token = strtok(regs, ":");
-      unsigned int start, end, reg;
-      do {
-        sscanf(token, "%u-%u", &start, &end);
-        unsigned int rmask = create_mask(start, end);
-        reg = rmask & binary;
-	reg = reg >> start;
-        printf("r%u", reg);
-	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL));
-    }
-  
-    char* imms = instruction->immediate_index;
-    if (*imms != 'N') {
-      printf(", ");
-      char* token = strtok(imms, ":");
-      unsigned int start, end, imm;
-      do {
-        sscanf(token, "%u-%u", &start, &end);
-        unsigned int imask = create_mask(start, end);
-        imm = imask & binary;
-	imm = imm >> start;
-        printf("#%u", imm);
-	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL));
-    }
- 
-  }
-
-  else {
-    printf("%sS ", instruction->mnemo);
-    char* regs = instruction->registers_index;
-    if (*regs != 'N') {
-      char* token = strtok(regs, ":");
-      unsigned int start, end, reg;
-      do {
-        sscanf(token, "%u-%u", &start, &end);
-        unsigned int rmask = create_mask(start, end);
-        reg = rmask & binary;
-	reg = reg >> start;
-        printf("r%u", reg);
-	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL));
-    }
-  
-    char* imms = instruction->immediate_index;
-    if (*imms != 'N') {
-      printf(", ");
-      char* token = strtok(imms, ":");
-      unsigned int start, end, imm;
-      do {
-        sscanf(token, "%u-%u", &start, &end);
-        unsigned int imask = create_mask(start, end);
-        imm = imask & binary;
-	imm = imm >> start;
-        printf("#%u", imm);
-	if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-      } while ((token != NULL));
-    }
- 
-  }
-
-  return 0; 
+  printf("\n");
+  return 0;
 }
 
-int read_instruction(byte* header, dico* dictionary, memory mem)
+word create_mask(unsigned int a, unsigned int b)
 {
-  int is_short = is_16bits(header+1);
+  word r = 0;
   int i;
-  if (is_short) {
-    uint16_t binary;
-    memcpy(&binary, header, 2);
-    dico *instruction;
-    search_instruction(binary, dictionary, instruction, is_short);
-    print_instruction(binary, instruction, header, dictionary, mem);
-  
-    return 0; 
-  }
-
-  else {
-    word binary = 0;
-    memcpy(&binary, header, 2);
-    binary = binary << 16;
-    word temp = 0;
-    memcpy(&temp, header+2, 2);
-    binary = binary + temp;
-    dico *instruction;
-    instruction = malloc(sizeof(*instruction));
-    search_instruction(binary, dictionary, instruction, is_short);
-    print_instruction(binary, instruction, header, dictionary, mem);
-  
-    return 0; 
-  }
+  for ( i = a; i <= b; i++)
+    r = r | 1 << i;
+  return r;
 }
-
-
-int disasm(size_t startadress, size_t endadress, dico* dico, memory mem)
+  
+int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem)
 {
-  size_t nb_bytes = endadress - startadress;
+  size_t nb_bytes = (endadress - mem->txt->vaddr);
   byte* header;
-  header =  mem->txt->raddr + startadress - mem->txt->vaddr;
   int i = 0;
-  while(i <= nb_bytes) {
-    printf("%lu :: ", startadress + i);
-    if (is_16bits(header)) {
-      read_instruction(header, dico, mem);
+  word binary;
+  dico* instruction;
+  int is_short;
+  int* in_it = malloc(sizeof(*in_it)); //Between 1 and 4 : in IT block
+  unsigned int* it_state = malloc(sizeof(*it_state)); //condition + mask
+  int print;
+
+  *it_state = 0;
+  instruction = malloc(sizeof(*instruction));
+  header =  mem->txt->raddr;
+  while (i <= nb_bytes) {
+    if(i >= (startadress - mem->txt->vaddr) && i <= (endadress - mem->txt->vaddr)) {
+      print = 1;
+      printf("%x :: ", startadress + i);
+    }
+    else {
+      print = 0;
+    }
+    is_short = is_16bits(header+1);
+    binary = 0;
+    
+    if (is_short) {
+      memcpy(&binary, header, 2);
+      search_instruction(binary, dictionary, instruction, is_short);
+      decode_instruction(binary, instruction, in_it, it_state, print);
       i = i + 2;
       header = header + 2;
     }
     else {
-      read_instruction(header, dico, mem);
+      word temp = 0;
+      memcpy(&binary, header, 2);
+      memcpy(&temp, header+2, 2);
+      binary = (binary << 16) + temp;
+      search_instruction(binary, dictionary, instruction, is_short);
+      decode_instruction(binary, instruction, in_it, it_state, print);
       i = i + 4;
       header = header + 4;     
     }
   }
+  free(instruction);
   return 0;
 }
 
 void extract_dico(char* dico_file, dico* dico) {
   int i;
   FILE* pf_dico;
-  char token[16];
+  char token[32];
   if ((pf_dico = fopen(dico_file, "r")) == NULL)
     ERROR_MSG("Cannot open file %s", dico_file);
   for (i=0;i<11;i++) {
@@ -325,6 +229,7 @@ void extract_dico(char* dico_file, dico* dico) {
     fscanf(pf_dico, "%s", token);
     dico[i].treatReg = atoi(token);
   }
+  fclose(pf_dico);
   return;
 }
 
@@ -357,8 +262,7 @@ word ThumbExpandImm(unsigned int i, unsigned int imm3, unsigned int imm8) {
   return imm32;
 }
 
-char* DecodeImmShift(unsigned int imm3, unsigned int imm2, unsigned int type) {
-  char ret[16];
+ char* DecodeImmShift(unsigned int imm3, unsigned int imm2, unsigned int type, char* ret) {
   char temp[16];
   unsigned int imm5;
   imm5 = (imm3 << 2) + imm2;
@@ -380,7 +284,7 @@ char* DecodeImmShift(unsigned int imm3, unsigned int imm2, unsigned int type) {
   case 2:
     strcpy(ret, "ASR");
     if (!imm5)
-      imm5 + 32;
+      imm5 = 32;
     sprintf(temp, "%u", imm5);
     strcat(ret, " #");
     strcat(ret, temp);
