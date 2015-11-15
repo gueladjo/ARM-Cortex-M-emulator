@@ -14,6 +14,8 @@
 #include <inttypes.h>
 #include <string.h>
 
+#define DICO_SIZE 53
+
 typedef struct dico dico;
 
 struct dico
@@ -24,8 +26,8 @@ struct dico
   unsigned int sig;
   unsigned int mask;
   int nb_op; //Number of operands
-  char registers_index[20];
-  char immediate_index[20];
+  char registers_index[32];
+  char immediate_index[32];
   int it;
   int treatImm;
   int treatReg;
@@ -41,6 +43,8 @@ void extract_dico(char* dico_file, dico* dico);
 int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem);
 int it_condition(unsigned int firstcond, char* condition);
 word ThumbExpandImm(unsigned int i, unsigned int imm3, unsigned int imm8);
-char* DecodeImmShift(unsigned int imm3, unsigned int imm2, unsigned int type, char* ret);
+void DecodeImmShift(unsigned int imm3, unsigned int imm2, unsigned int type, char* ret);
+word SignExtend16(unsigned int imm, unsigned int size);
+word SignExtend32(unsigned int s, unsigned int j1, unsigned int j2, unsigned int imm10, unsigned int imm11);
 
 #endif

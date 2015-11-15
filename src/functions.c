@@ -516,7 +516,7 @@ int disasmcmd(interpreteur inter, memory mem) {
       endaddr = mem->txt->vaddr + mem->txt->size - 1;
     else
       endaddr = startaddr+offset;
-    dico dico[53];
+    dico dico[DICO_SIZE];
     extract_dico("dico.csv", dico);
     disasm(startaddr, endaddr, dico, mem);
     return 0;

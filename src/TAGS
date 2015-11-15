@@ -3,13 +3,17 @@ bits.c,74
 unsigned int get_host_endianness(20,380
 byte * __flip_endianness(36,978
 
-disassembly.c,164
+disassembly.c,266
 int is_16bits(3,28
-int create_mask(14,285
-int search_instruction(23,434
-int print_instruction(39,800
-int read_instruction(198,5285
-void extract_dico(222,5871
+int it_condition(13,216
+int it_XYZ(35,984
+int search_instruction(58,2397
+int decode_instruction(71,2704
+word create_mask(157,5109
+int disasm(166,5257
+void extract_dico(214,6651
+word ThumbExpandImm(251,7787
+ char* DecodeImmShift(280,8549
 
 elf.c,735
 byte * __Elf_Rel_flip_endianness(31,737
@@ -48,15 +52,14 @@ int  acquire_line(87,2620
 void usage_ERROR_MSG(133,4100
 int exitcmd(142,4432
 
-memory.c,229
+memory.c,205
 memory stack_set(9,134
 void memory_allocation(19,407
-byte read_memory_value(55,1479
-int write_memory_value(84,2647
-int memory_free(118,3888
-void print_section_raw_content(149,4570
-int load 167,5193
-int read_word(237,7694
+byte read_memory_value(55,1455
+int write_memory_value(84,2623
+int memory_free(118,3864
+void print_section_raw_content(149,4546
+int load 167,5169
 
 parsing.c,179
 char* get_next_token(13,347
@@ -91,19 +94,21 @@ bits.h,153
 #define GET_BIT(29,552
 #define GET_BITS(31,605
 
-disassembly.h,326
+disassembly.h,390
 #define _DISASSEMBLY8,130
 typedef struct dico dico;17,283
 struct dico19,312
-char id_debug[id_debug21,328
-char mnemo[mnemo22,348
-int size;23,365
-unsigned int sig;24,417
-unsigned int mask;25,436
-int nb_op;26,456
-char registers_index[registers_index27,489
-char immediate_index[immediate_index28,516
-int it;29,543
+  char id_debug[id_debug21,328
+  char mnemo[mnemo22,350
+  int size;23,369
+  unsigned int sig;24,423
+  unsigned int mask;25,444
+  int nb_op;26,466
+  char registers_index[registers_index27,501
+  char immediate_index[immediate_index28,530
+  int it;29,559
+  int treatImm;30,570
+  int treatReg;31,587
 
 elf.h,6629
 #define _ELF_H_12,200
