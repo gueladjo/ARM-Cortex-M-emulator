@@ -228,7 +228,10 @@ int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* 
 	  mask = create_mask(start, end);
 	  imm5 = (mask & binary) >> start;
 	  var = SignExtend32(imm1, imm2, imm3, imm4, imm5);
-	  printf("%u", var);
+	  printf("#%u", var);
+	  break;
+
+	case 5:
 	  break;
 	}
       }
