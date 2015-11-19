@@ -36,19 +36,19 @@ int it_XYZ(unsigned int it_state, char* XYZ) {
   
   if (mask == 8) strcpy(XYZ, "");
   if (mask == (4 + (firstcond << 3))) strcpy(XYZ, "T");
-  if (mask == (4 + (~firstcond << 3))) strcpy(XYZ, "E");
+  if (mask == (4 + ((~firstcond &  1) << 3))) strcpy(XYZ, "E");
   if (mask == (2 + (firstcond << 3) + (firstcond << 2))) strcpy(XYZ, "TT");
-  if (mask == (2 + (~firstcond << 3) + (firstcond << 2))) strcpy(XYZ, "ET");
-  if (mask == (2 + (firstcond << 3) + (~firstcond << 2))) strcpy(XYZ, "TE");
-  if (mask == (2 + (~firstcond << 3) + (~firstcond << 2))) strcpy(XYZ, "EE");
+  if (mask == (2 + ((~firstcond &  1) << 3) + (firstcond << 2))) strcpy(XYZ, "ET");
+  if (mask == (2 + (firstcond << 3) + ((~firstcond &  1) << 2))) strcpy(XYZ, "TE");
+  if (mask == (2 + ((~firstcond &  1) << 3) + ((~firstcond &  1) << 2))) strcpy(XYZ, "EE");
   if (mask == (1 + (firstcond << 3) + (firstcond << 2) + (firstcond << 1))) strcpy(XYZ, "TTT");
-  if (mask == (1 + (~firstcond << 3) + (firstcond << 2) + (firstcond << 1))) strcpy(XYZ, "ETT");
-  if (mask == (1 + (firstcond << 3) + (~firstcond << 2) + (firstcond << 1))) strcpy(XYZ, "TET");
-  if (mask == (1 + (~firstcond << 3) + (~firstcond << 2) + (firstcond << 1))) strcpy(XYZ, "EET");
-  if (mask == (1 + (firstcond << 3) + (firstcond << 2) + (~firstcond << 1))) strcpy(XYZ, "TTE");
-  if (mask == (1 + (~firstcond << 3) + (firstcond << 2) + (~firstcond << 1))) strcpy(XYZ, "ETE");
-  if (mask == (1 + (firstcond << 3) + (~firstcond << 2) + (~firstcond << 1))) strcpy(XYZ, "TEE");
-  if (mask == (1 + (~firstcond << 3) + (~firstcond << 2) + (~firstcond << 1))) strcpy(XYZ, "EEE");
+  if (mask == (1 + ((~firstcond &  1) << 3) + (firstcond << 2) + (firstcond << 1))) strcpy(XYZ, "ETT");
+  if (mask == (1 + (firstcond << 3) + ((~firstcond &  1) << 2) + (firstcond << 1))) strcpy(XYZ, "TET");
+  if (mask == (1 + ((~firstcond &  1) << 3) + ((~firstcond &  1) << 2) + (firstcond << 1))) strcpy(XYZ, "EET");
+  if (mask == (1 + (firstcond << 3) + (firstcond << 2) + ((~firstcond &  1) << 1))) strcpy(XYZ, "TTE");
+  if (mask == (1 + ((~firstcond &  1) << 3) + (firstcond << 2) + ((~firstcond &  1) << 1))) strcpy(XYZ, "ETE");
+  if (mask == (1 + (firstcond << 3) + ((~firstcond &  1) << 2) + ((~firstcond &  1) << 1))) strcpy(XYZ, "TEE");
+  if (mask == (1 + ((~firstcond &  1) << 3) + ((~firstcond &  1) << 2) + ((~firstcond &  1) << 1))) strcpy(XYZ, "EEE");
 
   return 0;
 }
@@ -71,10 +71,10 @@ int search_instruction(word binary, dico* dictionary, dico* instruction, int is_
 }
 
 int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* it_state, int print) {
+  unsigned int start, end;
+  word mask;
   if (instruction->it == 3) { //If IT instruction
-    word mask;
     int temp;
-    unsigned int start, end;
     sscanf(instruction->immediate_index, "%u-%u", &end, &start);
     mask = create_mask(start, end);
     *it_state = binary & mask;
@@ -95,145 +95,160 @@ int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* 
   }
   
   if (print) { //If we display instruction
+    char* token;
+    unsigned int var;
+    printf("%s", instruction->mnemo);
+
+    if (instruction->it == 1 && *in_it <= 0) //If setflags and not in IT block
+      printf("S");
+
+    if(*in_it > 0) { //If we are in an IT block
+      int temp; 
+      char condition[3];
+      temp = (*it_state & 0xF) << 1;
+      it_condition((*it_state >> 4), condition);
+      printf("%s", condition);
+      *it_state = (*it_state & 0xE0) + temp;
+    }
+
+    if (instruction->it == 2) { //If never in IT
+      char condition[3];
+      token = strtok(instruction->immediate_index, ":");
+      sscanf(token, "%u-%u", &end, &start);
+      mask = create_mask(start, end);
+      var = (mask & binary) >> start;
+      it_condition(var, condition);
+      printf("%s", condition);
+    }
+    printf(" ");
     
-    if (*it_state <= 0) { //If not in IT block  
-      char* token;
-      unsigned int start, end, var;
-      word mask;
-      printf("%s", instruction->mnemo);
       
-      if(instruction->it == 2) { //If never in IT
-	char condition[3];
-	token = strtok(instruction->immediate_index, ":");
-	sscanf(token, "%u-%u", &end, &start);
-	mask = create_mask(start, end);
-	var = (mask & binary) >> start;
-	it_condition(var, condition);
-	printf("%s", condition);
-      }
-      printf(" ");
-      
-      if (strcmp(instruction->registers_index, "N")) {
-	switch (instruction->treatReg) { //Treatment on reg
+    if (strcmp(instruction->registers_index, "N")) {
+      switch (instruction->treatReg) { //Treatment on reg
 	    
-	case 0:
-	  token = strtok(instruction->registers_index, ":");
-	  do {
-	    sscanf(token, "%u-%u", &end, &start);
-	    mask = create_mask(start, end);
-	    var = (mask & binary) >> start;
-	    printf("r%u", var);
-	    if ((token = strtok(NULL, ":")) != NULL) printf(", ");
-	  } while (token != NULL);
-	  break;
-	  
-	case 1:
-	  token = strtok(instruction->registers_index, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  var = (mask & binary) >> start;
-	  var += (binary & 0x80) >> 4;
-	  printf("r%u, ", var);
-	  token = strtok(NULL, ":");
+      case 0:
+	token = strtok(instruction->registers_index, ":");
+	do {
 	  sscanf(token, "%u-%u", &end, &start);
 	  mask = create_mask(start, end);
 	  var = (mask & binary) >> start;
 	  printf("r%u", var);
-	}
+	  if ((token = strtok(NULL, ":")) != NULL) printf(", ");
+	} while (token != NULL);
+	break;
+	  
+      case 1:
+	token = strtok(instruction->registers_index, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	var = (mask & binary) >> start;
+	var += (binary & 0x80) >> 4;
+	printf("r%u, ", var);
+	token = strtok(NULL, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	var = (mask & binary) >> start;
+	printf("r%u", var);
       }
+    }
 
-      if (strcmp(instruction->immediate_index, "N")) {
-	unsigned int imm1, imm2, imm3, imm4, imm5;
-	switch (instruction->treatImm) {
-	case 0: //If no treatment : concat immediate
-	  var = 0;
-	  word temp;
-	  token = strtok(instruction->immediate_index, ":");
-	  do {
-	    sscanf(token, "%u-%u", &end, &start);
-	    var = var << (end-start+1);
-	    mask = create_mask(start, end);
-	    temp = (mask & binary) >> start;
-	    var += temp;
-	  } while ((token = strtok(NULL, ":")) != NULL);
-	  printf(", #%u", var);
-	  break;
+    if (strcmp(instruction->immediate_index, "N")) {
+      unsigned int imm1, imm2, imm3, imm4, imm5;
+      switch (instruction->treatImm) {
+      case 0: //If no treatment : concat immediate
+	var = 0;
+	word temp;
+	token = strtok(instruction->immediate_index, ":");
+	do {
+	  sscanf(token, "%u-%u", &end, &start);
+	  var = var << (end-start+1);
+	  mask = create_mask(start, end);
+	  temp = (mask & binary) >> start;
+	  var += temp;
+	} while ((token = strtok(NULL, ":")) != NULL);
+	printf(", #%u", var);
+	break;
 	  
-	case 1: //If ThumbExpandImm
-	  token = strtok(instruction->immediate_index, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm1 = (mask & binary) >> start;
-	  token = strtok(NULL, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm2 = (mask & binary) >> start;
-	  token = strtok(NULL, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm3 = (mask & binary) >> start;
-	  var = ThumbExpandImm(imm1, imm2, imm3);
-	  printf(", #%u", var);
-	  break;
+      case 1: //If ThumbExpandImm
+	token = strtok(instruction->immediate_index, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm1 = (mask & binary) >> start;
+	token = strtok(NULL, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm2 = (mask & binary) >> start;
+	token = strtok(NULL, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm3 = (mask & binary) >> start;
+	var = ThumbExpandImm(imm1, imm2, imm3);
+	printf(", #%u", var);
+	break;
 	  
-	case 2: ; //If DecodeImmShift
-	  char ret[16];
+      case 2: ; //If DecodeImmShift
+	char ret[16];
+	token = strtok(instruction->immediate_index, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm1 = (mask & binary) >> start;
+	token = strtok(NULL, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm2 = (mask & binary) >> start;
+	token = strtok(NULL, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm3 = (mask & binary) >> start;
+	DecodeImmShift(imm1, imm2, imm3, ret);
+	printf(", %s", ret);
+	break;
+
+      case 3: //If SignExtend16
+	if (instruction->it == 2)
+	  token = strtok(NULL, ":");
+	else
 	  token = strtok(instruction->immediate_index, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm1 = (mask & binary) >> start;
-	  token = strtok(NULL, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm2 = (mask & binary) >> start;
-	  token = strtok(NULL, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm3 = (mask & binary) >> start;
-	  DecodeImmShift(imm1, imm2, imm3, ret);
-	  printf(", %s", ret);
-	  break;
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm1 = (mask & binary) >> start;
+	var = SignExtend16(imm1, end-start+1);
+	printf("%d", (int)var);
+	break;
 
-	case 3: //If SignExtend16
-	  if (instruction->it == 2)
-	    token = strtok(NULL, ":");
-	  else
-	    token = strtok(instruction->immediate_index, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm1 = (mask & binary) >> start;
-	  var = SignExtend16(imm1, end-start+1);
-	  printf("%u", var);
-	  break;
+      case 4: //If SignExtend32
+	token = strtok(instruction->immediate_index, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm1 = (mask & binary) >> start;
+	token = strtok(NULL, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm2 = (mask & binary) >> start;
+	token = strtok(NULL, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm3 = (mask & binary) >> start;
+	token = strtok(NULL, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm4 = (mask & binary) >> start;
+	token = strtok(NULL, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm5 = (mask & binary) >> start;
+	var = SignExtend32(imm1, imm2, imm3, imm4, imm5);
+	printf("#%d", (int)var);
+	break;
 
-	case 4: //If SignExtend32
-	  token = strtok(instruction->immediate_index, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm1 = (mask & binary) >> start;
-	  token = strtok(NULL, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm2 = (mask & binary) >> start;
-	  token = strtok(NULL, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm3 = (mask & binary) >> start;
-	  token = strtok(NULL, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm4 = (mask & binary) >> start;
-	  token = strtok(NULL, ":");
-	  sscanf(token, "%u-%u", &end, &start);
-	  mask = create_mask(start, end);
-	  imm5 = (mask & binary) >> start;
-	  var = SignExtend32(imm1, imm2, imm3, imm4, imm5);
-	  printf("#%u", var);
-	  break;
-
-	case 5:
-	  break;
-	}
+      case 5:
+	token = strtok(instruction->immediate_index, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	imm1 = (mask & binary) >> start;
+	imm1 = imm1 << 2;
+	printf(", #%u", imm1);
+	break;
       }
     }
   }
@@ -263,6 +278,7 @@ int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem)
   int print;
 
   *it_state = 0;
+  *in_it = 0;
   instruction = malloc(sizeof(*instruction));
   header =  mem->txt->raddr;
   while (i <= nb_bytes) {
@@ -293,6 +309,7 @@ int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem)
       i = i + 4;
       header = header + 4;     
     }
+    (*in_it)--;
   }
   free(instruction);
   return 0;
@@ -433,3 +450,4 @@ word SignExtend32(unsigned int s, unsigned int j1, unsigned int j2, unsigned int
     ret = ret + (s << i);
   return ret;
 }
+

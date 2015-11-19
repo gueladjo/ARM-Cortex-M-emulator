@@ -1,3 +1,0 @@
-load boucle.o
-disasm 0x3000:0x4000
-exit
