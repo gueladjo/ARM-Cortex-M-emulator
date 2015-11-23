@@ -3,17 +3,19 @@ bits.c,74
 unsigned int get_host_endianness(20,380
 byte * __flip_endianness(36,978
 
-disassembly.c,266
+disassembly.c,325
 int is_16bits(3,28
 int it_condition(13,216
-int it_XYZ(35,984
-int search_instruction(58,2397
-int decode_instruction(71,2704
-word create_mask(157,5109
-int disasm(166,5257
-void extract_dico(214,6651
-word ThumbExpandImm(251,7787
- char* DecodeImmShift(280,8549
+int it_XYZ(33,942
+int search_instruction(56,2474
+int decode_instruction(73,2922
+word create_mask(259,8463
+int disasm(268,8611
+void extract_dico(318,10038
+word ThumbExpandImm(355,11174
+void DecodeImmShift(384,11936
+word SignExtend16(427,12850
+word SignExtend32(438,13080
 
 elf.c,735
 byte * __Elf_Rel_flip_endianness(31,737
@@ -35,22 +37,25 @@ int elf_load_symtab(782,22911
 emul_main.c,17
 int main 12,162
 
-functions.c,154
-int loadcmd(7,118
-int debugcmd(34,773
-int resumecmd(61,1397
-int dispcmd(87,2009
-int setcmd(194,5189
-int assertcmd(322,8797
-int disasmcmd(455,12720
+functions.c,223
+int loadcmd(8,136
+int debugcmd(35,791
+int resumecmd(62,1415
+int dispcmd(88,2027
+int setcmd(195,5207
+int assertcmd(323,8815
+int disasmcmd(456,12738
+int runcmd(536,15223
+int stepcmd(555,15720
+int breakcmd(559,15785
 
 interpreter.c,159
 interpreteur init_inter(9,186
 void del_inter(20,482
 int execute_cmd(34,1104
-int  acquire_line(87,2620
-void usage_ERROR_MSG(133,4100
-int exitcmd(142,4432
+int  acquire_line(90,2700
+void usage_ERROR_MSG(136,4180
+int exitcmd(145,4512
 
 memory.c,205
 memory stack_set(9,134
@@ -69,6 +74,10 @@ void string_standardise(86,2794
 int is_adress(117,3604
 int reg_index(132,3886
 int is_register(141,4121
+
+run.c,47
+int run(3,18
+int execute_instruction(37,1087
 
 section.c,81
 scntab new_scntab(21,439
@@ -94,21 +103,22 @@ bits.h,153
 #define GET_BIT(29,552
 #define GET_BITS(31,605
 
-disassembly.h,390
+disassembly.h,416
 #define _DISASSEMBLY8,130
-typedef struct dico dico;17,283
-struct dico19,312
-  char id_debug[id_debug21,328
-  char mnemo[mnemo22,350
-  int size;23,369
-  unsigned int sig;24,423
-  unsigned int mask;25,444
-  int nb_op;26,466
-  char registers_index[registers_index27,501
-  char immediate_index[immediate_index28,530
-  int it;29,559
-  int treatImm;30,570
-  int treatReg;31,587
+#define DICO_SIZE 17,283
+typedef struct dico dico;19,307
+struct dico21,336
+  char id_debug[id_debug23,352
+  char mnemo[mnemo24,374
+  int size;25,393
+  unsigned int sig;26,447
+  unsigned int mask;27,468
+  int nb_op;28,490
+  char registers_index[registers_index29,525
+  char immediate_index[immediate_index30,554
+  int it;31,583
+  int treatImm;32,594
+  int treatReg;33,611
 
 elf.h,6629
 #define _ELF_H_12,200
@@ -540,6 +550,9 @@ relocator.h,4574
 #define  R_ARM_ME_TOO 145,5373
 #define  R_ARM_THM_TLS_DESCSEQ16 146,5414
 #define  R_ARM_THM_TLS_DESCSEQ32 147,5455
+
+run.h,19
+#define _RUN8,107
 
 syms.h,547
 #define _SYMS_H_12,196

@@ -1,0 +1,5 @@
+#include "run.h"
+
+int run(size_t address, dico dictionary, memory mem) {
+  return 0;
+}

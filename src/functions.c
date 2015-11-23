@@ -3,6 +3,7 @@
 #include <string.h>
 #include "parsing.h"
 #include "disassembly.h"
+#include "run.h"
 
 int loadcmd(interpreteur inter, memory mem) {
   int no_args;
@@ -491,7 +492,11 @@ int disasmcmd(interpreteur inter, memory mem) {
     }
     if (endaddr >= mem->txt->vaddr + mem->txt->size) //If address range overflows .txt size
       endaddr = mem->txt->vaddr + mem->txt->size - 1;
-    dico dico[53];
+    if (endaddr < startaddr) {
+      WARNING_MSG("end address lower than startaddress%s\n", "disasmcmd");
+      return 1;
+    }
+    dico dico[DICO_SIZE];
     extract_dico("dico.csv", dico);
     disasm(startaddr, endaddr, dico, mem);
     return 0;
@@ -526,4 +531,31 @@ int disasmcmd(interpreteur inter, memory mem) {
     WARNING_MSG("wrong separator %s\n", "disasmcmd");
     return 1;
   }
+}
+
+int runcmd(interpreteur inter, memory mem) {
+  DEBUG_MSG("Chaine : %s", inter->input);
+  char* token = NULL;
+  size_t address;
+  if ((token = get_next_token(inter)) == NULL) {
+    mem->reg[15] = mem->txt->vaddr;
+  }
+  if (token != NULL && get_type(token) == HEXA)
+    mem->reg[15] = strtol(token, NULL, 16);
+  else if (token != NULL) {
+    WARNING_MSG("second argument is not an hexa %s\n", "disasmcmd");
+    return 1;
+  }
+  dico dico[DICO_SIZE];
+  extract_dico("dico.csv", dico);
+  run(dico, mem);
+  return 0;
+}
+
+int stepcmd(interpreteur inter, memory mem) {
+  return 0;
+}
+
+int breakcmd(interpreteur inter, memory mem) {
+  return 0;
 }
