@@ -1,5 +1,5 @@
 /**
- * @file disassembly.h
+ * @file run.h
  * @author Mickael Albisser 
  * @brief Run functions - header
  */
@@ -9,6 +9,7 @@
 
 #include "memory.h"
 #include "disassembly.h"
+#include "instructions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -16,6 +17,6 @@
 #include <string.h>
 
 int run(dico* dictionary, memory mem);
-int execute_instruction(word binary, dico* instruction, int* in_it, unsigned int* it_state);
+int execute_instruction(word binary, dico* instruction, int* in_it, unsigned int* it_state, memory mem);
 
 #endif

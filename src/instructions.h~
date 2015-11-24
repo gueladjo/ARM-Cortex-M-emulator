@@ -1,0 +1,21 @@
+/**
+ * @file instructions.h
+ * @author Mickael Albisser 
+ * @brief Run instructions - header
+ */
+
+#ifndef _INSTRUCTIONS
+#define _INSTRUCTIONS
+
+#include "memory.h"
+#include "disassembly.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <inttypes.h>
+#include <string.h>
+
+int run(dico* dictionary, memory mem);
+int execute_instruction(word binary, dico* instruction, int* in_it, unsigned int* it_state, memory mem);
+
+#endif
