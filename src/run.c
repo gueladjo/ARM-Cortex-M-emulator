@@ -13,6 +13,12 @@ int run(dico* dictionary, memory mem) {
     is_short = is_16bits(header+1);
     binary = 0;
 
+    if (mem->break_list[mem->reg[15]-mem->txt->vaddr]) {
+      printf("Breakpoint reached at address %x\n", mem->reg[15]);
+      mem->break_list[mem->reg[15]-mem->txt->vaddr] = 0;
+      return 0;
+    }
+      
     if (is_short) {
       memcpy(&binary, header, 2);
       search_instruction(binary, dictionary, instruction, is_short);
@@ -252,5 +258,13 @@ int execute_instruction(word binary, dico* instruction, int* in_it, unsigned int
     WARNING_MSG("Warning : function not found\n");
     return 1;
     }
+  return 0;
+}
+
+int step(dico* dictionary, memory mem) {
+  return 0;
+}
+
+int step_into(dico* dictionary, memory mem) {
   return 0;
 }

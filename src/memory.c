@@ -143,6 +143,10 @@ int memory_free(memory mem)
     free(mem->stack);
     e = 0;
   }
+  if (mem->break_list != NULL) {
+    free(mem->break_list);
+    e = 0;
+  }
   return e;
 }
 
@@ -223,6 +227,8 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
   free(ehdr);
   //Alloue le stack
   stack_set(memory);
+  //Alloue la liste des breakpoints
+  memory->break_list = calloc(memory->txt->size, sizeof(int));
   printf("\n------ Fichier ELF \"%s\" : sections lues lors du chargement ------\n", elf_file) ;
   stab32_print( symtab );
   memory->endianness = endianness;

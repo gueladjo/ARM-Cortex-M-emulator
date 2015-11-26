@@ -18,5 +18,7 @@
 
 int run(dico* dictionary, memory mem);
 int execute_instruction(word binary, dico* instruction, int* in_it, unsigned int* it_state, memory mem);
+int step(dico* dictionary, memory mem);
+int step_into(dico* dictionary, memory mem);
 
 #endif
