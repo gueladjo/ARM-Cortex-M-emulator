@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIl
+#TEST_COMMENT="Teste adresse hors de .txt"
+#-------
+
+break add 0x4000

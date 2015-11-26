@@ -15,6 +15,8 @@
 #include <inttypes.h>
 #include <string.h>
 
+void set_aspr(memory mem, int n, int z, int c, int v);
+int conditionPassed(memory mem, int cond);
 int ADD_Imm_T1(word binary, memory mem, int* in_it, unsigned int* it_state);
 int ADD_Imm_T2(word binary, memory mem, int* in_it, unsigned int* it_state);
 int ADD_Imm_T3(word binary, memory mem, int* in_it, unsigned int* it_state);

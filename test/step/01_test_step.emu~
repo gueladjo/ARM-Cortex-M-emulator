@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=PASS           
+#TEST_COMMENT="Teste fonctionnement standard"
+#-------
+
+set mem byte 0x3000 12

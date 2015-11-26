@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL
+#TEST_COMMENT="Teste adresse de début hors de .txt"
+#-------
+
+run 0x4000
