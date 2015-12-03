@@ -12,11 +12,16 @@ int run(dico* dictionary, memory mem) {
     is_short = is_16bits(header+1);
     binary = 0;
 
-    if (mem->break_list[mem->reg[15]-mem->txt->vaddr]) {
+    if (mem->break_list[mem->reg[15]-mem->txt->vaddr] == 1) {
       printf("Breakpoint reached at address %x\n", mem->reg[15]);
       mem->reg[15] += 2;
       if (!is_short)
 	mem->reg[15] += 2;
+      return 0;
+    }
+    
+    if (mem->break_list[mem->reg[15]-mem->txt->vaddr] == 2) {
+      mem->break_list[mem->reg[15]-mem->txt->vaddr] = 0;
       return 0;
     }
       
@@ -42,7 +47,7 @@ int run(dico* dictionary, memory mem) {
 
 int execute_instruction(word binary, dico* instruction, unsigned int* it_state, memory mem) {
   int setflags = 1;
-  if (*it_state & 0xf != 0) { //If in IT Block
+  if ((*it_state & 0xf) != 0) { //If in IT Block
     int temp = (*it_state & 0xF) << 1;
     if (!conditionPassed(mem, (*it_state >> 4))) { //Conditions non remplies
       *it_state = (*it_state & 0xE0) + temp; //Mise à jour de it_state
@@ -273,9 +278,44 @@ int execute_instruction(word binary, dico* instruction, unsigned int* it_state, 
 }
 
 int step(dico* dictionary, memory mem) {
-  return 0;
+  if (mem->reg[15] == 0)
+    mem->reg[15] = mem->txt->vaddr;
+  int is_short = is_16bits(mem->txt->raddr + mem->reg[15] - mem->txt->vaddr +1);
+  if (is_short)
+    mem->break_list[mem->reg[15]-mem->txt->vaddr + 2] = 2;
+  else
+    mem->break_list[mem->reg[15]-mem->txt->vaddr + 4] = 2;
+  return run(dictionary, mem);
 }
 
 int step_into(dico* dictionary, memory mem) {
+  dico* instruction = malloc(sizeof(*instruction));
+  unsigned int* it_state = malloc(sizeof(*it_state)); //condition + mask
+  int is_short;
+  word binary;
+  byte* header;
+  
+  if (mem->reg[15] == 0)
+    mem->reg[15] = mem->txt->vaddr;
+  header = mem->txt->raddr + mem->reg[15] - mem->txt->vaddr;
+  is_short = is_16bits(header+1);
+  binary = 0;
+  
+  if (is_short) {
+    mem->reg[15] = mem->reg[15] + 2;
+    memcpy(&binary, header, 2);
+    search_instruction(binary, dictionary, instruction, is_short);
+    execute_instruction(binary, instruction, it_state, mem);
+  }
+  else {
+    word temp = 0;
+    mem->reg[15] = mem->reg[15] + 4;
+    memcpy(&binary, header, 2);
+    memcpy(&temp, header+2, 2);
+    binary = (binary << 16) + temp;
+    search_instruction(binary, dictionary, instruction, is_short);
+    execute_instruction(binary, instruction, it_state, mem);
+  }
+  free(instruction);
   return 0;
 }

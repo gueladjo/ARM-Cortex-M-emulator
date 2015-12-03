@@ -608,5 +608,33 @@ int breakcmd(interpreteur inter, memory mem) {
       }
     }
   }
+  else if (!strcmp(token, "del")) {
+    if ((token = get_next_token(inter)) == NULL) {
+      WARNING_MSG("Not enough arguments given to command %s\n", "breakcmd");
+      return 1;
+    }
+    if(!strcmp(token, "all")) {
+      for (i=0;i<=mem->txt->size;i++)
+	mem->break_list[i] = 0;
+    }
+    else {
+      do {
+	if (get_type(token) != HEXA) {
+	WARNING_MSG("Argument is not an hexadecimal %s\n", "breakcmd");
+	return 1;
+      }
+      address = strtol(token, NULL, 16);
+      if (address < mem->txt->vaddr || address >= (mem->txt->vaddr + mem->txt->size)) {
+	WARNING_MSG("Address out of .txt range %s\n", "breakcmd");
+	return 1;
+      }
+      mem->break_list[address - mem->txt->vaddr] = 0;
+      } while ((token = get_next_token(inter)) != NULL);
+    }
+  }
+  else {
+    WARNING_MSG("Unknown parameter%s\n", "breakcmd");
+    return 1;
+  }
   return 0;
 }

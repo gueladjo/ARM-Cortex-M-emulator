@@ -213,7 +213,7 @@ int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* 
 	mask = create_mask(start, end);
 	imm1 = (mask & binary) >> start;
 	var = SignExtend16(imm1, end-start+1);
-	printf("%d", (int)var);
+	printf("%d", *(int*) &var);
 	break;
 
       case 4: //If SignExtend32
@@ -238,7 +238,7 @@ int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* 
 	mask = create_mask(start, end);
 	imm5 = (mask & binary) >> start;
 	var = SignExtend32(imm1, imm2, imm3, imm4, imm5);
-	printf("#%d", (int)var);
+	printf("#%d", *(int*) &var);
 	break;
 
       case 5:
