@@ -98,81 +98,56 @@ int conditionPassed(memory mem, int cond) {
   }
 }
 
-int ADD_Imm_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {
-  word imm;
-  int rd, rn;
-  if (*in_it <= 0) { //Case not in IT Block : setflags
-    imm = (binary & 0x1C0) >> 6;
-    rd = (binary & 0x7);
-    rn = (binary & 0x38) >> 3;
-    mem->reg[rd] = mem->reg[rn] + imm;
-    set_apsr(mem, (mem->reg[rd] & 0x80000000) >> 31, !mem->reg[rd], 0, 0); //Pas de retenue ni d'overflow dans cet encodage
-  }
-  
-  else {
-    int temp;
-    temp = (*it_state & 0xF) << 1; //Prêt pour décalage mask vers condition
-    if (conditionPassed(mem, (*it_state >> 4))) { //Si les conditions sont remplies
-      imm = (binary & 0x1C0) >> 6;
-      rd = (binary & 0x7);
-      rn = (binary & 0x38) >> 3;
-      mem->reg[rd] = mem->reg[rn] + imm;
-    }
-    *it_state = (*it_state & 0xE0) + temp; //Mise à jour de it_state
-  }
-
-  return 0;
-}
-
-int ADD_Imm_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int ADD_Imm_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int ADD_Imm_T4(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int ADD_Reg_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int ADD_Reg_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int ADD_Reg_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int B_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int B_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int B_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int B_T4(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int BL_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int BX_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int CMP_Imm_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int CMP_Imm_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int CMP_Reg_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int CMP_Reg_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int CMP_Reg_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int IT_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int LDR_Imm_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int LDR_Imm_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int LDR_Imm_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int LDR_Imm_T4(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int LDR_Lit_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int LDR_Lit_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int MOV_Imm_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int MOV_Imm_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int MOV_Imm_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int MOV_Reg_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int MOV_Reg_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int MOV_Reg_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int MOVT_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int MUL_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int MUL_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int POP_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int POP_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int POP_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int PUSH_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int PUSH_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int PUSH_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int STR_Imm_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int STR_Imm_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int STR_Imm_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int STR_Imm_T4(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int STR_Reg_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int STR_Reg_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int SUB_Imm_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int SUB_Imm_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int SUB_Imm_T3(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int SUB_Imm_T4(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int SUB_Reg_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int SUB_Reg_T2(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
-int SVC_T1(word binary, memory mem, int* in_it, unsigned int* it_state) {return 0;}
+int ADD_Imm_T1(word binary, memory mem, int setflags) {return 0;}
+int ADD_Imm_T2(word binary, memory mem, int setflags) {return 0;}
+int ADD_Imm_T3(word binary, memory mem, int setflags) {return 0;}
+int ADD_Imm_T4(word binary, memory mem, int setflags) {return 0;}
+int ADD_Reg_T1(word binary, memory mem, int setflags) {return 0;}
+int ADD_Reg_T2(word binary, memory mem, int setflags) {return 0;}
+int ADD_Reg_T3(word binary, memory mem, int setflags) {return 0;}
+int B_T1(word binary, memory mem, int setflags) {return 0;}
+int B_T2(word binary, memory mem, int setflags) {return 0;}
+int B_T3(word binary, memory mem, int setflags) {return 0;}
+int B_T4(word binary, memory mem, int setflags) {return 0;}
+int BL_T1(word binary, memory mem, int setflags) {return 0;}
+int BX_T1(word binary, memory mem, int setflags) {return 0;}
+int CMP_Imm_T1(word binary, memory mem, int setflags) {return 0;}
+int CMP_Imm_T2(word binary, memory mem, int setflags) {return 0;}
+int CMP_Reg_T1(word binary, memory mem, int setflags) {return 0;}
+int CMP_Reg_T2(word binary, memory mem, int setflags) {return 0;}
+int CMP_Reg_T3(word binary, memory mem, int setflags) {return 0;}
+int IT_T1(word binary, memory mem, int setflags, unsigned int* it_state) {return 0;}
+int LDR_Imm_T1(word binary, memory mem, int setflags) {return 0;}
+int LDR_Imm_T2(word binary, memory mem, int setflags) {return 0;}
+int LDR_Imm_T3(word binary, memory mem, int setflags) {return 0;}
+int LDR_Imm_T4(word binary, memory mem, int setflags) {return 0;}
+int LDR_Lit_T1(word binary, memory mem, int setflags) {return 0;}
+int LDR_Lit_T2(word binary, memory mem, int setflags) {return 0;}
+int MOV_Imm_T1(word binary, memory mem, int setflags) {return 0;}
+int MOV_Imm_T2(word binary, memory mem, int setflags) {return 0;}
+int MOV_Imm_T3(word binary, memory mem, int setflags) {return 0;}
+int MOV_Reg_T1(word binary, memory mem, int setflags) {return 0;}
+int MOV_Reg_T2(word binary, memory mem, int setflags) {return 0;}
+int MOV_Reg_T3(word binary, memory mem, int setflags) {return 0;}
+int MOVT_T1(word binary, memory mem, int setflags) {return 0;}
+int MUL_T1(word binary, memory mem, int setflags) {return 0;}
+int MUL_T2(word binary, memory mem, int setflags) {return 0;}
+int POP_T1(word binary, memory mem, int setflags) {return 0;}
+int POP_T2(word binary, memory mem, int setflags) {return 0;}
+int POP_T3(word binary, memory mem, int setflags) {return 0;}
+int PUSH_T1(word binary, memory mem, int setflags) {return 0;}
+int PUSH_T2(word binary, memory mem, int setflags) {return 0;}
+int PUSH_T3(word binary, memory mem, int setflags) {return 0;}
+int STR_Imm_T1(word binary, memory mem, int setflags) {return 0;}
+int STR_Imm_T2(word binary, memory mem, int setflags) {return 0;}
+int STR_Imm_T3(word binary, memory mem, int setflags) {return 0;}
+int STR_Imm_T4(word binary, memory mem, int setflags) {return 0;}
+int STR_Reg_T1(word binary, memory mem, int setflags) {return 0;}
+int STR_Reg_T2(word binary, memory mem, int setflags) {return 0;}
+int SUB_Imm_T1(word binary, memory mem, int setflags) {return 0;}
+int SUB_Imm_T2(word binary, memory mem, int setflags) {return 0;}
+int SUB_Imm_T3(word binary, memory mem, int setflags) {return 0;}
+int SUB_Imm_T4(word binary, memory mem, int setflags) {return 0;}
+int SUB_Reg_T1(word binary, memory mem, int setflags) {return 0;}
+int SUB_Reg_T2(word binary, memory mem, int setflags) {return 0;}
+int SVC_T1(word binary, memory mem, int setflags) {return 0;}
