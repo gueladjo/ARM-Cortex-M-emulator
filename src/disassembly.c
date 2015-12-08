@@ -56,9 +56,6 @@ int it_XYZ(unsigned int it_state, char* XYZ) {
 int search_instruction(word binary, dico* dictionary, dico* instruction, int is_short)
 {
   int i =0;
-  if ((binary & dictionary[DICO_SIZE-1].mask) == dictionary[DICO_SIZE-1].sig) { //Case SVC
-    *instruction = dictionary[DICO_SIZE-1];
-    return 0;
   }
   for (i = 0; i < DICO_SIZE; i++) {
     if ((binary & dictionary[i].mask) == dictionary[i].sig) {
