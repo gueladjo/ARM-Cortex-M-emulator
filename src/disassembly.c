@@ -145,6 +145,21 @@ int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* 
 	mask = create_mask(start, end);
 	var = (mask & binary) >> start;
 	printf("r%u", var);
+	break;
+
+      case 2: //Case <Rd>, SP
+	token = strtok(instruction->registers_index, ":");
+	sscanf(token, "%u-%u", &end, &start);
+	mask = create_mask(start, end);
+	var = (mask & binary) >> start;
+	printf("r%u, SP", var);
+	break;
+      case 3: //Case SP, SP
+	printf("SP, SP");
+	break;
+      case 4: //Case POP, PUSH
+	decode_P(binary, instruction);
+	break;
       }
     }
 
@@ -308,6 +323,8 @@ int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem)
     (*in_it)--;
   }
   free(instruction);
+  free(in_it);
+  free(it_state);
   return 0;
 }
 
@@ -447,3 +464,26 @@ word SignExtend32(unsigned int s, unsigned int j1, unsigned int j2, unsigned int
   return ret;
 }
 
+void decode_P(int binary, dico* instruction) {
+  char* token;
+  unsigned int register_list, start, end;
+  word mask;
+  int i;
+  token = strtok(instruction->registers_index, ":");
+  sscanf(token, "%u-%u", &end, &start);
+  mask = create_mask(start, end);
+  register_list = (mask & binary) >> start;
+  if (!strcmp(instruction->id_debug, "POP_T1")) {
+    register_list += (binary & 0x100) << 7;
+  }
+  if (!strcmp(instruction->id_debug, "PUSH_T1")) {
+    register_list += (binary & 0x100) << 6;
+  }
+  printf("{");
+  for (i=0;i<=15;i++) {
+    if ((register_list & (1 << i)) >> i)
+      printf("r%u, ", i);
+  }
+  printf("\b\b}");
+  return;
+}
