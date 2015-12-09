@@ -14,7 +14,7 @@
 #include <inttypes.h>
 #include <string.h>
 
-#define DICO_SIZE 53
+#define DICO_SIZE 60
 
 typedef struct dico dico;
 

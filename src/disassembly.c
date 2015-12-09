@@ -55,8 +55,7 @@ int it_XYZ(unsigned int it_state, char* XYZ) {
 
 int search_instruction(word binary, dico* dictionary, dico* instruction, int is_short)
 {
-  int i =0;
-  }
+  int i = 0;
   for (i = 0; i < DICO_SIZE; i++) {
     if ((binary & dictionary[i].mask) == dictionary[i].sig) {
       *instruction = dictionary[i];
@@ -78,7 +77,7 @@ int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* 
     temp = *it_state;
     *in_it = 5; //N+1 instructions under IT
     while ((temp & 1) != 1) {
-      *in_it = in_it - 1;
+      *in_it = *in_it - 1;
       temp = temp >> 1;
     }
     if(print) {
@@ -321,7 +320,7 @@ void extract_dico(char* dico_file, dico* dico) {
   for (i=0;i<11;i++) {
     fscanf(pf_dico, "%s", token);
   }
-  for (i=0;i<=52;i++) {
+  for (i=0;i<DICO_SIZE;i++) {
     fscanf(pf_dico, "%s", token);
     strcpy(dico[i].id_debug, token);
     fscanf(pf_dico, "%s", token);
@@ -426,7 +425,7 @@ word SignExtend16(unsigned int imm, unsigned int size) {
   int i;
   ret = imm;
   ret = ret << 1;
-  left = ret & (1<<(size-1));
+  left = ret & (1<<(size));
   for(i=1;i<=(31-size);i++)
     ret = ret + (left << i);
   return ret;
