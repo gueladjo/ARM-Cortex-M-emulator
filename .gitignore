@@ -4,3 +4,4 @@ emul-arm
 TAGS
 *.ods
 .~lock.dico.ods#
+.~lock.dico.csv#

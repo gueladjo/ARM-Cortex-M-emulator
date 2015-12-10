@@ -2,11 +2,12 @@
 
 int is_16bits(byte* header)
 {
-  byte mask = 0xF0;
+  byte mask = 0xF8;
   byte sig1 = 0xF0;
-  byte sig2 = 0xE0;
+  byte sig2 = 0xF8;
+  byte sig3 = 0xE8;
 
-  if ((*header & mask) == sig1 || (*header & mask) == sig2) return 0;
+  if ((*header & mask) == sig1 || (*header & mask) == sig2 || (*header & mask) == sig3) return 0;
   return 1;  
 }
 
