@@ -66,20 +66,13 @@ int search_instruction(word binary, dico* dictionary, dico* instruction, int is_
   return 1;
 }
 
-int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* it_state, int print) {
+int decode_instruction(int binary, dico* instruction, unsigned int* it_state, int print) {
   unsigned int start, end;
   word mask;
   if (instruction->it == 3) { //If IT instruction
-    int temp;
     sscanf(instruction->immediate_index, "%u-%u", &end, &start);
     mask = create_mask(start, end);
     *it_state = binary & mask;
-    temp = *it_state;
-    *in_it = 5; //N+1 instructions under IT
-    while ((temp & 1) != 1) {
-      *in_it = *in_it - 1;
-      temp = temp >> 1;
-    }
     if(print) {
       char XYZ[4];
       char condition[3];
@@ -95,10 +88,10 @@ int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* 
     unsigned int var;
     printf("%s", instruction->mnemo);
 
-    if (instruction->it == 1 && *in_it <= 0) //If setflags and not in IT block
+    if (instruction->it == 1 && !(*it_state & 0xF)) //If setflags and not in IT block
       printf("S");
 
-    if(*in_it > 0) { //If we are in an IT block
+    if(*it_state & 0xF) { //If we are in an IT block
       int temp; 
       char condition[3];
       temp = (*it_state & 0xF) << 1;
@@ -177,7 +170,10 @@ int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* 
 	  temp = (mask & binary) >> start;
 	  var += temp;
 	} while ((token = strtok(NULL, ":")) != NULL);
-	printf(", #%u", var);
+	if (strcmp(instruction->registers_index, "N")) //If we printed a register before
+	  printf(", #%u", var);
+	else
+	  printf("#%u", var);
 	break;
 	  
       case 1: //If ThumbExpandImm
@@ -224,7 +220,7 @@ int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* 
 	mask = create_mask(start, end);
 	imm1 = (mask & binary) >> start;
 	var = SignExtend16(imm1, end-start+1);
-	printf("%d", *(int*) &var);
+	printf("#%d", *(int*) &var);
 	break;
 
       case 4: //If SignExtend32
@@ -252,7 +248,7 @@ int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* 
 	printf("#%d", *(int*) &var);
 	break;
 
-      case 5:
+      case 5: //If ZeroExtend:00
 	token = strtok(instruction->immediate_index, ":");
 	sscanf(token, "%u-%u", &end, &start);
 	mask = create_mask(start, end);
@@ -284,12 +280,10 @@ int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem)
   word binary;
   dico* instruction;
   int is_short;
-  int* in_it = malloc(sizeof(*in_it)); //Between 1 and 4 : in IT block
   unsigned int* it_state = malloc(sizeof(*it_state)); //condition + mask
   int print;
 
   *it_state = 0;
-  *in_it = 0;
   instruction = malloc(sizeof(*instruction));
   header =  mem->txt->raddr;
   while (i <= nb_bytes) {
@@ -306,7 +300,7 @@ int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem)
     if (is_short) {
       memcpy(&binary, header, 2);
       search_instruction(binary, dictionary, instruction, is_short);
-      decode_instruction(binary, instruction, in_it, it_state, print);
+      decode_instruction(binary, instruction, it_state, print);
       i = i + 2;
       header = header + 2;
     }
@@ -316,14 +310,12 @@ int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem)
       memcpy(&temp, header+2, 2);
       binary = (binary << 16) + temp;
       search_instruction(binary, dictionary, instruction, is_short);
-      decode_instruction(binary, instruction, in_it, it_state, print);
+      decode_instruction(binary, instruction, it_state, print);
       i = i + 4;
       header = header + 4;     
     }
-    (*in_it)--;
   }
   free(instruction);
-  free(in_it);
   free(it_state);
   return 0;
 }

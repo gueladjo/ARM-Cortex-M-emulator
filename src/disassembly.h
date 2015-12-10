@@ -37,7 +37,7 @@ int is_16bits(byte* header);
 int it_condition(unsigned int it_state, char* condition);
 int it_XYZ(unsigned int it_state, char* XYZ);
 int search_instruction(word binary, dico* dictionary, dico* instruction, int is_short);
-int decode_instruction(int binary, dico* instruction, int* in_it, unsigned int* it_state, int print);
+int decode_instruction(int binary, dico* instruction, unsigned int* it_state, int print);
 word create_mask(unsigned int a, unsigned int b);
 void extract_dico(char* dico_file, dico* dico);
 int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem);
