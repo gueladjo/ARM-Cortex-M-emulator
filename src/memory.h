@@ -47,6 +47,7 @@ struct memory
   word reg[17];
   unsigned int endianness;
   int* break_list; //List of breakpoints : for each address, 1 if breakpoint, 0 if not
+  stab symtab;
 };
 
 

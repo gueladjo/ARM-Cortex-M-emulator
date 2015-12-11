@@ -164,7 +164,7 @@ int dispcmd(interpreteur inter, memory mem)
 	if (i%4 == 0) printf("\n");
 	printf("r%i: %02x\t", i, mem->reg[i]);
       }
-      printf("aspr: %02x\t\n", mem->reg[reg_index("aspr")]);
+      printf("apsr: %02x\t\n", mem->reg[reg_index("apsr")]);
       return 0;
     }
     while ((token != NULL) && !is_register(token)) {
