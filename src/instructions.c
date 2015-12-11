@@ -294,7 +294,7 @@ int CMP_Imm_T2(word binary, memory mem, int setflags)
 
 int cmpReg(int* registers, memory mem, char* encoding)
 {
-  int result = registers[1] - registers[2];
+  int result = registers[0] - registers[1];
 
   if (strcmp(encoding, "T3") == 0) {
     //gérer le shift
@@ -328,8 +328,8 @@ int CMP_Reg_T1(word binary, memory mem, int setflagse)
 {
   int regs[2];
   
-  regs[1] = (binary & 0x0038) >> 3;
-  regs[0] = binary & 0x0007;
+  regs[1] = mem->reg[(binary & 0x0038) >> 3];
+  regs[0] = mem->reg[binary & 0x0007];
 
   return cmpReg(regs, mem, "T1");
 }

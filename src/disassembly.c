@@ -63,7 +63,7 @@ int search_instruction(word binary, dico* dictionary, dico* instruction, int is_
       return 0; 
     }
   }
-
+  WARNING_MSG("Instruction not found %s\n", "search_instruction");
   return 1;
 }
 
