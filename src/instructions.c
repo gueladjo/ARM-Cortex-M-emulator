@@ -721,6 +721,8 @@ int MUL_T2(word binary, memory mem, int setflags)
 
 int POP_T1(word binary, memory mem, int setflags)
 {
+  if (mem->reg[13] == mem->stack->vaddr + mem->stack->size)
+    return 0; //Rien à sortir
   int reglist = (binary & 0x00FF);
   int P = (binary & 0x0100) >> 8;
   int registers = reglist + ( P << 15);
@@ -730,8 +732,8 @@ int POP_T1(word binary, memory mem, int setflags)
   for(i = 0; i < 15; i++) {
     bit = (registers & (1 << i)) >> i;
     if (bit == 1) {
-      mem->reg[i] = read_word(mem->reg[13], mem); 
       mem->reg[13] = mem->reg[13] + 4;
+      mem->reg[i] = read_word(mem->reg[13], mem); 
     }
   } 
 
@@ -740,6 +742,8 @@ int POP_T1(word binary, memory mem, int setflags)
 
 int POP_T2(word binary, memory mem, int setflags)
 {
+  if (mem->reg[13] == mem->stack->vaddr + mem->stack->size)
+    return 0; //Rien à sortir
   int reglist = (binary & 0x1FFF);
   int P = (binary & 0x8000) >> 15;
   int M = (binary & 0x4000) >> 14;
@@ -750,8 +754,8 @@ int POP_T2(word binary, memory mem, int setflags)
   for(i = 0; i < 15; i++) {
     bit = (registers & (1 << i)) >> i;
     if (bit == 1) {
-      mem->reg[i] = read_word(mem->reg[13], mem); 
       mem->reg[13] = mem->reg[13] + 4;
+      mem->reg[i] = read_word(mem->reg[13], mem); 
     }
   } 
   return 0;
@@ -759,10 +763,11 @@ int POP_T2(word binary, memory mem, int setflags)
 
 int POP_T3(word binary, memory mem, int setflags)
 {
+  if (mem->reg[13] == mem->stack->vaddr + mem->stack->size)
+    return 0; //Rien à sortir
   int registrt = (binary & 0xF000) >> 12;
-
-  mem->reg[registrt] = read_word(mem->reg[13], mem); 
   mem->reg[13] = mem->reg[13] + 4;
+  mem->reg[registrt] = read_word(mem->reg[13], mem); 
   return 0;
 }
 
@@ -777,8 +782,8 @@ int PUSH_T1(word binary, memory mem, int setflags)
   for(i = 0; i < 15; i++) {
     bit = (registers & (1 << (15 - i))) >> (15 - i);
     if (bit == 1) {
-      mem->reg[13] = mem->reg[13] - 4;
-      write_word(mem->reg[13], mem->reg[15 - i], mem); 
+      write_word(mem->reg[13], mem->reg[15 - i], mem);
+      mem->reg[13] = mem->reg[13] - 4; //Decrement apres ajout
     }
   } 
   return 0;
@@ -795,8 +800,8 @@ int PUSH_T2(word binary, memory mem, int setflags)
   for(i = 0; i < 15; i++) {
     bit = (registers & (1 << (15 - i))) >> (15 - i);
     if (bit == 1) {
+      write_word(mem->reg[13], mem->reg[15 - i], mem);
       mem->reg[13] = mem->reg[13] - 4;
-      write_word(mem->reg[13], mem->reg[15 - i], mem); 
     }
   } 
   return 0;
@@ -805,8 +810,8 @@ int PUSH_T2(word binary, memory mem, int setflags)
 int PUSH_T3(word binary, memory mem, int setflags)
 {
   int registrt = (binary & 0xF000) >> 12;
-  mem->reg[13] = mem->reg[13] - 4;
   write_word(mem->reg[13], mem->reg[registrt], mem);
+  mem->reg[13] = mem->reg[13] - 4;
 
   return 0;
 }
