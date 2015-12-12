@@ -29,6 +29,7 @@ int run(dico* dictionary, memory mem) {
       mem->reg[15] = mem->reg[15] + 2;
       memcpy(&binary, header, 2);
       search_instruction(binary, dictionary, instruction, is_short);
+      DEBUG_MSG("Instruction : %s", instruction->id_debug);
       execute_instruction(binary, instruction, it_state, mem);
     }
       else {
@@ -38,6 +39,7 @@ int run(dico* dictionary, memory mem) {
       memcpy(&temp, header+2, 2);
       binary = (binary << 16) + temp;
       search_instruction(binary, dictionary, instruction, is_short);
+      DEBUG_MSG("Instruction : %s", instruction->id_debug);
       execute_instruction(binary, instruction, it_state, mem);
     }
   }

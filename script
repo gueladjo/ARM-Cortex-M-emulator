@@ -1,3 +1,4 @@
 load pile.o
 disasm 0x3000:0x4000
+run
 exit

@@ -484,8 +484,8 @@ int B_T4(word binary, memory mem, int setflags)
   int32_t imm11 = binary & 0x07FF;
   int32_t imm10 = (binary & 0x03FF0000) >> 16;
   int32_t S = (binary & 0x04000000) >> 26;
-  int32_t I1 = ~(((binary & 0x00002000) >> 13) ^ S);
-  int32_t I2 = ~(((binary & 0x00000800) >> 11) ^ S);
+  int32_t I1 = (~(((binary & 0x00002000) >> 13) ^ S))&1;
+  int32_t I2 = (~(((binary & 0x00000800) >> 11) ^ S))&1;
 
   int32_t imm = (imm11 << 1) + (imm10 << 12) + (I2 << 22) + (I1 << 23) + (S << 24); 
   int32_t offset;
@@ -506,8 +506,8 @@ int BL_T1(word binary, memory mem, int setflags)
   int32_t imm11 = binary & 0x07FF;
   int32_t imm10 = (binary & 0x03FF0000) >> 16;
   int32_t S = (binary & 0x04000000) >> 26;
-  int32_t I1 = ~(((binary & 0x00002000) >> 13) ^ S);
-  int32_t I2 = ~(((binary & 0x00000800) >> 11) ^ S);
+  int32_t I1 = (~(((binary & 0x00002000) >> 13) ^ S))&1;
+  int32_t I2 = (~(((binary & 0x00000800) >> 11) ^ S))&1;
 
   int32_t imm = (imm11 << 1) + (imm10 << 12) + (I2 << 22) + (I1 << 23) + (S << 24); 
 
@@ -520,7 +520,7 @@ int BL_T1(word binary, memory mem, int setflags)
   }
 
   mem->reg[14] = mem->reg[15] | 0x1;
-  mem->reg[15] = mem->reg[15] + offset + 4;
+  mem->reg[15] = mem->reg[15] + offset; //A surveiller
 
   return 0;
 }
@@ -529,7 +529,7 @@ int BX_T1(word binary, memory mem, int setflags)
 {
   int32_t registr = (binary & 0x0078) >> 3;
   int offset = mem->reg[registr];
-  mem->reg[15] = mem->reg[15] + offset + 2;
+  mem->reg[15] = mem->reg[15] + offset; //A surveiller
 
   return 0;
 }
@@ -732,8 +732,8 @@ int POP_T1(word binary, memory mem, int setflags)
   for(i = 0; i < 15; i++) {
     bit = (registers & (1 << i)) >> i;
     if (bit == 1) {
+      mem->reg[i] = read_word(mem->reg[13], mem);
       mem->reg[13] = mem->reg[13] + 4;
-      mem->reg[i] = read_word(mem->reg[13], mem); 
     }
   } 
 
@@ -754,8 +754,8 @@ int POP_T2(word binary, memory mem, int setflags)
   for(i = 0; i < 15; i++) {
     bit = (registers & (1 << i)) >> i;
     if (bit == 1) {
+      mem->reg[i] = read_word(mem->reg[13], mem);
       mem->reg[13] = mem->reg[13] + 4;
-      mem->reg[i] = read_word(mem->reg[13], mem); 
     }
   } 
   return 0;
@@ -766,8 +766,8 @@ int POP_T3(word binary, memory mem, int setflags)
   if (mem->reg[13] == mem->stack->vaddr + mem->stack->size)
     return 0; //Rien à sortir
   int registrt = (binary & 0xF000) >> 12;
+  mem->reg[registrt] = read_word(mem->reg[13], mem);
   mem->reg[13] = mem->reg[13] + 4;
-  mem->reg[registrt] = read_word(mem->reg[13], mem); 
   return 0;
 }
 
@@ -782,8 +782,8 @@ int PUSH_T1(word binary, memory mem, int setflags)
   for(i = 0; i < 15; i++) {
     bit = (registers & (1 << (15 - i))) >> (15 - i);
     if (bit == 1) {
-      write_word(mem->reg[13], mem->reg[15 - i], mem);
-      mem->reg[13] = mem->reg[13] - 4; //Decrement apres ajout
+      mem->reg[13] = mem->reg[13] - 4;
+      write_word(mem->reg[13], mem->reg[15 - i], mem);      
     }
   } 
   return 0;
@@ -800,8 +800,8 @@ int PUSH_T2(word binary, memory mem, int setflags)
   for(i = 0; i < 15; i++) {
     bit = (registers & (1 << (15 - i))) >> (15 - i);
     if (bit == 1) {
-      write_word(mem->reg[13], mem->reg[15 - i], mem);
       mem->reg[13] = mem->reg[13] - 4;
+      write_word(mem->reg[13], mem->reg[15 - i], mem);      
     }
   } 
   return 0;
@@ -810,9 +810,8 @@ int PUSH_T2(word binary, memory mem, int setflags)
 int PUSH_T3(word binary, memory mem, int setflags)
 {
   int registrt = (binary & 0xF000) >> 12;
-  write_word(mem->reg[13], mem->reg[registrt], mem);
   mem->reg[13] = mem->reg[13] - 4;
-
+  write_word(mem->reg[13], mem->reg[registrt], mem);
   return 0;
 }
 
