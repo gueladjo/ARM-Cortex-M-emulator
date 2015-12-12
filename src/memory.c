@@ -167,6 +167,54 @@ void print_section_raw_content(char* name, unsigned int start, byte* content, un
   printf("\n");
 }
 
+int read_word(size_t adress, memory mem)
+{
+  int bValue[4];
+
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      bValue[i] = read_memory_value(adress + i, mem);    
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      bValue[3-i] = read_memory_value(adress + i, mem);
+    }
+  }
+
+  int value = (bValue[0] << 24) + (bValue[1] << 16) + (bValue[2] << 8) + bValue[3]; 
+
+  return value;
+}
+
+int write_word(size_t adress, int value, memory mem)
+{
+  byte bValue[4];
+  bValue[0] = (byte)((value & 0xff000000) >> 24);
+  bValue[1] = (byte)((value & 0x00ff0000) >> 16);
+  bValue[2] = (byte)((value & 0x0000ff00) >> 8);
+  bValue[3] = (byte)((value & 0x000000ff));
+
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "write_word");
+        return 1;
+      }
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[3-i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "write_word");
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
 
 int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
   WARNING_MSG("\n LOAD");
@@ -232,7 +280,6 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
   printf("\n------ Fichier ELF \"%s\" : sections lues lors du chargement ------\n", elf_file) ;
   stab32_print( symtab );
   memory->endianness = endianness;
-  memory->symtab = symtab;
   // on fait le ménage avant de partir
   del_stab( symtab );
   del_scntab( section_table );

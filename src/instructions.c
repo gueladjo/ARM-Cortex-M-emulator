@@ -206,7 +206,7 @@ int ADD_SP_T1(word binary, memory mem, int setflags)
   int imm = binary & 0x00FF;
   int regs[2];
   
-  regs[1] = 15;
+  regs[1] = 13;
   regs[0] = (binary & 0x0700) >> 8;
 
   return addImm(imm, regs, mem, "SP"); 
@@ -217,7 +217,7 @@ int ADD_SP_T2(word binary, memory mem, int setflags)
   int imm = binary & 0x007F;
   int regs[1];
   
-  regs[0] = 15;
+  regs[0] = 13;
 
   return addImm(imm, regs, mem, "T2");  
 }
@@ -227,18 +227,18 @@ int ADD_SP_T3(word binary, memory mem, int setflags)
   int imm = ThumbExpandImm((binary & 0x04000000) >> 26, (binary & 0x00007000) >> 12, binary & 0x000000FF);
   int regs[2];
   
-  regs[1] = 15;
+  regs[1] = 13;
   regs[0] = (binary & 0x00000F00) >> 8;
 
   return addImm(imm, regs, mem, "SP");
 }
 
-int add_SP_T4(word binary, memory mem, int setflags)
+int ADD_SP_T4(word binary, memory mem, int setflags)
 {
   int imm = ((binary & 0x04000000) >> 15) + ((binary & 0x00007000) >> 4) + (binary & 0x000000FF);
   int regs[2];
   
-  regs[1] = 15;
+  regs[1] = 13;
   regs[0] = (binary & 0x00000F00) >> 8;
 
   return addImm(imm, regs, mem, "SP");
@@ -294,7 +294,7 @@ int CMP_Imm_T2(word binary, memory mem, int setflags)
 
 int cmpReg(int* registers, memory mem, char* encoding)
 {
-  int result = registers[0] - registers[1];
+  int result = mem->reg[registers[0]] - mem->reg[registers[1]];
 
   if (strcmp(encoding, "T3") == 0) {
     //gérer le shift
@@ -328,8 +328,8 @@ int CMP_Reg_T1(word binary, memory mem, int setflagse)
 {
   int regs[2];
   
-  regs[1] = mem->reg[(binary & 0x0038) >> 3];
-  regs[0] = mem->reg[binary & 0x0007];
+  regs[1] = (binary & 0x0038) >> 3;
+  regs[0] = binary & 0x0007;
 
   return cmpReg(regs, mem, "T1");
 }
@@ -376,7 +376,8 @@ int MOV_Imm_T1(word binary, memory mem, int setflags)
 int MOV_Imm_T2(word binary, memory mem, int setflags)
 {
   int registr = (binary & 0x00000F00) >> 8;
-  int imm = ThumbExpandImm((binary & 0x04000000) >> 26, (binary & 0x00007000) >> 12, binary & 0x000000FF); //ThumbExpandImmC, à remplacer 
+ // int imm = ThumbExpandImm_C((binary & 0x04000000) >> 26, (binary & 0x00007000) >> 12, binary & 0x000000FF, (mem->reg[16] & 0x20000000) >> 29)  ;
+  int imm = 3;
   return movImm(registr, imm, mem); 
 }
 
@@ -533,12 +534,153 @@ int BX_T1(word binary, memory mem, int setflags)
   return 0;
 }
 
-int LDR_Imm_T1(word binary, memory mem, int setflags) {return 0;}
-int LDR_Imm_T2(word binary, memory mem, int setflags) {return 0;}
-int LDR_Imm_T3(word binary, memory mem, int setflags) {return 0;}
+int LDR_Imm_T1(word binary, memory mem, int setflags)
+{
+  int32_t imm5 = (binary & 0x07C0) >> 6;
+  int32_t registrn = (binary & 0x0038) >> 3;
+  int32_t registrt = (binary & 0x0007);
+
+  int32_t imm32 = (imm5 << 2);
+  int adress = mem->reg[registrn] + imm32;
+
+  int bValue[4];
+
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      bValue[i] = read_memory_value(adress + i, mem);    
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      bValue[3-i] = read_memory_value(adress + i, mem);
+    }
+  }
+
+  int value = (bValue[0] << 24) + (bValue[1] << 16) + (bValue[2] << 8) + bValue[3]; 
+  mem->reg[registrt] = value; 
+  return 0;
+}
+
+int LDR_Imm_T2(word binary, memory mem, int setflags)
+{
+  int32_t imm8 = (binary & 0x00FF);
+  int32_t registrt = (binary & 0x0700) >> 8;
+
+  int32_t imm32 = (imm8 << 2);
+  int adress = mem->reg[13] + imm32;
+
+  int bValue[4];
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      bValue[i] = read_memory_value(adress + i, mem);    
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      bValue[3-i] = read_memory_value(adress + i, mem);
+    }
+  }
+
+  int value = (bValue[0] << 24) + (bValue[1] << 16) + (bValue[2] << 8) + bValue[3]; 
+
+  mem->reg[registrt] = value; 
+
+  return 0;
+}
+
+int LDR_Imm_T3(word binary, memory mem, int setflags)
+{
+  int32_t imm12 = binary & 0x0FFF;
+  int32_t registrn = (binary & 0x000F0000) >> 16;
+  int32_t registrt = (binary & 0xF000) >> 12;
+
+  int32_t imm32 = imm12;
+  int adress = mem->reg[registrn] + imm32;
+
+  int bValue[4];
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      bValue[i] = read_memory_value(adress + i, mem);    
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      bValue[3-i] = read_memory_value(adress + i, mem);
+    }
+  }
+
+  int value = (bValue[0] << 24) + (bValue[1] << 16) + (bValue[2] << 8) + bValue[3]; 
+
+  mem->reg[registrt] = value; 
+
+  return 0;
+}
+
 int LDR_Imm_T4(word binary, memory mem, int setflags) {return 0;}
-int LDR_Lit_T1(word binary, memory mem, int setflags) {return 0;}
-int LDR_Lit_T2(word binary, memory mem, int setflags) {return 0;}
+
+int LDR_Lit_T1(word binary, memory mem, int setflags)
+{
+  int32_t imm8 = (binary & 0x00FF);
+  int32_t registrt = (binary & 0x0700) >> 8;
+
+  int32_t imm32 = (imm8 << 2);
+  int adress = mem->reg[15] + imm32;
+
+  int bValue[4];
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      bValue[i] = read_memory_value(adress + i, mem);    
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      bValue[3-i] = read_memory_value(adress + i, mem);
+    }
+  }
+
+  int value = (bValue[0] << 24) + (bValue[1] << 16) + (bValue[2] << 8) + bValue[3];
+  mem->reg[registrt] = value; 
+
+  return 0;
+}
+
+int LDR_Lit_T2(word binary, memory mem, int setflags)
+{
+  int32_t imm12 = (binary & 0x0FFF);
+  int32_t registrt = (binary & 0xF000) >> 12;
+  int U = (binary & 0x00800000) >> 23;
+
+  int32_t imm32 = imm12;
+  int adress;
+  if (U == 0) 
+    adress = mem->reg[15] - imm32;
+
+  else
+    adress = mem->reg[15] + imm32;
+
+  int bValue[4];
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      bValue[i] = read_memory_value(adress + i, mem);    
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      bValue[3-i] = read_memory_value(adress + i, mem);
+    }
+  }
+
+  int value = (bValue[0] << 24) + (bValue[1] << 16) + (bValue[2] << 8) + bValue[3]; 
+
+  mem->reg[registrt] = value; 
+
+  return 0;
+}
 
 int MOVT_T1(word binary, memory mem, int setflags)
 {
@@ -577,18 +719,279 @@ int MUL_T2(word binary, memory mem, int setflags)
   return 0;
 }
 
-int POP_T1(word binary, memory mem, int setflags) {return 0;}
-int POP_T2(word binary, memory mem, int setflags) {return 0;}
-int POP_T3(word binary, memory mem, int setflags) {return 0;}
-int PUSH_T1(word binary, memory mem, int setflags) {return 0;}
-int PUSH_T2(word binary, memory mem, int setflags) {return 0;}
-int PUSH_T3(word binary, memory mem, int setflags) {return 0;}
-int STR_Imm_T1(word binary, memory mem, int setflags) {return 0;}
-int STR_Imm_T2(word binary, memory mem, int setflags) {return 0;}
-int STR_Imm_T3(word binary, memory mem, int setflags) {return 0;}
+int POP_T1(word binary, memory mem, int setflags)
+{
+  int reglist = (binary & 0x00FF);
+  int P = (binary & 0x0100) >> 8;
+  int registers = reglist + ( P << 15);
+
+  int i = 0;
+  int bit;
+  for(i = 0; i < 15; i++) {
+    bit = (registers & (1 << i)) >> i;
+    if (bit == 1) {
+      mem->reg[i] = read_word(mem->reg[13], mem); 
+      mem->reg[13] = mem->reg[13] + 4;
+    }
+  } 
+
+  return 0;
+}
+
+int POP_T2(word binary, memory mem, int setflags)
+{
+  int reglist = (binary & 0x1FFF);
+  int P = (binary & 0x8000) >> 15;
+  int M = (binary & 0x4000) >> 14;
+  int registers = reglist + (M << 14) + ( P << 15);
+
+  int i = 0;
+  int bit;
+  for(i = 0; i < 15; i++) {
+    bit = (registers & (1 << i)) >> i;
+    if (bit == 1) {
+      mem->reg[i] = read_word(mem->reg[13], mem); 
+      mem->reg[13] = mem->reg[13] + 4;
+    }
+  } 
+  return 0;
+}
+
+int POP_T3(word binary, memory mem, int setflags)
+{
+  int registrt = (binary & 0xF000) >> 12;
+
+  mem->reg[registrt] = read_word(mem->reg[13], mem); 
+  mem->reg[13] = mem->reg[13] + 4;
+  return 0;
+}
+
+int PUSH_T1(word binary, memory mem, int setflags)
+{
+  int reglist = (binary & 0x00FF);
+  int M = (binary & 0x0100) >> 8;
+  int registers = reglist + ( M << 14);
+
+  int i = 0;
+  int bit;
+  for(i = 0; i < 15; i++) {
+    bit = (registers & (1 << (15 - i))) >> (15 - i);
+    if (bit == 1) {
+      mem->reg[13] = mem->reg[13] - 4;
+      write_word(mem->reg[13], mem->reg[15 - i], mem); 
+    }
+  } 
+  return 0;
+}
+
+int PUSH_T2(word binary, memory mem, int setflags)
+{
+  int reglist = (binary & 0xEFFF);
+  int M = (binary & 0x04000) >> 14;
+  int registers = reglist + ( M << 14);
+
+  int i = 0;
+  int bit;
+  for(i = 0; i < 15; i++) {
+    bit = (registers & (1 << (15 - i))) >> (15 - i);
+    if (bit == 1) {
+      mem->reg[13] = mem->reg[13] - 4;
+      write_word(mem->reg[13], mem->reg[15 - i], mem); 
+    }
+  } 
+  return 0;
+}
+
+int PUSH_T3(word binary, memory mem, int setflags)
+{
+  int registrt = (binary & 0xF000) >> 12;
+  mem->reg[13] = mem->reg[13] - 4;
+  write_word(mem->reg[13], mem->reg[registrt], mem);
+
+  return 0;
+}
+
+int STR_Imm_T1(word binary, memory mem, int setflags)
+{ 
+  int32_t imm5 = (binary & 0x07C0) >> 6;
+  int32_t registrn = (binary & 0x0038) >> 3;
+  int32_t registrt = (binary & 0x0007);
+
+  int32_t imm32 = (imm5 << 2);
+  int adress = mem->reg[registrn] + imm32;
+  int value = mem->reg[registrt];
+
+  byte bValue[4];
+  bValue[0] = (byte)((value & 0xff000000) >> 24);
+  bValue[1] = (byte)((value & 0x00ff0000) >> 16);
+  bValue[2] = (byte)((value & 0x0000ff00) >> 8);
+  bValue[3] = (byte)((value & 0x000000ff));
+
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "STR_IMM_T1");
+        return 1;
+      }
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[3-i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "STR_IMM_T1");
+        return 1;
+      }
+    }
+  }
+
+  return 0;
+}
+
+int STR_Imm_T2(word binary, memory mem, int setflags)
+{
+  int32_t imm8 = (binary & 0xFF);
+  int32_t registrt = (binary & 0x0700) >> 8;
+
+  int32_t imm32 = (imm8 << 2);
+  int adress = mem->reg[13] + imm32;
+  int value = mem->reg[registrt];
+
+  byte bValue[4];
+  bValue[0] = (byte)((value & 0xff000000) >> 24);
+  bValue[1] = (byte)((value & 0x00ff0000) >> 16);
+  bValue[2] = (byte)((value & 0x0000ff00) >> 8);
+  bValue[3] = (byte)((value & 0x000000ff));
+
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "STR_IMM_T2");
+        return 1;
+      }
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[3-i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "STR_IMM_T2");
+        return 1;
+      }
+    }
+  }
+
+  return 0;
+}
+
+int STR_Imm_T3(word binary, memory mem, int setflags)
+{
+  int32_t imm12 = binary & 0x0FFF;
+  int32_t registrn = (binary & 0x000F0000) >> 16;
+  int32_t registrt = (binary & 0xF000) >> 12;
+
+  int32_t imm32 = imm12;
+  int adress = mem->reg[registrn] + imm32;
+  int value = mem->reg[registrt];
+
+  byte bValue[4];
+  bValue[0] = (byte)((value & 0xff000000) >> 24);
+  bValue[1] = (byte)((value & 0x00ff0000) >> 16);
+  bValue[2] = (byte)((value & 0x0000ff00) >> 8);
+  bValue[3] = (byte)((value & 0x000000ff));
+
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "STR_IMM_T1");
+        return 1;
+      }
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[3-i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "STR_IMM_T1");
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
+
 int STR_Imm_T4(word binary, memory mem, int setflags) {return 0;}
-int STR_Reg_T1(word binary, memory mem, int setflags) {return 0;}
-int STR_Reg_T2(word binary, memory mem, int setflags) {return 0;}
+
+int STR_Reg_T1(word binary, memory mem, int setflags)
+{
+  int32_t registrm = (binary & 0x01C0) >> 6;
+  int32_t registrn = (binary & 0x0038) >> 3;
+  int32_t registrt = (binary & 0x0007);
+
+  int adress = mem->reg[registrn] + mem->reg[registrm];
+  int value = mem->reg[registrt];
+
+  byte bValue[4];
+  bValue[0] = (byte)((value & 0xff000000) >> 24);
+  bValue[1] = (byte)((value & 0x00ff0000) >> 16);
+  bValue[2] = (byte)((value & 0x0000ff00) >> 8);
+  bValue[3] = (byte)((value & 0x000000ff));
+
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "STR_IMM_T1");
+        return 1;
+      }
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[3-i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "STR_IMM_T1");
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+int STR_Reg_T2(word binary, memory mem, int setflags)
+{
+  int32_t shift = (binary & 0x0030) >> 4;
+  int32_t registrn = (binary & 0x000F0000) >> 16;
+  int32_t registrt = (binary & 0xF000) >> 12;
+  int32_t registrm = (binary & 0x000F);
+
+  int adress = mem->reg[registrn] + (mem->reg[registrm] << shift);
+  int value = mem->reg[registrt];
+
+  byte bValue[4];
+  bValue[0] = (byte)((value & 0xff000000) >> 24);
+  bValue[1] = (byte)((value & 0x00ff0000) >> 16);
+  bValue[2] = (byte)((value & 0x0000ff00) >> 8);
+  bValue[3] = (byte)((value & 0x000000ff));
+
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "STR_IMM_T1");
+        return 1;
+      }
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[3-i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "STR_IMM_T1");
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
 
 int subImm(int immediate, int* registers,  memory mem, char* encoding)
 {
@@ -681,6 +1084,36 @@ int SUB_Reg_T2(word binary, memory mem, int setflags)
   regs[0] = (binary & 0x00000F00) >> 8;
 
   return subReg(regs, mem, "T2");
+}
+
+int SUB_SP_T1(word binary, memory mem, int setflags)
+{
+  int imm7 = binary & 0x007F;
+  int imm32 = imm7 << 2;
+
+  mem->reg[13] = mem->reg[13] - imm32;
+
+  return 0;
+}
+
+int SUB_SP_T2(word binary, memory mem, int setflags)
+{ 
+  int imm = ThumbExpandImm((binary & 0x04000000) >> 26, (binary & 0x00007000) >> 12, binary & 0x000000FF);
+  
+  int registrd = (binary & 0x0F00) >> 8;
+  mem->reg[registrd] = mem->reg[13] - imm;
+
+  return 0;
+}
+
+int SUB_SP_T3(word binary, memory mem, int setflags)
+{
+  int imm = ((binary & 0x04000000) >> 15) + ((binary & 0x00007000) >> 4) + (binary & 0x000000FF);
+  
+  int registrd = (binary & 0x00000F00) >> 8;
+  mem->reg[registrd] = mem->reg[13] - imm;
+
+  return 0;
 }
 
 int SVC_T1(word binary, memory mem, int setflags) {return 0;}

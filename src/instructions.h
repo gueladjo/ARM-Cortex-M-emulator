@@ -18,6 +18,13 @@
 void set_apsr(memory mem, int n, int z, int c, int v);
 int conditionPassed(memory mem, int cond);
 
+int addImm(int immediate, int* registers, memory mem, char* encoding);
+int addReg(int* registers, memory mem, char* encoding);
+int cmpImm(int registr, int immediate, memory mem);
+int cmpReg(int* registers, memory mem, char* encoding);
+int movImm(int registr, int immediate, memory mem); 
+
+int movReg(int* registers, memory mem);
 int ADD_Imm_T1(word binary, memory mem, int setflags);
 int ADD_Imm_T2(word binary, memory mem, int setflags);
 int ADD_Imm_T3(word binary, memory mem, int setflags);
@@ -25,6 +32,10 @@ int ADD_Imm_T4(word binary, memory mem, int setflags);
 int ADD_Reg_T1(word binary, memory mem, int setflags);
 int ADD_Reg_T2(word binary, memory mem, int setflags);
 int ADD_Reg_T3(word binary, memory mem, int setflags);
+int ADD_SP_T1(word binary, memory mem, int setflags);
+int ADD_SP_T2(word binary, memory mem, int setflags);
+int ADD_SP_T3(word binary, memory mem, int setflags);
+int ADD_SP_T4(word binary, memory mem, int setflags);
 int B_T1(word binary, memory mem, int setflags);
 int B_T2(word binary, memory mem, int setflags);
 int B_T3(word binary, memory mem, int setflags);
@@ -70,7 +81,9 @@ int SUB_Imm_T3(word binary, memory mem, int setflags);
 int SUB_Imm_T4(word binary, memory mem, int setflags);
 int SUB_Reg_T1(word binary, memory mem, int setflags);
 int SUB_Reg_T2(word binary, memory mem, int setflags);
+int SUB_SP_T1(word binary, memory mem, int setflags);
+int SUB_SP_T2(word binary, memory mem, int setflags);
+int SUB_SP_T3(word binary, memory mem, int setflags);
 int SVC_T1(word binary, memory mem, int setflags);
-
 
 #endif

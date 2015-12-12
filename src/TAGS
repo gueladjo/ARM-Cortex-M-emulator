@@ -3,19 +3,20 @@ bits.c,74
 unsigned int get_host_endianness(20,380
 byte * __flip_endianness(36,978
 
-disassembly.c,325
+disassembly.c,350
 int is_16bits(3,28
-int it_condition(13,216
-int it_XYZ(33,942
-int search_instruction(56,2474
-int decode_instruction(73,2922
-word create_mask(259,8463
-int disasm(268,8611
-void extract_dico(318,10038
-word ThumbExpandImm(355,11174
-void DecodeImmShift(384,11936
-word SignExtend16(427,12850
-word SignExtend32(438,13080
+int it_condition(14,265
+int it_XYZ(34,991
+int search_instruction(57,2523
+int decode_instruction(70,2881
+word create_mask(267,8763
+int disasm(276,8911
+void extract_dico(324,10239
+word ThumbExpandImm(361,11381
+void DecodeImmShift(390,12143
+word SignExtend16(433,13057
+word SignExtend32(444,13285
+void decode_P(460,13688
 
 elf.c,735
 byte * __Elf_Rel_flip_endianness(31,737
@@ -46,16 +47,88 @@ int setcmd(195,5207
 int assertcmd(323,8815
 int disasmcmd(456,12738
 int runcmd(536,15223
-int stepcmd(555,15720
-int breakcmd(559,15785
+int stepcmd(555,15774
+int breakcmd(575,16267
+
+instructions.c,1680
+void set_apsr(3,27
+int conditionPassed(10,188
+int addImm(102,1994
+int ADD_Imm_T1(115,2290
+int ADD_Imm_T2(126,2510
+int ADD_Imm_T3(136,2692
+int ADD_Imm_T4(147,2997
+int addReg(158,3292
+int ADD_Reg_T1(177,3775
+int ADD_Reg_T2(188,3991
+int ADD_Reg_T3(198,4170
+int ADD_SP_T1(204,4265
+int ADD_SP_T2(215,4463
+int ADD_SP_T3(225,4626
+int ADD_SP_T4(236,4905
+int cmpImm(248,5176
+int CMP_Imm_T1(276,5739
+int CMP_Imm_T2(284,5904
+int cmpReg(295,6155
+int CMP_Reg_T1(327,6812
+int CMP_Reg_T2(337,6990
+int CMP_Reg_T3(347,7167
+int IT_T1(353,7261
+int movImm(360,7380
+int MOV_Imm_T1(368,7506
+int MOV_Imm_T2(376,7671
+int MOV_Imm_T3(384,7974
+int movReg(392,8243
+int MOV_Reg_T1(399,8351
+int MOV_Reg_T2(409,8522
+int MOV_Reg_T3(419,8693
+int B_T1(430,8874
+int B_T2(448,9223
+int B_T3(465,9496
+int B_T4(482,9865
+int BL_T1(504,10400
+int BX_T1(528,10974
+int LDR_Imm_T1(537,11159
+int LDR_Imm_T2(565,11832
+int LDR_Imm_T3(593,12455
+int LDR_Imm_T4(622,13128
+int LDR_Lit_T1(624,13195
+int LDR_Lit_T2(651,13816
+int MOVT_T1(685,14544
+int MUL_T1(695,14873
+int MUL_T2(708,15159
+int POP_T1(722,15500
+int POP_T2(741,15890
+int POP_T3(760,16327
+int PUSH_T1(769,16526
+int PUSH_T2(787,16935
+int PUSH_T3(805,17346
+int STR_Imm_T1(814,17545
+int STR_Imm_T2(851,18515
+int STR_Imm_T3(887,19431
+int STR_Imm_T4(923,20398
+int STR_Reg_T1(925,20465
+int STR_Reg_T2(960,21419
+int subImm(996,22432
+int SUB_Imm_T1(1009,22729
+int SUB_Imm_T2(1020,22949
+int SUB_Imm_T3(1030,23131
+int SUB_Imm_T4(1041,23436
+int subReg(1052,23731
+int SUB_Reg_T1(1068,24096
+int SUB_Reg_T2(1079,24312
+int SUB_SP_T1(1089,24537
+int SUB_SP_T2(1099,24703
+int SUB_SP_T3(1109,24969
+int SVC_T1(1119,25229
 
 interpreter.c,159
 interpreteur init_inter(9,186
 void del_inter(20,482
 int execute_cmd(34,1104
-int  acquire_line(90,2700
-void usage_ERROR_MSG(136,4180
-int exitcmd(145,4512
+int  acquire_line(96,2866
+void usage_ERROR_MSG(142,4346
+int exitcmd(151,4678
 
 memory.c,205
 memory stack_set(9,134
@@ -63,8 +136,8 @@ void memory_allocation(19,407
 byte read_memory_value(55,1455
 int write_memory_value(84,2623
 int memory_free(118,3864
-void print_section_raw_content(149,4546
-int load 167,5169
+void print_section_raw_content(153,4625
+int load 171,5248
 
 parsing.c,179
 char* get_next_token(13,347
@@ -75,9 +148,11 @@ int is_adress(117,3604
 int reg_index(132,3886
 int is_register(141,4121
 
-run.c,47
+run.c,90
 int run(3,18
-int execute_instruction(37,1087
+int execute_instruction(48,1365
+int step(280,7956
+int step_into(291,8314
 
 section.c,81
 scntab new_scntab(21,439
@@ -334,6 +409,9 @@ typedef int64_t  Elf64_Sxword;38,719
 functions.h,24
 #define _FUNCTIONS2,20
 
+instructions.h,28
+#define _INSTRUCTIONS8,120
+
 interpreter.h,648
 #define _INTERPRETER2,22
 #define PROMPT_STRING 18,337
@@ -354,7 +432,7 @@ enum {HEXA, INT, UNKNOWN}UNKNOWN25,559
     char first_token;44,1153
 } *interpreteur;interpreteur45,1176
 
-memory.h,580
+memory.h,630
 #define _MEMORY7,135
 #define NB_SECTIONS 21,384
 #define DEFAULT_START 23,434
@@ -376,6 +454,8 @@ struct memory40,896
   segment* rodata;46,985
   word reg[reg47,1005
   unsigned int endianness;48,1022
+  int* break_list;49,1050
+  stab symtab;50,1138
 
 notify.h,962
 #define _NOTIFY_H_11,205
@@ -551,8 +631,8 @@ relocator.h,4574
 #define  R_ARM_THM_TLS_DESCSEQ16 146,5414
 #define  R_ARM_THM_TLS_DESCSEQ32 147,5455
 
-run.h,19
-#define _RUN8,107
+run.h,18
+#define _RUN8,99
 
 syms.h,547
 #define _SYMS_H_12,196
