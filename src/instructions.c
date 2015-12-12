@@ -376,8 +376,8 @@ int MOV_Imm_T1(word binary, memory mem, int setflags)
 int MOV_Imm_T2(word binary, memory mem, int setflags)
 {
   int registr = (binary & 0x00000F00) >> 8;
- // int imm = ThumbExpandImm_C((binary & 0x04000000) >> 26, (binary & 0x00007000) >> 12, binary & 0x000000FF, (mem->reg[16] & 0x20000000) >> 29)  ;
-  int imm = 3;
+  int imm = ThumbExpandImm((binary & 0x04000000) >> 26, (binary & 0x00007000) >> 12, binary & 0x000000FF); //ThumbExpandImm_C
+ //int imm = 3;
   return movImm(registr, imm, mem); 
 }
 
@@ -440,7 +440,7 @@ int B_T1(word binary, memory mem, int setflags)
       offset = ((imm8 << 1) | 0xFFFFFE00);
     }
 
-    mem->reg[15] = mem->reg[15] + offset;
+    mem->reg[15] = mem->reg[15] + offset + 2; //Ajouter la taille de l'instruction
    }
   return 0;
 }
@@ -456,7 +456,7 @@ int B_T2(word binary, memory mem, int setflags)
     offset = ((imm11 << 1) | 0xFFFFF000);
   }
 
-  mem->reg[15] = mem->reg[15] + offset;
+  mem->reg[15] = mem->reg[15] + offset + 2;
 
   return 0;
 }
@@ -474,7 +474,7 @@ int B_T3(word binary, memory mem, int setflags) {
       offset = ((imm11 << 1) | 0xFFFFF000);
     }
 
-    mem->reg[15] = mem->reg[15] + offset;
+    mem->reg[15] = mem->reg[15] + offset + 4;
    }
   return 0;
 }
@@ -496,7 +496,7 @@ int B_T4(word binary, memory mem, int setflags)
     offset = (imm | 0xFE000000);
   }
 
-  mem->reg[15] = mem->reg[15] + offset;
+  mem->reg[15] = mem->reg[15] + offset + 4;
 
   return 0;
 }
@@ -520,7 +520,7 @@ int BL_T1(word binary, memory mem, int setflags)
   }
 
   mem->reg[14] = mem->reg[15] | 0x1;
-  mem->reg[15] = mem->reg[15] + offset;
+  mem->reg[15] = mem->reg[15] + offset + 4;
 
   return 0;
 }
@@ -529,7 +529,7 @@ int BX_T1(word binary, memory mem, int setflags)
 {
   int32_t registr = (binary & 0x0078) >> 3;
   int offset = mem->reg[registr];
-  mem->reg[15] = mem->reg[15] + offset;
+  mem->reg[15] = mem->reg[15] + offset + 2;
 
   return 0;
 }
