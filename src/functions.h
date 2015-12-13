@@ -9,5 +9,8 @@ int debugcmd(interpreteur inter);
 int assertcmd(interpreteur inter, memory mem);
 int resumecmd(interpreteur inter);
 int disasmcmd(interpreteur inter, memory mem);
+int runcmd(interpreteur inter, memory mem);
+int stepcmd(interpreteur inter, memory mem);
+int breakcmd(interpreteur inter, memory mem);
 
 #endif

@@ -3,4 +3,4 @@
 #TEST_COMMENT="Test fonctionnement standard"
 #-------
 
-disp mem 0x12Fd54:0x13Fd55
+disasm 0x3000:0x300f

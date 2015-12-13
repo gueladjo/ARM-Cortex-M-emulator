@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=FAIL
+#TEST_COMMENT="Adresse hors .txt"
+#-------
+
+disasm 0x4000:0x400f

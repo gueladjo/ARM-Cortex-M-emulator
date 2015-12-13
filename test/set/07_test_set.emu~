@@ -1,6 +1,0 @@
-#-------
-#TEST_RETURN_CODE=FAIL           
-#TEST_COMMENT="Teste valeur invalide pour registre"
-#-------
-
-set reg r4 1264641

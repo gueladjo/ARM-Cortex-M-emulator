@@ -18,37 +18,37 @@ memory stack_set(memory mem)
 
 void memory_allocation(memory mem, char* section_name, byte* segdata, size_t size, size_t adress)
 {
-  if (size == 0) return mem;
+  if (size == 0) return;
   if (!strcmp(section_name,".rodata")) {
     WARNING_MSG("RODATA\n");
     mem->rodata->raddr = calloc(size, sizeof(byte));
     mem->rodata->vaddr = adress;
     mem->rodata->size = size;
     memcpy(mem->rodata->raddr, segdata, size);
-    return mem;
+    return;
   }
   if (!strcmp(section_name, ".text")) {
     mem->txt->raddr = calloc(size, sizeof(byte));
     mem->txt->vaddr = adress; 
     mem->txt->size = size;
     memcpy(mem->txt->raddr, segdata, size);
-    return mem;
+    return;
   }
   if (!strcmp(section_name,".data")) {
     mem->data->raddr = calloc(size, sizeof(byte));
     mem->data->vaddr = adress;
     mem->data->size = size;
     memcpy(mem->data->raddr, segdata, size);
-    return mem;
+    return;
   }
   if (!strcmp(section_name, ".bss")) {
     mem->bss->raddr = calloc(size, sizeof(byte));
     mem->bss->vaddr = adress;
     mem->bss->size = size;
     memcpy(mem->bss->raddr, segdata, size);
-    return mem;
+    return;
   }
-  return mem;
+  return;
 }
 
 
@@ -143,6 +143,10 @@ int memory_free(memory mem)
     free(mem->stack);
     e = 0;
   }
+  if (mem->break_list != NULL) {
+    free(mem->break_list);
+    e = 0;
+  }
   return e;
 }
 
@@ -163,6 +167,54 @@ void print_section_raw_content(char* name, unsigned int start, byte* content, un
   printf("\n");
 }
 
+int read_word(size_t adress, memory mem)
+{
+  int bValue[4];
+
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      bValue[i] = read_memory_value(adress + i, mem);    
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      bValue[3-i] = read_memory_value(adress + i, mem);
+    }
+  }
+
+  int value = (bValue[0] << 24) + (bValue[1] << 16) + (bValue[2] << 8) + bValue[3]; 
+
+  return value;
+}
+
+int write_word(size_t adress, int value, memory mem)
+{
+  byte bValue[4];
+  bValue[0] = (byte)((value & 0xff000000) >> 24);
+  bValue[1] = (byte)((value & 0x00ff0000) >> 16);
+  bValue[2] = (byte)((value & 0x0000ff00) >> 8);
+  bValue[3] = (byte)((value & 0x000000ff));
+
+  int i =0;
+  if (mem->endianness == LSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "write_word");
+        return 1;
+      }
+    }
+  }
+  else if (mem->endianness == MSB) {
+    for (i=0;i<=3;i++) {
+      if (write_memory_value(adress+i, bValue[3-i], mem)) {
+        WARNING_MSG("address is not valid %s\n", "write_word");
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
 
 int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
   WARNING_MSG("\n LOAD");
@@ -220,9 +272,19 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
       DEBUG_MSG("section %s not present in the elf file",section_names[i]);
     }
   }
+  rewind(pf_elf);
+
+  // Relocation
+  reloc_segment(pf_elf, *(memory->data), ".data", memory, endianness, &symtab);  
+  reloc_segment(pf_elf, *(memory->txt), ".text", memory, endianness, &symtab);   
+  reloc_segment(pf_elf, *(memory->rodata), ".rodata", memory, endianness, &symtab);   
+  reloc_segment(pf_elf, *(memory->bss), ".bss", memory, endianness, &symtab);   
+
   free(ehdr);
   //Alloue le stack
   stack_set(memory);
+  //Alloue la liste des breakpoints
+  memory->break_list = calloc(memory->txt->size, sizeof(int));
   printf("\n------ Fichier ELF \"%s\" : sections lues lors du chargement ------\n", elf_file) ;
   stab32_print( symtab );
   memory->endianness = endianness;
@@ -231,10 +293,5 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
   del_scntab( section_table );
   fclose(pf_elf);
   puts("");
-  return 0;
-} 
-
-int read_word(size_t adress, memory mem)
-{
   return 0;
 }

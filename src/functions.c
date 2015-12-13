@@ -3,6 +3,7 @@
 #include <string.h>
 #include "parsing.h"
 #include "disassembly.h"
+#include "run.h"
 
 int loadcmd(interpreteur inter, memory mem) {
   int no_args;
@@ -163,7 +164,7 @@ int dispcmd(interpreteur inter, memory mem)
 	if (i%4 == 0) printf("\n");
 	printf("r%i: %02x\t", i, mem->reg[i]);
       }
-      printf("aspr: %02x\t\n", mem->reg[reg_index("aspr")]);
+      printf("apsr: %02x\t\n", mem->reg[reg_index("apsr")]);
       return 0;
     }
     while ((token != NULL) && !is_register(token)) {
@@ -491,9 +492,13 @@ int disasmcmd(interpreteur inter, memory mem) {
     }
     if (endaddr >= mem->txt->vaddr + mem->txt->size) //If address range overflows .txt size
       endaddr = mem->txt->vaddr + mem->txt->size - 1;
-    dico dico[53];
+    if (endaddr < startaddr) {
+      WARNING_MSG("end address lower than startaddress%s\n", "disasmcmd");
+      return 1;
+    }
+    dico dico[DICO_SIZE];
     extract_dico("dico.csv", dico);
-    disasm(startaddr, endaddr, dico, mem); 
+    disasm(startaddr, endaddr, dico, mem);
     return 0;
   }
 
@@ -516,7 +521,7 @@ int disasmcmd(interpreteur inter, memory mem) {
       endaddr = mem->txt->vaddr + mem->txt->size - 1;
     else
       endaddr = startaddr+offset;
-    dico dico[53];
+    dico dico[DICO_SIZE];
     extract_dico("dico.csv", dico);
     disasm(startaddr, endaddr, dico, mem);
     return 0;
@@ -526,4 +531,110 @@ int disasmcmd(interpreteur inter, memory mem) {
     WARNING_MSG("wrong separator %s\n", "disasmcmd");
     return 1;
   }
+}
+
+int runcmd(interpreteur inter, memory mem) {
+  DEBUG_MSG("Chaine : %s", inter->input);
+  char* token = NULL;
+  size_t address;
+  if ((token = get_next_token(inter)) == NULL && mem->reg[15] == 0) {
+    mem->reg[15] = mem->txt->vaddr;
+  }
+  if (token != NULL && get_type(token) == HEXA)
+    mem->reg[15] = strtol(token, NULL, 16);
+  else if (token != NULL) {
+    WARNING_MSG("second argument is not an hexa %s\n", "runcmd");
+    return 1;
+  }
+  dico dico[DICO_SIZE];
+  extract_dico("dico.csv", dico);
+  run(dico, mem);
+  return 0;
+}
+
+int stepcmd(interpreteur inter, memory mem) {
+  DEBUG_MSG("Chaine : %s", inter->input);
+  char* token = NULL;
+  if ((token = get_next_token(inter)) == NULL) {
+    dico dico[DICO_SIZE];
+    extract_dico("dico.csv", dico);
+    step(dico, mem);
+  }
+  else if (!strcmp(token, "into")) {
+    dico dico[DICO_SIZE];
+    extract_dico("dico.csv", dico);
+    step_into(dico, mem);
+  }
+  else {
+    WARNING_MSG("Parameter not valid %s\n", "stepcmd");
+    return 1;
+  }
+  return 0;
+}
+
+int breakcmd(interpreteur inter, memory mem) {
+  DEBUG_MSG("Chaine : %s", inter->input);
+  char* token = NULL;
+  size_t address;
+  int i;
+  if ((token = get_next_token(inter)) == NULL) {
+    WARNING_MSG("No argument given to command %s\n", "breakcmd");
+    return 1;
+  }
+  if (!strcmp(token, "add")) {
+    if ((token = get_next_token(inter)) == NULL) {
+      WARNING_MSG("Not enough arguments given to command %s\n", "breakcmd");
+      return 1;
+    }
+    do {
+      if (get_type(token) != HEXA) {
+	WARNING_MSG("Argument is not an hexadecimal %s\n", "breakcmd");
+	return 1;
+      }
+      address = strtol(token, NULL, 16);
+      if (address < mem->txt->vaddr || address >= (mem->txt->vaddr + mem->txt->size)) {
+	WARNING_MSG("Address out of .txt range %s\n", "breakcmd");
+	return 1;
+      }
+      mem->break_list[address - mem->txt->vaddr] = 1;
+    } while ((token = get_next_token(inter)) != NULL);
+  }
+  else if (!strcmp(token, "list")) {
+    int j = 1;
+    for (i=0;i<=mem->txt->size;i++) {
+      if (mem->break_list[i] == 1) {
+	printf("#%d : 0x%x\n", j, (unsigned int)(i + mem->txt->vaddr));
+	j++;
+      }
+    }
+  }
+  else if (!strcmp(token, "del")) {
+    if ((token = get_next_token(inter)) == NULL) {
+      WARNING_MSG("Not enough arguments given to command %s\n", "breakcmd");
+      return 1;
+    }
+    if(!strcmp(token, "all")) {
+      for (i=0;i<=mem->txt->size;i++)
+	mem->break_list[i] = 0;
+    }
+    else {
+      do {
+	if (get_type(token) != HEXA) {
+	WARNING_MSG("Argument is not an hexadecimal %s\n", "breakcmd");
+	return 1;
+      }
+      address = strtol(token, NULL, 16);
+      if (address < mem->txt->vaddr || address >= (mem->txt->vaddr + mem->txt->size)) {
+	WARNING_MSG("Address out of .txt range %s\n", "breakcmd");
+	return 1;
+      }
+      mem->break_list[address - mem->txt->vaddr] = 0;
+      } while ((token = get_next_token(inter)) != NULL);
+    }
+  }
+  else {
+    WARNING_MSG("Unknown parameter%s\n", "breakcmd");
+    return 1;
+  }
+  return 0;
 }

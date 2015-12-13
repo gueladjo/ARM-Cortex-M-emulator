@@ -35,6 +35,13 @@ assert word <registre> <valeur>
 assert byte <registre> <valeur>
 debug
 resume
+disasm <plage>
+run {<adresse>}
+step
+step into
+break add <adresse>+
+break del <adresse>+ | all
+break list
 
 
 Instructions de désinstallation

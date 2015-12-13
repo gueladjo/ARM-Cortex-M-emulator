@@ -72,6 +72,15 @@ int execute_cmd(interpreteur inter, memory memory) {
   else if(strcmp(token, "disasm") == 0) {
     return disasmcmd(inter, memory);
   }
+  else if(strcmp(token, "run") == 0) {
+    return runcmd(inter, memory);
+  }
+  else if(strcmp(token, "step") == 0) {
+    return stepcmd(inter, memory);
+  }
+  else if(strcmp(token, "break") == 0) {
+    return breakcmd(inter, memory);
+  }
   WARNING_MSG("Unknown Command : '%s'\n", cmdStr);
   return CMD_UNKOWN_RETURN_VALUE;
 }
