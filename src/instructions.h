@@ -18,13 +18,16 @@
 void set_apsr(memory mem, int n, int z, int c, int v);
 int conditionPassed(memory mem, int cond);
 
-int addImm(int immediate, int* registers, memory mem, char* encoding);
-int addReg(int* registers, memory mem, char* encoding);
+int addImm(int immediate, int* registers,  memory mem, int setflags, char* encoding);
+int addReg(int* registers, memory mem, int setflags, int shifted, char* encoding);
 int cmpImm(int registr, int immediate, memory mem);
-int cmpReg(int* registers, memory mem, char* encoding);
-int movImm(int registr, int immediate, memory mem); 
+int cmpReg(int* registers, memory mem, int shifted, char* encoding);
+int movImm(int registr, int immediate, memory mem, int setflags); 
+int movReg(int* registers, memory mem, int setflags);
+int subReg(int* registers, memory mem, int setflags, int shifted, char* encoding);
+int subImm(int immediate, int* registers,  memory mem, int setflags, char* encoding);
 
-int movReg(int* registers, memory mem);
+
 int ADD_Imm_T1(word binary, memory mem, int setflags);
 int ADD_Imm_T2(word binary, memory mem, int setflags);
 int ADD_Imm_T3(word binary, memory mem, int setflags);
