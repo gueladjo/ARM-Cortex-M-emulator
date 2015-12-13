@@ -26,7 +26,7 @@ int movImm(int registr, int immediate, memory mem, int setflags);
 int movReg(int* registers, memory mem, int setflags);
 int subReg(int* registers, memory mem, int setflags, int shifted, char* encoding);
 int subImm(int immediate, int* registers,  memory mem, int setflags, char* encoding);
-
+int shift(unsigned imm2, unsigned imm3, unsigned type, word reg, memory mem);
 
 int ADD_Imm_T1(word binary, memory mem, int setflags);
 int ADD_Imm_T2(word binary, memory mem, int setflags);
