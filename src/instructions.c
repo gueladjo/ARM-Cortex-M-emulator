@@ -204,8 +204,8 @@ int addReg(int* registers, memory mem, int setflags, int shifted, char* encoding
 
   else if (strcmp(encoding, "T3") == 0) {
     result = mem->reg[registers[1]] + shifted;
-    mem->reg[registers[0]] = mem->reg[registers[1]] + shifted;
-    a = mem->reg[registers[1]];
+    mem->reg[registers[0]] = mem->reg[registers[2]] + shifted;
+    a = mem->reg[registers[2]];
     x = shifted;
   }
 

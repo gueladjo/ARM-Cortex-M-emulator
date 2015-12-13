@@ -3,7 +3,7 @@ bits.c,74
 unsigned int get_host_endianness(20,380
 byte * __flip_endianness(36,978
 
-disassembly.c,350
+disassembly.c,371
 int is_16bits(3,28
 int it_condition(14,265
 int it_XYZ(34,991
@@ -17,6 +17,7 @@ void DecodeImmShift(390,12143
 word SignExtend16(433,13057
 word SignExtend32(444,13285
 void decode_P(460,13688
+int shift(484,14348
 
 elf.c,735
 byte * __Elf_Rel_flip_endianness(31,737
@@ -50,7 +51,7 @@ int runcmd(536,15223
 int stepcmd(555,15774
 int breakcmd(575,16267
 
-instructions.c,1739
+instructions.c,1740
 #define INT_MAX 2,26
 #define INT_MIN 3,53
 void set_apsr(5,88
@@ -59,70 +60,70 @@ int addImm(104,2055
 int ADD_Imm_T1(142,2939
 int ADD_Imm_T2(153,3169
 int ADD_Imm_T3(163,3361
-int ADD_Imm_T4(176,3729
-int addReg(187,4027
-int ADD_Reg_T1(238,5446
-int ADD_Reg_T2(249,5675
-int ADD_Reg_T3(259,5887
-int ADD_SP_T1(276,6355
-int ADD_SP_T2(287,6556
-int ADD_SP_T3(297,6722
-int ADD_SP_T4(310,7055
-int cmpImm(321,7328
-int CMP_Imm_T1(345,7720
-int CMP_Imm_T2(353,7885
-int cmpReg(361,8133
-int CMP_Reg_T1(394,8721
-int CMP_Reg_T2(404,8904
-int CMP_Reg_T3(414,9113
-int IT_T1(429,9492
-int movImm(436,9611
-int MOV_Imm_T1(456,9989
-int MOV_Imm_T2(464,10164
-int MOV_Imm_T3(475,10517
-int movReg(483,10789
-int MOV_Reg_T1(504,11184
-int MOV_Reg_T2(514,11387
-int MOV_Reg_T3(524,11561
-int B_T1(538,11807
-int B_T2(556,12156
-int B_T3(573,12429
-int B_T4(590,12798
-int BL_T1(612,13333
-int BX_T1(636,13907
-int LDR_Imm_T1(645,14092
-int LDR_Imm_T2(673,14765
-int LDR_Imm_T3(701,15388
-int LDR_Imm_T4(730,16061
-int LDR_Lit_T1(732,16128
-int LDR_Lit_T2(759,16749
-int MOVT_T1(793,17477
-int MUL_T1(803,17806
-int MUL_T2(828,18325
-int POP_T1(842,18666
-int POP_T2(861,19056
-int POP_T3(880,19493
-int PUSH_T1(889,19692
-int PUSH_T2(907,20101
-int PUSH_T3(925,20512
-int STR_Imm_T1(934,20711
-int STR_Imm_T2(971,21681
-int STR_Imm_T3(1007,22597
-int STR_Imm_T4(1043,23564
-int STR_Reg_T1(1045,23631
-int STR_Reg_T2(1080,24585
-int subImm(1116,25598
-int SUB_Imm_T1(1154,26485
-int SUB_Imm_T2(1165,26715
-int SUB_Imm_T3(1175,26907
-int SUB_Imm_T4(1188,27276
-int subReg(1199,27574
-int SUB_Reg_T1(1237,28547
-int SUB_Reg_T2(1248,28776
-int SUB_SP_T1(1267,29265
-int SUB_SP_T2(1277,29431
-int SUB_SP_T3(1287,29697
-int SVC_T1(1297,29957
+int ADD_Imm_T4(176,3733
+int addReg(187,4031
+int ADD_Reg_T1(238,5450
+int ADD_Reg_T2(249,5679
+int ADD_Reg_T3(259,5891
+int ADD_SP_T1(276,6363
+int ADD_SP_T2(287,6564
+int ADD_SP_T3(297,6730
+int ADD_SP_T4(310,7067
+int cmpImm(321,7340
+int CMP_Imm_T1(345,7732
+int CMP_Imm_T2(353,7897
+int cmpReg(361,8145
+int CMP_Reg_T1(394,8733
+int CMP_Reg_T2(404,8916
+int CMP_Reg_T3(414,9125
+int IT_T1(429,9504
+int movImm(436,9623
+int MOV_Imm_T1(456,10001
+int MOV_Imm_T2(464,10176
+int MOV_Imm_T3(475,10533
+int movReg(483,10805
+int MOV_Reg_T1(504,11200
+int MOV_Reg_T2(514,11403
+int MOV_Reg_T3(524,11577
+int B_T1(538,11827
+int B_T2(556,12180
+int B_T3(573,12457
+int B_T4(590,12830
+int BL_T1(612,13377
+int BX_T1(636,13964
+int LDR_Imm_T1(644,14111
+int LDR_Imm_T2(672,14784
+int LDR_Imm_T3(700,15407
+int LDR_Imm_T4(729,16080
+int LDR_Lit_T1(731,16147
+int LDR_Lit_T2(758,16768
+int MOVT_T1(792,17496
+int MUL_T1(802,17825
+int MUL_T2(827,18344
+int POP_T1(841,18685
+int POP_T2(860,19076
+int POP_T3(879,19514
+int PUSH_T1(888,19713
+int PUSH_T2(906,20123
+int PUSH_T3(924,20535
+int STR_Imm_T1(933,20734
+int STR_Imm_T2(970,21704
+int STR_Imm_T3(1006,22620
+int STR_Imm_T4(1042,23587
+int STR_Reg_T1(1044,23654
+int STR_Reg_T2(1079,24608
+int subImm(1115,25621
+int SUB_Imm_T1(1153,26508
+int SUB_Imm_T2(1164,26738
+int SUB_Imm_T3(1174,26930
+int SUB_Imm_T4(1187,27301
+int subReg(1198,27599
+int SUB_Reg_T1(1236,28572
+int SUB_Reg_T2(1247,28801
+int SUB_SP_T1(1266,29294
+int SUB_SP_T2(1276,29460
+int SUB_SP_T3(1286,29726
+int SVC_T1(1296,29986
 
 interpreter.c,159
 interpreteur init_inter(9,186
@@ -152,11 +153,14 @@ int is_adress(117,3604
 int reg_index(132,3886
 int is_register(141,4121
 
+relocation.c,27
+void reloc_segment(15,482
+
 run.c,90
 int run(3,18
-int execute_instruction(50,1485
-int step(282,8076
-int step_into(293,8434
+int execute_instruction(55,1570
+int step(232,7765
+int step_into(243,8123
 
 section.c,81
 scntab new_scntab(21,439
@@ -436,29 +440,30 @@ enum {HEXA, INT, UNKNOWN}UNKNOWN25,559
     char first_token;44,1153
 } *interpreteur;interpreteur45,1176
 
-memory.h,607
+memory.h,640
 #define _MEMORY7,135
-#define NB_SECTIONS 21,384
-#define DEFAULT_START 23,434
-#define TEXT_SECTION_STR 24,502
-#define RODATA_SECTION_STR 25,555
-#define DATA_SECTION_STR 26,593
-#define BSS_SECTION_STR 27,627
-typedef struct segment segment;30,663
-typedef struct memory* memory;31,696
-struct segment33,730
-  byte* raddr;35,749
-  size_t size;36,802
-  size_t vaddr;37,833
-struct memory40,896
-  segment* stack;42,914
-  segment* bss;43,933
-  segment* data;44,950
-  segment* txt;45,968
-  segment* rodata;46,985
-  word reg[reg47,1005
-  unsigned int endianness;48,1022
-  int* break_list;49,1050
+#define NB_SECTIONS 20,363
+#define DEFAULT_START 22,413
+#define TEXT_SECTION_STR 23,481
+#define RODATA_SECTION_STR 24,534
+#define DATA_SECTION_STR 25,572
+#define BSS_SECTION_STR 26,606
+#define RELOC_PREFIX_STR 27,638
+typedef struct segment segment;29,673
+typedef struct memory* memory;30,706
+struct segment32,740
+  byte* raddr;34,759
+  size_t size;35,812
+  size_t vaddr;36,843
+struct memory39,906
+  segment* stack;41,924
+  segment* bss;42,943
+  segment* data;43,960
+  segment* txt;44,978
+  segment* rodata;45,995
+  word reg[reg46,1015
+  unsigned int endianness;47,1032
+  int* break_list;48,1060
 
 notify.h,962
 #define _NOTIFY_H_11,205
