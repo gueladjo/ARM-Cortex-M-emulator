@@ -1,3 +1,9 @@
+/**
+ * @file memory.h
+ * @author Mickael Albisser + Moctar Ba
+ * @brief Parsing headers
+ */
+
 #ifndef _PARSING
 #define _PARSING
 

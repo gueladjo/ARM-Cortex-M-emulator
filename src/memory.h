@@ -1,6 +1,6 @@
 /**
  * @file memory.h
- * @author Mickael Albisser
+ * @author Mickael Albisser + Moctar Ba
  * @brief Memory + registers management functions - header
  */
 #ifndef _MEMORY

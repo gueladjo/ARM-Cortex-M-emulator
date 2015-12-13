@@ -1,3 +1,9 @@
+/**
+ * @file memory.h
+ * @author Mickael Albisser
+ * @brief Run functions
+ */
+
 #include "run.h"
 
 int run(dico* dictionary, memory mem) {
@@ -13,17 +19,19 @@ int run(dico* dictionary, memory mem) {
     is_short = is_16bits(header+1);
     binary = 0;
 
-    if (mem->break_list[mem->reg[15]-mem->txt->vaddr] == 1) {
+    if (mem->break_list[mem->reg[15]-mem->txt->vaddr] == 1) { //On atteint le breakpoint, on change sa valeur pour passer par dessus ensuite
       printf("Breakpoint reached at address %x\n", mem->reg[15]);
-      mem->reg[15] += 2;
-      if (!is_short)
-	mem->reg[15] += 2;
+      mem->break_list[mem->reg[15]-mem->txt->vaddr] = 3;
       return 0;
     }
     
     if (mem->break_list[mem->reg[15]-mem->txt->vaddr] == 2) {
       mem->break_list[mem->reg[15]-mem->txt->vaddr] = 0;
       return 0;
+    }
+    
+    if (mem->break_list[mem->reg[15]-mem->txt->vaddr] == 3) { 
+      mem->break_list[mem->reg[15]-mem->txt->vaddr] = 1;
     }
       
     if (is_short) {
@@ -32,8 +40,11 @@ int run(dico* dictionary, memory mem) {
       search_instruction(binary, dictionary, instruction, is_short);
       DEBUG_MSG("Instruction : %s", instruction->id_debug);
       ret = execute_instruction(binary, instruction, it_state, mem);
-      if (ret == 1)
+      if (ret == 1) {
+	free(instruction);
+	free(it_state);
 	return 0;
+      }
     }
       else {
       word temp = 0;
@@ -44,23 +55,27 @@ int run(dico* dictionary, memory mem) {
       search_instruction(binary, dictionary, instruction, is_short);
       DEBUG_MSG("Instruction : %s", instruction->id_debug);
       ret = execute_instruction(binary, instruction, it_state, mem);
-      if (ret == 1)
+      if (ret == 1) {
+	free(instruction);
+	free(it_state);
 	return 0;
+      }
     }
   }
   free(instruction);
+  free(it_state);
   return 0;
 }
 
 int execute_instruction(word binary, dico* instruction, unsigned int* it_state, memory mem) {
-  int setflags = 1;
+  int setflags = 0;
   if ((*it_state & 0xf) != 0) { //If in IT Block
     int temp = (*it_state & 0xF) << 1;
     if (!conditionPassed(mem, (*it_state >> 4))) { //Conditions non remplies
       *it_state = (*it_state & 0xE0) + temp; //Mise à jour de it_state
       return 0;
     }
-    setflags = 0;
+    setflags = 1;
     *it_state = (*it_state & 0xE0) + temp; //Mise à jour de it_state
   }
   

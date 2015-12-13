@@ -1,3 +1,9 @@
+/**
+ * @file memory.h
+ * @author Mickael Albisser + Moctar Ba
+ * @brief Parsing functions
+ */
+
 #include "interpreter.h"
 #include "parsing.h"
 

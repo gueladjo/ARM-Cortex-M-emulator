@@ -1,3 +1,9 @@
+/**
+ * @file memory.h
+ * @author Mickael Albisser + Moctar Ba
+ * @brief Interpreter commands
+ */
+
 #ifndef _FUNCTIONS
 #define _FUNCTIONS
 

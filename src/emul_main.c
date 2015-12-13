@@ -1,5 +1,7 @@
 /**
- * @brief main function for the emulator
+ * @file memory.h
+ * @author Mickael Albisser + Moctar Ba
+ * @brief Interpreter main
  */
 
 #include "interpreter.h"

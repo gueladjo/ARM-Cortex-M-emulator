@@ -1,3 +1,9 @@
+/**
+ * @file memory.h
+ * @author Moctar Ba
+ * @brief Relocation
+ */
+
 #include "memory.h"
 
 /*--------------------------------------------------------------------------  */
@@ -32,7 +38,7 @@ void reloc_segment(FILE* fp, segment seg, char* segname, memory mem, unsigned in
       INFO_MSG("--------------Relocation de %s-------------------\n",segname) ;
       INFO_MSG("Nombre de symboles a reloger: %ld\n",scnsz/sizeof(*rel)) ;
 
-      int i;
+      int i = 0, j = 0;
       unsigned int V = 0;
       unsigned int S = 0;
       unsigned int A = 0;
@@ -49,19 +55,24 @@ void reloc_segment(FILE* fp, segment seg, char* segname, memory mem, unsigned in
           DEBUG_MSG("Entrée de relocation : offset %08x info =%08x sym = %08x type =%08x\n",rel[i].r_offset,rel[i].r_info,sym,type);
           DEBUG_MSG("Symbole en fonction duquel on reloge : symbole %s de type %d\n",symtab->sym[sym].name, type);
 
-
           if (symtab->sym[sym].type==STT_SECTION) {
-            S = symtab->sym[sym].addr._32;  
+            S = symtab->sym[sym].addr._32;
  
 	    if (type == R_ARM_ABS8) {
-              A = read_memory_value(P, mem);
+              uint8_t oct = read_memory_value(P, mem);
+              if (oct < 0)
+                A = oct | 0xFFFFFF00;
+              else
+                A = oct;
               V = A + S;
               write_memory_value(P, V, mem);  
+              printf("A: %d, P: %d, S: %d, T: %d, V:%x\n", A, P, S, T, V);
             }
             
             if (type == R_ARM_ABS32) {
-              A = read_word(P, mem);
+              A = read_word(P, mem) ;
               V = (S + A) | T;
+              printf("A: %d, P: %d, S: %d, T: %d, V:%x\n", A, P, S, T, V);
               write_word(P, V, mem);
             }
 
@@ -76,14 +87,16 @@ void reloc_segment(FILE* fp, segment seg, char* segname, memory mem, unsigned in
             S = symtab->sym[sym].addr._32;   
 
 	    if (type == R_ARM_ABS8) {
-              A = read_memory_value(P, mem);
+              A = read_memory_value(P, mem) ;
               V = A + S;
+              printf("A: %d, P: %d, S: %d, T: %d, V:%x\n", A, P, S, T, V);
               write_memory_value(P, V, mem);  
             }
             
             if (type == R_ARM_ABS32) {
-              A = read_word(P, mem);
+              A = read_word(P, mem) << 1;
               V = (S + A) | T;
+              printf("A: %d, P: %d, S: %d, T: %d, V:%x\n", A, P, S, T, V);
               write_word(P, V, mem);
             }
 
@@ -98,12 +111,14 @@ void reloc_segment(FILE* fp, segment seg, char* segname, memory mem, unsigned in
 	    if (type == R_ARM_ABS8) {
               A = read_memory_value(P, mem);
               V = A + S;
+              printf("A: %d, P: %d, S: %d, T: %d, V:%x\n", A, P, S, T, V);
               write_memory_value(P, V, mem);  
             }
             
             if (type == R_ARM_ABS32) {
               A = read_word(P, mem);
               V = (S + A) | T;
+              printf("A: %d, P: %d, S: %d, T: %d, V:%x\n", A, P, S, T, V);
               write_word(P, V, mem);
             }
 

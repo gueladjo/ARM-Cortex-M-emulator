@@ -1,3 +1,9 @@
+/**
+ * @file memory.h
+ * @author Mickael Albisser + Moctar Ba
+ * @brief Disassembly functions
+ */
+
 #include "disassembly.h"
 
 int is_16bits(byte* header)

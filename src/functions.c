@@ -1,3 +1,9 @@
+/**
+ * @file memory.h
+ * @author Mickael Albisser + Moctar Ba
+ * @brief Interpreteurs commands
+ */
+
 #include "interpreter.h"
 #include "memory.h"
 #include <string.h>
@@ -602,7 +608,7 @@ int breakcmd(interpreteur inter, memory mem) {
   else if (!strcmp(token, "list")) {
     int j = 1;
     for (i=0;i<=mem->txt->size;i++) {
-      if (mem->break_list[i] == 1) {
+      if (mem->break_list[i] != 0) {
 	printf("#%d : 0x%x\n", j, (unsigned int)(i + mem->txt->vaddr));
 	j++;
       }

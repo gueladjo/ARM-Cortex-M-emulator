@@ -1,6 +1,6 @@
 /**
  * @file instructions.h
- * @author Mickael Albisser 
+ * @author Mickael Albisser + Moctar Ba
  * @brief Run instructions - header
  */
 

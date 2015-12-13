@@ -1,3 +1,9 @@
+/**
+ * @file memory.h
+ * @author Mickael Albisser
+ * @brief Interpreter header
+ */
+
 #ifndef _INTERPRETER
 #define _INTERPRETER
 
