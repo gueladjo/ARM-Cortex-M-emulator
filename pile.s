@@ -18,14 +18,14 @@ B KO 						      @ sinon saut à KO
 procedure:
  push {r0,lr}         @ on stocke les registres sur lesquels la procedure 
                       @ agit (ici r0 seulement) et on stocke l'adresse de retour
- SUB sp,sp,#8         @ on decremente le pointeur de pile
+@ SUB sp,sp,#8         @ on decremente le pointeur de pile
  
  mov r0,#0
  ADD r1,r0,r1,LSR #1
  
  pop {r0,lr}          @ on recupere les registres sur lesquels la procedure agit
                       @ et on recupere l'adresse de retour
- ADD sp,sp,#8         @on decremente le pointeur de pile
+@ ADD sp,sp,#8         @on decremente le pointeur de pile
  BX lr
 
 OK:

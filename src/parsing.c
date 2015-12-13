@@ -134,10 +134,10 @@ int reg_index(char* reg)
     if (strcmp(reg, "sp") == 0) return 13;
     if (strcmp(reg, "lr") == 0) return 14;
     if (strcmp(reg, "pc") == 0) return 15;
-    if (strcmp(reg, "aspr") == 0) return 16;
+    if (strcmp(reg, "apsr") == 0) return 16;
     return atoi(reg);
 }
 
 int is_register(char* reg) {
-    return (strcmp(reg, "r0") && strcmp(reg, "r1") && strcmp(reg, "r2") && strcmp(reg, "r3") && strcmp(reg, "r4") && strcmp(reg, "r5") && strcmp(reg, "r6") && strcmp(reg, "r7") && strcmp(reg, "r8") &&  strcmp(reg, "r9") && strcmp(reg, "r10") && strcmp(reg, "r11") && strcmp(reg, "r12") && strcmp(reg, "r13") && strcmp(reg, "r14") && strcmp(reg, "r15") && strcmp(reg, "sp") && strcmp(reg, "lr") && strcmp(reg, "pc") && strcmp(reg, "aspr"));
+    return (strcmp(reg, "r0") && strcmp(reg, "r1") && strcmp(reg, "r2") && strcmp(reg, "r3") && strcmp(reg, "r4") && strcmp(reg, "r5") && strcmp(reg, "r6") && strcmp(reg, "r7") && strcmp(reg, "r8") &&  strcmp(reg, "r9") && strcmp(reg, "r10") && strcmp(reg, "r11") && strcmp(reg, "r12") && strcmp(reg, "r13") && strcmp(reg, "r14") && strcmp(reg, "r15") && strcmp(reg, "sp") && strcmp(reg, "lr") && strcmp(reg, "pc") && strcmp(reg, "apsr"));
 }

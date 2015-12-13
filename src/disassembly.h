@@ -26,8 +26,8 @@ struct dico
   unsigned int sig;
   unsigned int mask;
   int nb_op; //Number of operands
-  char registers_index[32];
-  char immediate_index[32];
+  char registers_index[50];
+  char immediate_index[50];
   int it;
   int treatImm;
   int treatReg;

@@ -1,0 +1,6 @@
+#-------
+#TEST_RETURN_CODE=PASS          
+#TEST_COMMENT="Test fonctionnement standard"
+#-------
+
+disp mem 0x12Fd54:0x13Fd55

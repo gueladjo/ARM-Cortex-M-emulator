@@ -324,7 +324,7 @@ int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem)
 void extract_dico(char* dico_file, dico* dico) {
   int i;
   FILE* pf_dico;
-  char token[32];
+  char token[50];
   if ((pf_dico = fopen(dico_file, "r")) == NULL)
     ERROR_MSG("Cannot open file %s", dico_file);
   for (i=0;i<11;i++) {
@@ -489,20 +489,24 @@ int shift(unsigned imm2, unsigned imm3, unsigned type, unsigned registr, memory 
     case 0:
       ret = registr << imm5;    
       mem->reg[16] = (mem->reg[16] & 0xDFFFFFFF) + (((registr & (1 << (32 - imm5))) >> (32 - imm5)) << 29);
+      break;
     case 1:
       if (imm5 == 0) imm5 = 32;
       ret = registr >> imm5;
       mem->reg[16] = (mem->reg[16] & 0xDFFFFFFF) + (((registr & (1 << (imm5 - 1))) >> (imm5 - 1)) << 29);
+      break;
     case 2:
       if (imm5 == 0) imm5 = 32;
       ret = ret >> imm5;
       mem->reg[16] = (mem->reg[16] & 0xDFFFFFFF) + (((registr & (1 << (imm5 - 1))) >> (imm5 - 1)) << 29);
+      break;
     case 3:
       if (imm5 == 0) {
         unsigned bit0 = registr & 0x1;
         ret = registr >> 1;
         ret = (ret | ((mem->reg[16] << 2) & 0x80000000));
-        mem->reg[16] = (mem->reg[16] & 0xDFFFFFFF) + (bit0 << 29);  
+        mem->reg[16] = (mem->reg[16] & 0xDFFFFFFF) + (bit0 << 29);
+	break;
       }
       else 
         ret = (registr >> imm5) | (registr << (sizeof(registr)*8 - imm5));
