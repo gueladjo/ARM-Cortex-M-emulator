@@ -34,8 +34,11 @@ int run(dico* dictionary, memory mem) {
       search_instruction(binary, dictionary, instruction, is_short);
       DEBUG_MSG("Instruction : %s", instruction->id_debug);
       ret = execute_instruction(binary, instruction, it_state, mem);
-      if (ret == 1)
+      if (ret == 1) {
+	free(instruction);
+	free(it_state);
 	return 0;
+      }
     }
       else {
       word temp = 0;
@@ -46,11 +49,15 @@ int run(dico* dictionary, memory mem) {
       search_instruction(binary, dictionary, instruction, is_short);
       DEBUG_MSG("Instruction : %s", instruction->id_debug);
       ret = execute_instruction(binary, instruction, it_state, mem);
-      if (ret == 1)
+      if (ret == 1) {
+	free(instruction);
+	free(it_state);
 	return 0;
+      }
     }
   }
   free(instruction);
+  free(it_state);
   return 0;
 }
 

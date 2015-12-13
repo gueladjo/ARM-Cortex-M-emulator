@@ -324,7 +324,7 @@ int disasm(size_t startadress, size_t endadress, dico* dictionary, memory mem)
 void extract_dico(char* dico_file, dico* dico) {
   int i;
   FILE* pf_dico;
-  char token[32];
+  char token[50];
   if ((pf_dico = fopen(dico_file, "r")) == NULL)
     ERROR_MSG("Cannot open file %s", dico_file);
   for (i=0;i<11;i++) {

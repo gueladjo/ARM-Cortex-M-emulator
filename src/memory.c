@@ -120,33 +120,34 @@ int memory_free(memory mem)
   int e = 1; //Error value
   if (mem->rodata != NULL && mem->rodata->size != 0) {
     free(mem->rodata->raddr);
-    free(mem->rodata);
     e = 0;
   }
+  free(mem->rodata);
   if (mem->txt != NULL && mem->txt->size != 0) {
     free(mem->txt->raddr);
-    free(mem->txt);
     e = 0;
   }
+  free(mem->txt);
   if (mem->data != NULL && mem->data->size != 0) {
     free(mem->data->raddr);
-    free(mem->data);
     e = 0;
   }
+  free(mem->data);
   if (mem->bss != NULL && mem->bss->size != 0) {
     free(mem->bss->raddr);
-    free(mem->bss);
     e = 0;
   }
+  free(mem->bss);
   if (mem->stack != NULL && mem->stack->size != 0) {
     free(mem->stack->raddr);
-    free(mem->stack);
     e = 0;
   }
+  free(mem->stack);
   if (mem->break_list != NULL) {
     free(mem->break_list);
     e = 0;
   }
+  free(mem);
   return e;
 }
 
