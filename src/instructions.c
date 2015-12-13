@@ -550,7 +550,7 @@ int B_T1(word binary, memory mem, int setflags)
       offset = ((imm8 << 1) | 0xFFFFFE00);
     }
 
-    mem->reg[15] = mem->reg[15] + offset;
+    mem->reg[15] = mem->reg[15] + offset + 2;
    }
   return 0;
 }
@@ -566,7 +566,7 @@ int B_T2(word binary, memory mem, int setflags)
     offset = ((imm11 << 1) | 0xFFFFF000);
   }
 
-  mem->reg[15] = mem->reg[15] + offset;
+  mem->reg[15] = mem->reg[15] + offset + 2;
 
   return 0;
 }
@@ -584,7 +584,7 @@ int B_T3(word binary, memory mem, int setflags) {
       offset = ((imm11 << 1) | 0xFFFFF000);
     }
 
-    mem->reg[15] = mem->reg[15] + offset;
+    mem->reg[15] = mem->reg[15] + offset + 4;
    }
   return 0;
 }
@@ -606,7 +606,7 @@ int B_T4(word binary, memory mem, int setflags)
     offset = (imm | 0xFE000000);
   }
 
-  mem->reg[15] = mem->reg[15] + offset;
+  mem->reg[15] = mem->reg[15] + offset + 4;
 
   return 0;
 }
@@ -629,7 +629,7 @@ int BL_T1(word binary, memory mem, int setflags)
     offset = (imm | 0xFE000000);
   }
 
-  mem->reg[14] = mem->reg[15] | 0x1;
+  mem->reg[14] = mem->reg[15]; // | 0x1; ?
   mem->reg[15] = mem->reg[15] + offset;
 
   return 0;
@@ -638,8 +638,7 @@ int BL_T1(word binary, memory mem, int setflags)
 int BX_T1(word binary, memory mem, int setflags)
 {
   int32_t registr = (binary & 0x0078) >> 3;
-  int offset = mem->reg[registr];
-  mem->reg[15] = mem->reg[15] + offset;
+  mem->reg[15] = mem->reg[registr];
 
   return 0;
 }
@@ -896,7 +895,7 @@ int PUSH_T1(word binary, memory mem, int setflags)
 
   int i = 0;
   int bit;
-  for(i = 15; i >= 0; i--) {
+  for(i = 0; i <= 15; i++) {
     bit = (registers & (1 << (15 - i))) >> (15 - i);
     if (bit == 1) {
       mem->reg[13] = mem->reg[13] - 4;
@@ -914,7 +913,7 @@ int PUSH_T2(word binary, memory mem, int setflags)
 
   int i = 0;
   int bit;
-  for(i = 15; i >= 0; i--) {
+  for(i = 0; i <= 15; i++) {
     bit = (registers & (1 << (15 - i))) >> (15 - i);
     if (bit == 1) {
       mem->reg[13] = mem->reg[13] - 4;
@@ -1296,5 +1295,8 @@ int SUB_SP_T3(word binary, memory mem, int setflags)
   return 0;
 }
 
-int SVC_T1(word binary, memory mem, int setflags) {return 0;}
+int SVC_T1(word binary, memory mem, int setflags) {
+  printf("Supervisor called with reference %u\n", binary & 0xFF);
+  return 1;
+}
 

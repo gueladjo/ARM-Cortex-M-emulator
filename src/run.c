@@ -6,6 +6,7 @@ int run(dico* dictionary, memory mem) {
   int is_short;
   word binary;
   byte* header;
+  int ret;
 
   while (mem->reg[15] <= mem->txt->vaddr + mem->txt->size) {
     header = mem->txt->raddr + mem->reg[15] - mem->txt->vaddr;
@@ -30,7 +31,9 @@ int run(dico* dictionary, memory mem) {
       memcpy(&binary, header, 2);
       search_instruction(binary, dictionary, instruction, is_short);
       DEBUG_MSG("Instruction : %s", instruction->id_debug);
-      execute_instruction(binary, instruction, it_state, mem);
+      ret = execute_instruction(binary, instruction, it_state, mem);
+      if (ret == 1)
+	return 0;
     }
       else {
       word temp = 0;
@@ -40,7 +43,9 @@ int run(dico* dictionary, memory mem) {
       binary = (binary << 16) + temp;
       search_instruction(binary, dictionary, instruction, is_short);
       DEBUG_MSG("Instruction : %s", instruction->id_debug);
-      execute_instruction(binary, instruction, it_state, mem);
+      ret = execute_instruction(binary, instruction, it_state, mem);
+      if (ret == 1)
+	return 0;
     }
   }
   free(instruction);
@@ -60,223 +65,168 @@ int execute_instruction(word binary, dico* instruction, unsigned int* it_state, 
   }
   
   if (!strcmp(instruction->id_debug, "ADD_Imm_T1")) {
-      ADD_Imm_T1(binary, mem, setflags);
-      return 0;
-    }
+    return ADD_Imm_T1(binary, mem, setflags);
+  }
   else if (!strcmp(instruction->id_debug, "ADD_Imm_T2")) {
-    ADD_Imm_T2(binary, mem, setflags);
-    return 0;
+    return ADD_Imm_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "ADD_Imm_T3")) {
-    ADD_Imm_T3(binary, mem, setflags);
-    return 0;
+    return ADD_Imm_T3(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "ADD_Imm_T4")) {
-    ADD_Imm_T4(binary, mem, setflags);
-    return 0;
+    return ADD_Imm_T4(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "ADD_Reg_T1")) {
-    ADD_Reg_T1(binary, mem, setflags);
-    return 0;
+    return ADD_Reg_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "ADD_Reg_T2")) {
-    ADD_Reg_T2(binary, mem, setflags);
-    return 0;
+    return ADD_Reg_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "ADD_Reg_T3")) {
-    ADD_Reg_T3(binary, mem, setflags);
-    return 0;
+    return ADD_Reg_T3(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "B_T1")) {
-    B_T1(binary, mem, setflags);
-    return 0;
+    return B_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "B_T2")) {
-    B_T2(binary, mem, setflags);
-    return 0;
+    return B_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "B_T3")) {
-    B_T3(binary, mem, setflags);
-    return 0;
+    return B_T3(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "B_T4")) {
-    B_T4(binary, mem, setflags);
-    return 0;
+    return B_T4(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "BL_T1")) {
-    BL_T1(binary, mem, setflags);
-    return 0;
+    return BL_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "BX_T1")) {
-    BX_T1(binary, mem, setflags);
-    return 0;
+    return BX_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "CMP_Imm_T1")) {
-    CMP_Imm_T1(binary, mem, setflags);
-    return 0;
+    return CMP_Imm_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "CMP_Imm_T2")) {
-    CMP_Imm_T2(binary, mem, setflags);
-    return 0;
+    return CMP_Imm_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "CMP_Reg_T1")) {
-    CMP_Reg_T1(binary, mem, setflags);
-    return 0;
+    return CMP_Reg_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "CMP_Reg_T2")) {
-    CMP_Reg_T2(binary, mem, setflags);
-    return 0;
+    return CMP_Reg_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "CMP_Reg_T3")) {
-    CMP_Reg_T3(binary, mem, setflags);
-    return 0;
+    return CMP_Reg_T3(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "IT_T1")) {
-    IT_T1(binary, mem, setflags, it_state);
-    return 0;
+    return IT_T1(binary, mem, setflags, it_state);
   }  
   else if (!strcmp(instruction->id_debug, "LDR_Imm_T1")) {
-    LDR_Imm_T1(binary, mem, setflags);
-    return 0;
+    return LDR_Imm_T1(binary, mem, setflags);
   }  
   else if (!strcmp(instruction->id_debug, "LDR_Imm_T2")) {
-    LDR_Imm_T2(binary, mem, setflags);
-    return 0;
+    return LDR_Imm_T2(binary, mem, setflags);
   }  
   else if (!strcmp(instruction->id_debug, "LDR_Imm_T3")) {
-    LDR_Imm_T3(binary, mem, setflags);
-    return 0;
+    return LDR_Imm_T3(binary, mem, setflags);
   }  
   else if (!strcmp(instruction->id_debug, "LDR_Imm_T4")) {
-    LDR_Imm_T4(binary, mem, setflags);
-    return 0;
+    return LDR_Imm_T4(binary, mem, setflags);
   }  
   else if (!strcmp(instruction->id_debug, "LDR_Lit_T1")) {
-    LDR_Lit_T1(binary, mem, setflags);
-    return 0;
+    return LDR_Lit_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "LDR_Lit_T2")) {
-    LDR_Lit_T2(binary, mem, setflags);
-    return 0;
+    return LDR_Lit_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "MOV_Imm_T1")) {
-    MOV_Imm_T1(binary, mem, setflags);
-    return 0;
+    return MOV_Imm_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "MOV_Imm_T2")) {
-    MOV_Imm_T2(binary, mem, setflags);
-    return 0;
+    return MOV_Imm_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "MOV_Imm_T3")) {
-    MOV_Imm_T3(binary, mem, setflags);
-    return 0;
+    return MOV_Imm_T3(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "MOV_Reg_T1")) {
-    MOV_Reg_T1(binary, mem, setflags);
-    return 0;
+    return MOV_Reg_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "MOV_Reg_T2")) {
-    MOV_Reg_T2(binary, mem, setflags);
-    return 0;
+    return MOV_Reg_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "MOV_Reg_T3")) {
-    MOV_Reg_T3(binary, mem, setflags);
-    return 0;
+    return MOV_Reg_T3(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "MOVT_T1")) {
-    MOVT_T1(binary, mem, setflags);
-    return 0;
+    return MOVT_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "MUL_T1")) {
-    MUL_T1(binary, mem, setflags);
-    return 0;
+    return MUL_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "MUL_T2")) {
-    MUL_T2(binary, mem, setflags);
-    return 0;
+    return MUL_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "POP_T1")) {
-    POP_T1(binary, mem, setflags);
-    return 0;
+    return POP_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "POP_T2")) {
-    POP_T2(binary, mem, setflags);
-    return 0;
+    return POP_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "POP_T3")) {
-    POP_T3(binary, mem, setflags);
-    return 0;
+    return POP_T3(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "PUSH_T1")) {
-    PUSH_T1(binary, mem, setflags);
-    return 0;
+    return PUSH_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "PUSH_T2")) {
-    PUSH_T2(binary, mem, setflags);
-    return 0;
+    return PUSH_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "PUSH_T3")) {
-    PUSH_T3(binary, mem, setflags);
-    return 0;
+    return PUSH_T3(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "STR_Imm_T1")) {
-    STR_Imm_T1(binary, mem, setflags);
-    return 0;
+    return STR_Imm_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "STR_Imm_T2")) {
-    STR_Imm_T2(binary, mem, setflags);
-    return 0;
+    return STR_Imm_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "STR_Imm_T3")) {
-    STR_Imm_T3(binary, mem, setflags);
-    return 0;
+    return STR_Imm_T3(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "STR_Imm_T4")) {
-    STR_Imm_T4(binary, mem, setflags);
-    return 0;
+    return STR_Imm_T4(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "STR_Reg_T1")) {
-    STR_Reg_T1(binary, mem, setflags);
-    return 0;
+    return STR_Reg_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "STR_Reg_T2")) {
-    STR_Reg_T2(binary, mem, setflags);
-    return 0;
+    return STR_Reg_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "SUB_Imm_T1")) {
-      SUB_Imm_T1(binary, mem, setflags);
-      return 0;
+    return SUB_Imm_T1(binary, mem, setflags);
     }
   else if (!strcmp(instruction->id_debug, "SUB_Imm_T2")) {
-    SUB_Imm_T2(binary, mem, setflags);
-    return 0;
+    return SUB_Imm_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "SUB_Imm_T3")) {
-    SUB_Imm_T3(binary, mem, setflags);
-    return 0;
+    return SUB_Imm_T3(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "SUB_Imm_T4")) {
-    SUB_Imm_T4(binary, mem, setflags);
-    return 0;
+    return SUB_Imm_T4(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "SUB_Reg_T1")) {
-    SUB_Reg_T1(binary, mem, setflags);
-    return 0;
+    return SUB_Reg_T1(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "SUB_Reg_T2")) {
-    SUB_Reg_T2(binary, mem, setflags);
-    return 0;
+    return SUB_Reg_T2(binary, mem, setflags);
   }
   else if (!strcmp(instruction->id_debug, "SVC_T1")) {
-    SVC_T1(binary, mem, setflags);
-    return 0;
-  }
-  
+    return SVC_T1(binary, mem, setflags);
+  }  
   else {
     WARNING_MSG("Warning : function not found\n");
     return 1;
-    }
-  return 0;
+  }
 }
 
 int step(dico* dictionary, memory mem) {
