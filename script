@@ -1,5 +1,5 @@
 load pile.o
-disasm 0x3000:0x3030
+disasm 0x3000:0x4000
 run
 disp reg all
 exit
