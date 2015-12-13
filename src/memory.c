@@ -272,6 +272,14 @@ int load (int no_args, char *elf_file, size_t start_mem, memory memory) {
       DEBUG_MSG("section %s not present in the elf file",section_names[i]);
     }
   }
+  rewind(pf_elf);
+
+  // Relocation
+  reloc_segment(pf_elf, *(memory->data), ".data", memory, endianness, &symtab);  
+  reloc_segment(pf_elf, *(memory->txt), ".text", memory, endianness, &symtab);   
+  reloc_segment(pf_elf, *(memory->rodata), ".rodata", memory, endianness, &symtab);   
+  reloc_segment(pf_elf, *(memory->bss), ".bss", memory, endianness, &symtab);   
+
   free(ehdr);
   //Alloue le stack
   stack_set(memory);

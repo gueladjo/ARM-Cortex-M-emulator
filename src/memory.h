@@ -16,7 +16,6 @@
 #include "elf.h"
 #include "syms.h"
 #include "relocator.h"
-#include "memory.h"
 
 #define NB_SECTIONS 4 //Nombre max de sections
 
@@ -25,7 +24,7 @@
 #define RODATA_SECTION_STR ".rodata"
 #define DATA_SECTION_STR ".data"
 #define BSS_SECTION_STR ".bss"
-
+#define RELOC_PREFIX_STR ".rel"
 
 typedef struct segment segment;
 typedef struct memory* memory;
@@ -126,5 +125,6 @@ int memory_free(memory mem);
 
 int read_word(size_t adress, memory mem);
 int write_word(size_t adress, int value, memory mem);
+void reloc_segment(FILE* fp, segment seg, char* segname, memory mem, unsigned int endianness,stab* symtab);
 
 #endif

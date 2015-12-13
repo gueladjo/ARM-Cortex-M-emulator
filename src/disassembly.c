@@ -480,3 +480,32 @@ void decode_P(int binary, dico* instruction) {
   printf("\b\b}");
   return;
 }
+
+int shift(unsigned imm2, unsigned imm3, unsigned type, unsigned registr, memory mem)
+{
+  unsigned imm5 = imm2 + (imm3 << 2);
+  int ret = registr;
+  switch(type) {
+    case 0:
+      ret = registr << imm5;    
+      mem->reg[16] = (mem->reg[16] & 0xDFFFFFFF) + (((registr & (1 << (32 - imm5))) >> (32 - imm5)) << 29);
+    case 1:
+      if (imm5 == 0) imm5 = 32;
+      ret = registr >> imm5;
+      mem->reg[16] = (mem->reg[16] & 0xDFFFFFFF) + (((registr & (1 << (imm5 - 1))) >> (imm5 - 1)) << 29);
+    case 2:
+      if (imm5 == 0) imm5 = 32;
+      ret = ret >> imm5;
+      mem->reg[16] = (mem->reg[16] & 0xDFFFFFFF) + (((registr & (1 << (imm5 - 1))) >> (imm5 - 1)) << 29);
+    case 3:
+      if (imm5 == 0) {
+        unsigned bit0 = registr & 0x1;
+        ret = registr >> 1;
+        ret = (ret | ((mem->reg[16] << 2) & 0x80000000));
+        mem->reg[16] = (mem->reg[16] & 0xDFFFFFFF) + (bit0 << 29);  
+      }
+      else 
+        ret = (registr >> imm5) | (registr << (sizeof(registr)*8 - imm5));
+  }
+  return ret;  
+}

@@ -47,5 +47,6 @@ void DecodeImmShift(unsigned int imm3, unsigned int imm2, unsigned int type, cha
 word SignExtend16(unsigned int imm, unsigned int size);
 word SignExtend32(unsigned int s, unsigned int j1, unsigned int j2, unsigned int imm10, unsigned int imm11);
 void decode_P(int binary, dico* instruction); //Decode for POP & PUSH
+int shift(unsigned imm2, unsigned imm3, unsigned type, unsigned registr, memory mem);
 
 #endif

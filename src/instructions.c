@@ -165,7 +165,7 @@ int ADD_Imm_T3(word binary, memory mem, int setflags)
   int imm = ThumbExpandImm((binary & 0x04000000) >> 26, (binary & 0x00008000) >> 12, binary & 0x000000FF);
   int regs[2];
   int flag = (binary & 0x00100000) >> 20;
-  flag = (~flag)&1;
+  flag = ~flag;
  
   regs[1] = (binary & 0x000F0000) >> 16;
   regs[0] = (binary & 0x00000F00) >> 8;
@@ -235,8 +235,6 @@ int addReg(int* registers, memory mem, int setflags, int shifted, char* encoding
   return 0; 
 }
 
-int shift(unsigned imm2, unsigned imm3, unsigned type, word reg, memory mem) {return 0;}
-
 int ADD_Reg_T1(word binary, memory mem, int setflags)
 {
   int regs[3];
@@ -260,7 +258,7 @@ int ADD_Reg_T2(word binary, memory mem, int setflags)
 
 int ADD_Reg_T3(word binary, memory mem, int setflags)
 {
-  int regs[3];
+  int regs[2];
 
   unsigned imm3 = (binary & 0x7000) >> 12;
   unsigned imm2 = (binary & 0x00C0) >> 6;
@@ -270,7 +268,7 @@ int ADD_Reg_T3(word binary, memory mem, int setflags)
   regs[0] = (binary & 0x0F00) >> 8;
   
   int shifted = shift(imm2, imm3, type, mem->reg[regs[1]], mem);
-  int flag = (~((binary & 0x00100000) >> 20))&1;
+  int flag = ~((binary & 0x00100000) >> 20);
 
   return addReg(regs, mem, flag, shifted, "T3");
 }
@@ -304,7 +302,7 @@ int ADD_SP_T3(word binary, memory mem, int setflags)
   regs[1] = 13;
   regs[0] = (binary & 0x00000F00) >> 8;
 
-  int flags = (~((binary & 0x00100000) >> 16))&1;
+  int flags = ~((binary & 0x00100000) >> 16);
 
   return addImm(imm, regs, mem, flags, "SP");
 }
@@ -469,7 +467,7 @@ int MOV_Imm_T2(word binary, memory mem, int setflags)
   int imm = ThumbExpandImm((binary & 0x04000000) >> 26, (binary & 0x00007000) >> 12, binary & 0x000000FF);
   // Thumb_Expand_Imm_C non implémenté
   int S = (binary & 0x00100000) >> 16;
-  int flags = (~S)&1;
+  int flags = ~S;
 
   return movImm(registr, imm, mem, flags); 
 }
@@ -531,7 +529,7 @@ int MOV_Reg_T3(word binary, memory mem, int setflags)
   regs[0] = binary & 0x0000000F;
 
   int S = (binary & 0x00100000) >> 16;
-  int flags = (~S)&1;
+  int flags = ~S;
 
   return movReg(regs, mem, flags); 
 }
@@ -550,7 +548,7 @@ int B_T1(word binary, memory mem, int setflags)
       offset = ((imm8 << 1) | 0xFFFFFE00);
     }
 
-    mem->reg[15] = mem->reg[15] + offset + 2;
+    mem->reg[15] = mem->reg[15] + offset;
    }
   return 0;
 }
@@ -566,7 +564,7 @@ int B_T2(word binary, memory mem, int setflags)
     offset = ((imm11 << 1) | 0xFFFFF000);
   }
 
-  mem->reg[15] = mem->reg[15] + offset + 2;
+  mem->reg[15] = mem->reg[15] + offset;
 
   return 0;
 }
@@ -584,7 +582,7 @@ int B_T3(word binary, memory mem, int setflags) {
       offset = ((imm11 << 1) | 0xFFFFF000);
     }
 
-    mem->reg[15] = mem->reg[15] + offset + 4;
+    mem->reg[15] = mem->reg[15] + offset;
    }
   return 0;
 }
@@ -594,8 +592,8 @@ int B_T4(word binary, memory mem, int setflags)
   int32_t imm11 = binary & 0x07FF;
   int32_t imm10 = (binary & 0x03FF0000) >> 16;
   int32_t S = (binary & 0x04000000) >> 26;
-  int32_t I1 = (~(((binary & 0x00002000) >> 13) ^ S))&1;
-  int32_t I2 = (~(((binary & 0x00000800) >> 11) ^ S))&1;
+  int32_t I1 = ~(((binary & 0x00002000) >> 13) ^ S);
+  int32_t I2 = ~(((binary & 0x00000800) >> 11) ^ S);
 
   int32_t imm = (imm11 << 1) + (imm10 << 12) + (I2 << 22) + (I1 << 23) + (S << 24); 
   int32_t offset;
@@ -606,7 +604,7 @@ int B_T4(word binary, memory mem, int setflags)
     offset = (imm | 0xFE000000);
   }
 
-  mem->reg[15] = mem->reg[15] + offset + 4;
+  mem->reg[15] = mem->reg[15] + offset;
 
   return 0;
 }
@@ -616,8 +614,8 @@ int BL_T1(word binary, memory mem, int setflags)
   int32_t imm11 = binary & 0x07FF;
   int32_t imm10 = (binary & 0x03FF0000) >> 16;
   int32_t S = (binary & 0x04000000) >> 26;
-  int32_t I1 = ~((((binary & 0x00002000) >> 13) ^ S))&1;
-  int32_t I2 = ~((((binary & 0x00000800) >> 11) ^ S))&1;
+  int32_t I1 = ~(((binary & 0x00002000) >> 13) ^ S);
+  int32_t I2 = ~(((binary & 0x00000800) >> 11) ^ S);
 
   int32_t imm = (imm11 << 1) + (imm10 << 12) + (I2 << 22) + (I1 << 23) + (S << 24); 
 
@@ -629,7 +627,7 @@ int BL_T1(word binary, memory mem, int setflags)
     offset = (imm | 0xFE000000);
   }
 
-  mem->reg[14] = mem->reg[15]; // | 0x1; ?
+  mem->reg[14] = mem->reg[15] | 0x1;
   mem->reg[15] = mem->reg[15] + offset;
 
   return 0;
@@ -638,7 +636,8 @@ int BL_T1(word binary, memory mem, int setflags)
 int BX_T1(word binary, memory mem, int setflags)
 {
   int32_t registr = (binary & 0x0078) >> 3;
-  mem->reg[15] = mem->reg[registr];
+  int offset = mem->reg[registr];
+  mem->reg[15] = mem->reg[15] + offset;
 
   return 0;
 }
@@ -848,7 +847,7 @@ int POP_T1(word binary, memory mem, int setflags)
 
   int i = 0;
   int bit;
-  for(i = 0; i <= 15; i++) {
+  for(i = 0; i < 15; i++) {
     bit = (registers & (1 << i)) >> i;
     if (bit == 1) {
       mem->reg[i] = read_word(mem->reg[13], mem); 
@@ -868,7 +867,7 @@ int POP_T2(word binary, memory mem, int setflags)
 
   int i = 0;
   int bit;
-  for(i = 0; i <= 15; i++) {
+  for(i = 0; i < 15; i++) {
     bit = (registers & (1 << i)) >> i;
     if (bit == 1) {
       mem->reg[i] = read_word(mem->reg[13], mem); 
@@ -895,7 +894,7 @@ int PUSH_T1(word binary, memory mem, int setflags)
 
   int i = 0;
   int bit;
-  for(i = 0; i <= 15; i++) {
+  for(i = 0; i < 15; i++) {
     bit = (registers & (1 << (15 - i))) >> (15 - i);
     if (bit == 1) {
       mem->reg[13] = mem->reg[13] - 4;
@@ -913,7 +912,7 @@ int PUSH_T2(word binary, memory mem, int setflags)
 
   int i = 0;
   int bit;
-  for(i = 0; i <= 15; i++) {
+  for(i = 0; i < 15; i++) {
     bit = (registers & (1 << (15 - i))) >> (15 - i);
     if (bit == 1) {
       mem->reg[13] = mem->reg[13] - 4;
@@ -1181,7 +1180,7 @@ int SUB_Imm_T3(word binary, memory mem, int setflags)
   regs[1] = (binary & 0x000F0000) >> 16;
   regs[0] = (binary & 0x00000F00) >> 8;
   int S = (binary & 0x00100000) >> 16;
-  int flags = (~S)&1;
+  int flags = ~S;
 
   return subImm(imm, regs, mem, flags, "T3");
 }
@@ -1260,7 +1259,7 @@ int SUB_Reg_T2(word binary, memory mem, int setflags)
   int shifted =  shift(imm2, imm3, type, mem->reg[registrm], mem);
   
   int S = (binary & 0x00100000) >> 16;
-  int flags = (~S)&1;
+  int flags = ~S;
 
   return subReg(regs, mem, flags, shifted, "T2");
 }
@@ -1295,8 +1294,5 @@ int SUB_SP_T3(word binary, memory mem, int setflags)
   return 0;
 }
 
-int SVC_T1(word binary, memory mem, int setflags) {
-  printf("Supervisor called with reference %u\n", binary & 0xFF);
-  return 1;
-}
+int SVC_T1(word binary, memory mem, int setflags) {return 0;}
 
